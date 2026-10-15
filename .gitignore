@@ -35,9 +35,10 @@ data_test/
 # Submissions output
 submissions/
 
-# Keep outputs plots & metrics
+# Keep outputs plots, metrics & alignment reports
 !outputs/*.png
 !outputs/*.json
+!outputs/*.csv
 
 # HTML renders & assets
 *.html

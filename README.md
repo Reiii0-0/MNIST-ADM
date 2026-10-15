@@ -239,6 +239,7 @@ FinalProject/
 │   ├── run_phase1_pipeline.py                   # Automated single-command pipeline runner for Phase 1
 │   ├── generate_labeling_suite.py               # Active learning ambiguity extractor & HTML builder
 │   ├── apply_manual_labels.py                   # Human verification merger & submission compiler
+│   ├── match_validation_with_kaggle.py          # Reverse-matching engine against Gabriel Preda Kaggle dataset
 │   ├── stress_test_blur_dilation.py             # Rapid morphological verification utility
 │   ├── comprehensive_stress_test.py             # 8-scenario comprehensive perturbation benchmark
 │   └── compare_stress_test_architectures.py     # ResNet vs. ConvNeXt head-to-head evaluation runner
@@ -248,6 +249,7 @@ FinalProject/
 │   ├── eigen_characters.png                     # Visualizations of top 20 Eigen-character components
 │   ├── lda_canonical_projection.png             # 2D Fisher LDA canonical variate scatter plot
 │   ├── mahalanobis_qq_plot.png                  # Chi-Square Q-Q normality diagnostic plot
+│   ├── kaggle_validation_alignment_report.csv   # Reverse-matching audit against Gabriel Preda ground truth
 │   ├── head_to_head_stress_test.json            # Comparative performance metrics across architectures
 │   └── stress_test_metrics.json                 # Comprehensive stress-test results across 8 regimes
 │
