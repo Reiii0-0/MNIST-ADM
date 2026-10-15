@@ -29,6 +29,7 @@ train/
 train_synthetic/
 data_validasi/
 data_test/
+outputs/matched_kaggle/
 *.zip
 *.tar.gz
 
