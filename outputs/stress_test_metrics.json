@@ -1,0 +1,56 @@
+{
+  "Clean Baseline": {
+    "single_acc": 99.63636363636364,
+    "ensemble_acc": 99.63636363636364,
+    "ensemble_tta_acc": 99.63636363636364,
+    "total": 275
+  },
+  "Mild Blur (k=3, s=0.8)": {
+    "single_acc": 99.63636363636364,
+    "ensemble_acc": 99.63636363636364,
+    "ensemble_tta_acc": 99.63636363636364,
+    "total": 275
+  },
+  "Heavy Blur (k=7, s=1.8)": {
+    "single_acc": 99.63636363636364,
+    "ensemble_acc": 99.63636363636364,
+    "ensemble_tta_acc": 99.63636363636364,
+    "total": 275
+  },
+  "Stroke Dilation (2x2)": {
+    "single_acc": 99.63636363636364,
+    "ensemble_acc": 99.63636363636364,
+    "ensemble_tta_acc": 99.63636363636364,
+    "total": 275
+  },
+  "Heavy Dilation (3x3)": {
+    "single_acc": 99.63636363636364,
+    "ensemble_acc": 99.63636363636364,
+    "ensemble_tta_acc": 99.63636363636364,
+    "total": 275
+  },
+  "Stroke Erosion (2x2)": {
+    "single_acc": 99.63636363636364,
+    "ensemble_acc": 100.0,
+    "ensemble_tta_acc": 100.0,
+    "total": 275
+  },
+  "Committee Compound (Dilate+Blur)": {
+    "single_acc": 99.63636363636364,
+    "ensemble_acc": 99.63636363636364,
+    "ensemble_tta_acc": 99.63636363636364,
+    "total": 275
+  },
+  "Additive Noise (Normal 15)": {
+    "single_acc": 99.63636363636364,
+    "ensemble_acc": 99.63636363636364,
+    "ensemble_tta_acc": 100.0,
+    "total": 275
+  },
+  "Salt & Pepper Ink Specks": {
+    "single_acc": 94.18181818181817,
+    "ensemble_acc": 98.54545454545455,
+    "ensemble_tta_acc": 97.81818181818181,
+    "total": 275
+  }
+}

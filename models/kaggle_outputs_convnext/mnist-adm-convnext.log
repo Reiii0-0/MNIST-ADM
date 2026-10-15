@@ -1,0 +1,131 @@
+[{"stream_name":"stdout","time":11.518344233,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":11.518395647,"data":"RUNNING ON DEVICE: cuda\n"}
+,{"stream_name":"stdout","time":11.566396601,"data":"GPU Model: Tesla T4\n"}
+,{"stream_name":"stdout","time":11.566421173,"data":"CUDA Memory: 15.64 GB\n"}
+,{"stream_name":"stdout","time":11.566442507,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":11.566656769,"data":"Scanning /kaggle/input for dataset files...\n"}
+,{"stream_name":"stdout","time":16.559702348,"data":"Resolved Dataset Root: /kaggle/input/datasets/reiiihel/chinese-mnist-adm\n"}
+,{"stream_name":"stdout","time":16.560194488,"data":"Using splits_kfold.csv from: /kaggle/input/datasets/reiiihel/chinese-mnist-adm/splits_kfold.csv\n"}
+,{"stream_name":"stdout","time":16.594209494,"data":"Total training images in splits: 10500\n"}
+,{"stream_name":"stdout","time":16.594876222,"data":"Using train_synthetic_labels.csv from: /kaggle/input/datasets/reiiihel/chinese-mnist-adm/train_synthetic_labels.csv\n"}
+,{"stream_name":"stdout","time":16.59946718,"data":"Synthetic traditional samples loaded: 700\n"}
+,{"stream_name":"stdout","time":16.599482314,"data":"Indexing all PNG image files in /kaggle and /tmp...\n"}
+,{"stream_name":"stdout","time":22.217439736,"data":"Total mapped unique image files: 11200\n"}
+,{"stream_name":"stdout","time":22.236512531,"data":"\n"}
+,{"stream_name":"stdout","time":22.236558976,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":22.23656764,"data":"STARTING TRAINING: FOLD 0 (ConvNeXt-Femto SOTA)\n"}
+,{"stream_name":"stdout","time":22.236572206,"data":"Train samples: 9100 | Val samples (Unseen Writers): 2100\n"}
+,{"stream_name":"stdout","time":22.236576321,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":55.478681917,"data":"Epoch 01/15 | Train Loss: 5.5744 | Train Acc: 39.66% | Val Acc: 75.86%\n"}
+,{"stream_name":"stdout","time":69.35212132,"data":"Epoch 02/15 | Train Loss: 1.9408 | Train Acc: 88.18% | Val Acc: 94.05%\n"}
+,{"stream_name":"stdout","time":84.524294843,"data":"Epoch 03/15 | Train Loss: 1.0208 | Train Acc: 96.07% | Val Acc: 97.43%\n"}
+,{"stream_name":"stdout","time":102.846218242,"data":"Epoch 04/15 | Train Loss: 0.7892 | Train Acc: 97.67% | Val Acc: 97.52%\n"}
+,{"stream_name":"stdout","time":120.015265563,"data":"Epoch 05/15 | Train Loss: 0.6649 | Train Acc: 98.60% | Val Acc: 98.62%\n"}
+,{"stream_name":"stdout","time":135.614722829,"data":"Epoch 06/15 | Train Loss: 0.6222 | Train Acc: 98.93% | Val Acc: 99.14%\n"}
+,{"stream_name":"stdout","time":149.987328969,"data":"Epoch 07/15 | Train Loss: 0.5735 | Train Acc: 99.26% | Val Acc: 99.29%\n"}
+,{"stream_name":"stdout","time":208.462097357,"data":"Epoch 08/15 | Train Loss: 0.5429 | Train Acc: 99.55% | Val Acc: 98.86%\n"}
+,{"stream_name":"stdout","time":257.349503668,"data":"Epoch 09/15 | Train Loss: 0.5437 | Train Acc: 99.49% | Val Acc: 99.29%\n"}
+,{"stream_name":"stdout","time":271.978772826,"data":"Epoch 10/15 | Train Loss: 0.5223 | Train Acc: 99.62% | Val Acc: 99.33%\n"}
+,{"stream_name":"stdout","time":288.844137008,"data":"Epoch 11/15 | Train Loss: 0.5169 | Train Acc: 99.66% | Val Acc: 99.57%\n"}
+,{"stream_name":"stdout","time":303.632685165,"data":"Epoch 12/15 | Train Loss: 0.5083 | Train Acc: 99.77% | Val Acc: 99.38%\n"}
+,{"stream_name":"stdout","time":317.666518363,"data":"Epoch 13/15 | Train Loss: 0.5039 | Train Acc: 99.73% | Val Acc: 99.38%\n"}
+,{"stream_name":"stdout","time":333.842047169,"data":"Epoch 14/15 | Train Loss: 0.5022 | Train Acc: 99.75% | Val Acc: 99.43%\n"}
+,{"stream_name":"stdout","time":347.905172496,"data":"Epoch 15/15 | Train Loss: 0.4951 | Train Acc: 99.84% | Val Acc: 99.43%\n"}
+,{"stream_name":"stdout","time":347.905209948,"data":"[+] Fold 0 Best Val Acc: 99.57% saved to /kaggle/working/models/convnext_femto_fold0.pt\n"}
+,{"stream_name":"stdout","time":347.913983656,"data":"\n"}
+,{"stream_name":"stdout","time":347.914012707,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":347.914017676,"data":"STARTING TRAINING: FOLD 1 (ConvNeXt-Femto SOTA)\n"}
+,{"stream_name":"stdout","time":347.914025299,"data":"Train samples: 9100 | Val samples (Unseen Writers): 2100\n"}
+,{"stream_name":"stdout","time":347.914029524,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":363.803002658,"data":"Epoch 01/15 | Train Loss: 5.4562 | Train Acc: 42.23% | Val Acc: 82.71%\n"}
+,{"stream_name":"stdout","time":377.881939689,"data":"Epoch 02/15 | Train Loss: 1.8627 | Train Acc: 88.91% | Val Acc: 94.90%\n"}
+,{"stream_name":"stdout","time":393.649104938,"data":"Epoch 03/15 | Train Loss: 1.0651 | Train Acc: 95.48% | Val Acc: 98.71%\n"}
+,{"stream_name":"stdout","time":407.910145764,"data":"Epoch 04/15 | Train Loss: 0.7768 | Train Acc: 98.04% | Val Acc: 97.90%\n"}
+,{"stream_name":"stdout","time":424.577127037,"data":"Epoch 05/15 | Train Loss: 0.6888 | Train Acc: 98.58% | Val Acc: 98.52%\n"}
+,{"stream_name":"stdout","time":438.827035784,"data":"Epoch 06/15 | Train Loss: 0.6223 | Train Acc: 99.15% | Val Acc: 98.81%\n"}
+,{"stream_name":"stdout","time":455.390429194,"data":"Epoch 07/15 | Train Loss: 0.5869 | Train Acc: 99.21% | Val Acc: 99.38%\n"}
+,{"stream_name":"stdout","time":470.209316924,"data":"Epoch 08/15 | Train Loss: 0.5783 | Train Acc: 99.24% | Val Acc: 99.29%\n"}
+,{"stream_name":"stdout","time":486.201040287,"data":"Epoch 09/15 | Train Loss: 0.5361 | Train Acc: 99.60% | Val Acc: 99.57%\n"}
+,{"stream_name":"stdout","time":503.265958724,"data":"Epoch 10/15 | Train Loss: 0.5271 | Train Acc: 99.64% | Val Acc: 99.71%\n"}
+,{"stream_name":"stdout","time":517.406651064,"data":"Epoch 11/15 | Train Loss: 0.5152 | Train Acc: 99.67% | Val Acc: 99.67%\n"}
+,{"stream_name":"stdout","time":537.194622239,"data":"Epoch 12/15 | Train Loss: 0.5002 | Train Acc: 99.76% | Val Acc: 99.62%\n"}
+,{"stream_name":"stdout","time":552.164988701,"data":"Epoch 13/15 | Train Loss: 0.4984 | Train Acc: 99.85% | Val Acc: 99.62%\n"}
+,{"stream_name":"stdout","time":570.995511015,"data":"Epoch 14/15 | Train Loss: 0.4974 | Train Acc: 99.81% | Val Acc: 99.67%\n"}
+,{"stream_name":"stdout","time":588.839003054,"data":"Epoch 15/15 | Train Loss: 0.4979 | Train Acc: 99.77% | Val Acc: 99.67%\n"}
+,{"stream_name":"stdout","time":588.839031808,"data":"[+] Fold 1 Best Val Acc: 99.71% saved to /kaggle/working/models/convnext_femto_fold1.pt\n"}
+,{"stream_name":"stdout","time":588.847576142,"data":"\n"}
+,{"stream_name":"stdout","time":588.847594657,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":588.847600879,"data":"STARTING TRAINING: FOLD 2 (ConvNeXt-Femto SOTA)\n"}
+,{"stream_name":"stdout","time":588.847605637,"data":"Train samples: 9100 | Val samples (Unseen Writers): 2100\n"}
+,{"stream_name":"stdout","time":588.847610029,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":605.277834098,"data":"Epoch 01/15 | Train Loss: 5.4280 | Train Acc: 42.27% | Val Acc: 90.81%\n"}
+,{"stream_name":"stdout","time":619.689771896,"data":"Epoch 02/15 | Train Loss: 1.9244 | Train Acc: 88.68% | Val Acc: 96.57%\n"}
+,{"stream_name":"stdout","time":633.963285363,"data":"Epoch 03/15 | Train Loss: 0.9666 | Train Acc: 96.55% | Val Acc: 98.10%\n"}
+,{"stream_name":"stdout","time":648.397612039,"data":"Epoch 04/15 | Train Loss: 0.7527 | Train Acc: 98.19% | Val Acc: 99.19%\n"}
+,{"stream_name":"stdout","time":662.699248904,"data":"Epoch 05/15 | Train Loss: 0.6718 | Train Acc: 98.68% | Val Acc: 99.10%\n"}
+,{"stream_name":"stdout","time":677.470069558,"data":"Epoch 06/15 | Train Loss: 0.6201 | Train Acc: 98.93% | Val Acc: 99.43%\n"}
+,{"stream_name":"stdout","time":698.698446603,"data":"Epoch 07/15 | Train Loss: 0.5776 | Train Acc: 99.33% | Val Acc: 99.48%\n"}
+,{"stream_name":"stdout","time":713.067034706,"data":"Epoch 08/15 | Train Loss: 0.5705 | Train Acc: 99.35% | Val Acc: 99.38%\n"}
+,{"stream_name":"stdout","time":727.550551173,"data":"Epoch 09/15 | Train Loss: 0.5434 | Train Acc: 99.45% | Val Acc: 99.62%\n"}
+,{"stream_name":"stdout","time":742.050709827,"data":"Epoch 10/15 | Train Loss: 0.5251 | Train Acc: 99.60% | Val Acc: 99.67%\n"}
+,{"stream_name":"stdout","time":756.629233013,"data":"Epoch 11/15 | Train Loss: 0.5173 | Train Acc: 99.60% | Val Acc: 99.57%\n"}
+,{"stream_name":"stdout","time":770.939483944,"data":"Epoch 12/15 | Train Loss: 0.5075 | Train Acc: 99.73% | Val Acc: 99.57%\n"}
+,{"stream_name":"stdout","time":785.858048284,"data":"Epoch 13/15 | Train Loss: 0.4995 | Train Acc: 99.77% | Val Acc: 99.57%\n"}
+,{"stream_name":"stdout","time":801.193441403,"data":"Epoch 14/15 | Train Loss: 0.4989 | Train Acc: 99.74% | Val Acc: 99.62%\n"}
+,{"stream_name":"stdout","time":816.277792686,"data":"Epoch 15/15 | Train Loss: 0.4983 | Train Acc: 99.80% | Val Acc: 99.62%\n"}
+,{"stream_name":"stdout","time":816.277825635,"data":"[+] Fold 2 Best Val Acc: 99.67% saved to /kaggle/working/models/convnext_femto_fold2.pt\n"}
+,{"stream_name":"stdout","time":816.286509887,"data":"\n"}
+,{"stream_name":"stdout","time":816.286528424,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":816.286533487,"data":"STARTING TRAINING: FOLD 3 (ConvNeXt-Femto SOTA)\n"}
+,{"stream_name":"stdout","time":816.286537807,"data":"Train samples: 9100 | Val samples (Unseen Writers): 2100\n"}
+,{"stream_name":"stdout","time":816.286543949,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":831.046988848,"data":"Epoch 01/15 | Train Loss: 5.5416 | Train Acc: 39.95% | Val Acc: 80.67%\n"}
+,{"stream_name":"stdout","time":845.753403646,"data":"Epoch 02/15 | Train Loss: 1.8829 | Train Acc: 88.64% | Val Acc: 93.57%\n"}
+,{"stream_name":"stdout","time":862.228187002,"data":"Epoch 03/15 | Train Loss: 1.0484 | Train Acc: 95.66% | Val Acc: 95.57%\n"}
+,{"stream_name":"stdout","time":877.117140109,"data":"Epoch 04/15 | Train Loss: 0.8021 | Train Acc: 97.65% | Val Acc: 96.24%\n"}
+,{"stream_name":"stdout","time":891.841423723,"data":"Epoch 05/15 | Train Loss: 0.6858 | Train Acc: 98.59% | Val Acc: 98.00%\n"}
+,{"stream_name":"stdout","time":906.640111818,"data":"Epoch 06/15 | Train Loss: 0.6101 | Train Acc: 98.97% | Val Acc: 98.43%\n"}
+,{"stream_name":"stdout","time":923.825519015,"data":"Epoch 07/15 | Train Loss: 0.5789 | Train Acc: 99.27% | Val Acc: 98.67%\n"}
+,{"stream_name":"stdout","time":939.031414074,"data":"Epoch 08/15 | Train Loss: 0.5604 | Train Acc: 99.41% | Val Acc: 98.57%\n"}
+,{"stream_name":"stdout","time":957.25383823,"data":"Epoch 09/15 | Train Loss: 0.5443 | Train Acc: 99.52% | Val Acc: 98.76%\n"}
+,{"stream_name":"stdout","time":971.986410129,"data":"Epoch 10/15 | Train Loss: 0.5236 | Train Acc: 99.69% | Val Acc: 99.00%\n"}
+,{"stream_name":"stdout","time":988.217891418,"data":"Epoch 11/15 | Train Loss: 0.5147 | Train Acc: 99.68% | Val Acc: 99.00%\n"}
+,{"stream_name":"stdout","time":1004.000157361,"data":"Epoch 12/15 | Train Loss: 0.5063 | Train Acc: 99.75% | Val Acc: 98.90%\n"}
+,{"stream_name":"stdout","time":1018.273615203,"data":"Epoch 13/15 | Train Loss: 0.4965 | Train Acc: 99.80% | Val Acc: 99.10%\n"}
+,{"stream_name":"stdout","time":1032.957513547,"data":"Epoch 14/15 | Train Loss: 0.4949 | Train Acc: 99.81% | Val Acc: 98.90%\n"}
+,{"stream_name":"stdout","time":1047.471467053,"data":"Epoch 15/15 | Train Loss: 0.4970 | Train Acc: 99.76% | Val Acc: 98.95%\n"}
+,{"stream_name":"stdout","time":1047.471511958,"data":"[+] Fold 3 Best Val Acc: 99.10% saved to /kaggle/working/models/convnext_femto_fold3.pt\n"}
+,{"stream_name":"stdout","time":1047.480132022,"data":"\n"}
+,{"stream_name":"stdout","time":1047.480149081,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":1047.480154565,"data":"STARTING TRAINING: FOLD 4 (ConvNeXt-Femto SOTA)\n"}
+,{"stream_name":"stdout","time":1047.480159116,"data":"Train samples: 9100 | Val samples (Unseen Writers): 2100\n"}
+,{"stream_name":"stdout","time":1047.480169548,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":1061.960702183,"data":"Epoch 01/15 | Train Loss: 5.4276 | Train Acc: 41.63% | Val Acc: 86.33%\n"}
+,{"stream_name":"stdout","time":1076.416208596,"data":"Epoch 02/15 | Train Loss: 1.8990 | Train Acc: 88.70% | Val Acc: 97.67%\n"}
+,{"stream_name":"stdout","time":1090.965289847,"data":"Epoch 03/15 | Train Loss: 1.0046 | Train Acc: 96.09% | Val Acc: 96.33%\n"}
+,{"stream_name":"stdout","time":1107.621227092,"data":"Epoch 04/15 | Train Loss: 0.7826 | Train Acc: 97.86% | Val Acc: 99.10%\n"}
+,{"stream_name":"stdout","time":1122.004747798,"data":"Epoch 05/15 | Train Loss: 0.6560 | Train Acc: 98.81% | Val Acc: 99.19%\n"}
+,{"stream_name":"stdout","time":1136.198751449,"data":"Epoch 06/15 | Train Loss: 0.5947 | Train Acc: 99.20% | Val Acc: 99.43%\n"}
+,{"stream_name":"stdout","time":1150.636502152,"data":"Epoch 07/15 | Train Loss: 0.5639 | Train Acc: 99.42% | Val Acc: 99.52%\n"}
+,{"stream_name":"stdout","time":1165.405557007,"data":"Epoch 08/15 | Train Loss: 0.5539 | Train Acc: 99.46% | Val Acc: 99.57%\n"}
+,{"stream_name":"stdout","time":1180.570955119,"data":"Epoch 09/15 | Train Loss: 0.5334 | Train Acc: 99.57% | Val Acc: 99.38%\n"}
+,{"stream_name":"stdout","time":1194.955931537,"data":"Epoch 10/15 | Train Loss: 0.5227 | Train Acc: 99.62% | Val Acc: 99.48%\n"}
+,{"stream_name":"stdout","time":1209.471688376,"data":"Epoch 11/15 | Train Loss: 0.5093 | Train Acc: 99.71% | Val Acc: 99.71%\n"}
+,{"stream_name":"stdout","time":1224.075844408,"data":"Epoch 12/15 | Train Loss: 0.5029 | Train Acc: 99.78% | Val Acc: 99.52%\n"}
+,{"stream_name":"stdout","time":1238.434343673,"data":"Epoch 13/15 | Train Loss: 0.4937 | Train Acc: 99.81% | Val Acc: 99.57%\n"}
+,{"stream_name":"stdout","time":1252.949797712,"data":"Epoch 14/15 | Train Loss: 0.4970 | Train Acc: 99.79% | Val Acc: 99.67%\n"}
+,{"stream_name":"stdout","time":1269.865026539,"data":"Epoch 15/15 | Train Loss: 0.4927 | Train Acc: 99.81% | Val Acc: 99.67%\n"}
+,{"stream_name":"stdout","time":1269.865077829,"data":"[+] Fold 4 Best Val Acc: 99.71% saved to /kaggle/working/models/convnext_femto_fold4.pt\n"}
+,{"stream_name":"stdout","time":1269.877795655,"data":"\n"}
+,{"stream_name":"stdout","time":1269.877815575,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":1269.877821129,"data":"CONVNEXT-FEMTO 5-FOLD OVERALL OOF ACCURACY: 99.55%\n"}
+,{"stream_name":"stdout","time":1269.877825774,"data":"Fold Accuracies: ['99.57%', '99.71%', '99.67%', '99.10%', '99.71%']\n"}
+,{"stream_name":"stdout","time":1269.877844762,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":1269.893239164,"data":"ALL TRAINING COMPLETE! Checkpoints ready in /kaggle/working/models.\n"}
+,{"stream_name":"stderr","time":1276.436089261,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":1276.436120097,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":1276.7241449,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":1276.724171201,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":1277.544732107,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":1278.613180709,"data":"[NbConvertApp] Writing 367299 bytes to __results__.html\n"}
+]

@@ -1,0 +1,20 @@
+{
+  "id": "reiiihel/mnist-adm-convnext",
+  "title": "MNIST-ADM-ConvNeXt",
+  "code_file": "mnist-adm-convnext.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [
+    "multivariate",
+    "deep-learning",
+    "convnext",
+    "classification"
+  ],
+  "dataset_sources": [
+    "reiiihel/chinese-mnist-adm"
+  ]
+}

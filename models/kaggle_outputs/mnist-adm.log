@@ -1,0 +1,164 @@
+[{"stream_name":"stdout","time":12.950759783,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":12.950822054,"data":"RUNNING ON DEVICE: cuda\n"}
+,{"stream_name":"stdout","time":12.999465342,"data":"GPU Model: Tesla T4\n"}
+,{"stream_name":"stdout","time":12.999488422,"data":"CUDA Memory: 15.64 GB\n"}
+,{"stream_name":"stdout","time":12.999493474,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":12.999697334,"data":"Scanning /kaggle/input for dataset files...\n"}
+,{"stream_name":"stdout","time":29.713254542,"data":"--\u003e Located Train Images Directory: /kaggle/input/chinese-mnist-adm/train/train\n"}
+,{"stream_name":"stdout","time":36.978137741,"data":"--\u003e Located Synthetic Images Directory: /kaggle/input/chinese-mnist-adm/train_synthetic/train_synthetic\n"}
+,{"stream_name":"stdout","time":37.036239126,"data":"--\u003e Located Splits CSV: /kaggle/input/chinese-mnist-adm/splits_kfold.csv\n"}
+,{"stream_name":"stdout","time":37.07658818,"data":"--\u003e Located Synthetic Labels CSV: /kaggle/input/chinese-mnist-adm/train_synthetic_labels.csv\n"}
+,{"stream_name":"stdout","time":37.121027261,"data":"\n"}
+,{"stream_name":"stdout","time":37.121057233,"data":"Loaded splits: 10500 samples | Synthetic: 700 samples\n"}
+,{"stream_name":"stdout","time":37.213690182,"data":"\n"}
+,{"stream_name":"stdout","time":37.213730213,"data":"[SANITY CHECK] Successfully read first sample image!\n"}
+,{"stream_name":"stdout","time":37.224966231,"data":"Shape: torch.Size([1, 64, 64]) | Non-zero elements: 4096/4096\n"}
+,{"stream_name":"stdout","time":37.224994624,"data":"[SANITY CHECK PASSED] Dataset pipeline is 100% verified and functional!\n"}
+,{"stream_name":"stdout","time":37.22500128,"data":"\n"}
+,{"stream_name":"stdout","time":37.225110517,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":37.225134671,"data":"STARTING FULL 5-FOLD STRATIFIED GROUP K-FOLD SOTA TRAINING\n"}
+,{"stream_name":"stdout","time":37.225140712,"data":"Total Folds: 5 | Epochs per fold: 15 | Batch size: 64\n"}
+,{"stream_name":"stdout","time":37.225145525,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":37.225149964,"data":"\n"}
+,{"stream_name":"stdout","time":37.225154117,"data":"\u003e\u003e\u003e [FOLD 1/5] INITIALIZATION\n"}
+,{"stream_name":"stdout","time":37.237572009,"data":"Train samples: 9100 | Val samples (Unseen writers): 2100\n"}
+,{"stream_name":"stdout","time":86.058502666,"data":"Fold 0 | Epoch 01/15 | Train Loss: 2.7468 | Train Acc: 68.35% | Val Acc (Unseen Writers): 98.43%\n"}
+,{"stream_name":"stdout","time":123.806922688,"data":"Fold 0 | Epoch 02/15 | Train Loss: 0.7014 | Train Acc: 98.99% | Val Acc (Unseen Writers): 99.57%\n"}
+,{"stream_name":"stdout","time":162.87603356,"data":"Fold 0 | Epoch 03/15 | Train Loss: 0.5804 | Train Acc: 99.52% | Val Acc (Unseen Writers): 99.33%\n"}
+,{"stream_name":"stdout","time":201.163836694,"data":"Fold 0 | Epoch 04/15 | Train Loss: 0.5590 | Train Acc: 99.56% | Val Acc (Unseen Writers): 99.67%\n"}
+,{"stream_name":"stdout","time":240.588517853,"data":"Fold 0 | Epoch 05/15 | Train Loss: 0.5381 | Train Acc: 99.63% | Val Acc (Unseen Writers): 99.71%\n"}
+,{"stream_name":"stdout","time":279.583908974,"data":"Fold 0 | Epoch 06/15 | Train Loss: 0.5100 | Train Acc: 99.82% | Val Acc (Unseen Writers): 99.71%\n"}
+,{"stream_name":"stdout","time":318.205269263,"data":"Fold 0 | Epoch 07/15 | Train Loss: 0.5027 | Train Acc: 99.85% | Val Acc (Unseen Writers): 99.81%\n"}
+,{"stream_name":"stdout","time":357.158645981,"data":"Fold 0 | Epoch 08/15 | Train Loss: 0.4999 | Train Acc: 99.84% | Val Acc (Unseen Writers): 99.00%\n"}
+,{"stream_name":"stdout","time":395.647628329,"data":"Fold 0 | Epoch 09/15 | Train Loss: 0.4975 | Train Acc: 99.85% | Val Acc (Unseen Writers): 99.81%\n"}
+,{"stream_name":"stdout","time":434.275945469,"data":"Fold 0 | Epoch 10/15 | Train Loss: 0.4895 | Train Acc: 99.89% | Val Acc (Unseen Writers): 99.86%\n"}
+,{"stream_name":"stdout","time":473.020047286,"data":"Fold 0 | Epoch 11/15 | Train Loss: 0.4832 | Train Acc: 99.91% | Val Acc (Unseen Writers): 99.76%\n"}
+,{"stream_name":"stdout","time":511.503833533,"data":"Fold 0 | Epoch 12/15 | Train Loss: 0.4827 | Train Acc: 99.91% | Val Acc (Unseen Writers): 99.71%\n"}
+,{"stream_name":"stdout","time":550.153745497,"data":"Fold 0 | Epoch 13/15 | Train Loss: 0.4808 | Train Acc: 99.91% | Val Acc (Unseen Writers): 99.81%\n"}
+,{"stream_name":"stdout","time":588.633351461,"data":"Fold 0 | Epoch 14/15 | Train Loss: 0.4801 | Train Acc: 99.92% | Val Acc (Unseen Writers): 99.86%\n"}
+,{"stream_name":"stdout","time":627.181711861,"data":"Fold 0 | Epoch 15/15 | Train Loss: 0.4789 | Train Acc: 99.92% | Val Acc (Unseen Writers): 99.86%\n"}
+,{"stream_name":"stdout","time":627.182425395,"data":"\u003e\u003e\u003e [FOLD 1 COMPLETE] Best Val Accuracy: 99.86% -\u003e Saved to /kaggle/working/models/resnet18_cbam_fold0.pt\n"}
+,{"stream_name":"stdout","time":627.182440282,"data":"\n"}
+,{"stream_name":"stdout","time":627.18244951,"data":"\n"}
+,{"stream_name":"stdout","time":627.18245333,"data":"\u003e\u003e\u003e [FOLD 2/5] INITIALIZATION\n"}
+,{"stream_name":"stdout","time":627.188679169,"data":"Train samples: 9100 | Val samples (Unseen writers): 2100\n"}
+,{"stream_name":"stdout","time":665.667198966,"data":"Fold 1 | Epoch 01/15 | Train Loss: 2.8571 | Train Acc: 62.67% | Val Acc (Unseen Writers): 94.95%\n"}
+,{"stream_name":"stdout","time":704.435613796,"data":"Fold 1 | Epoch 02/15 | Train Loss: 0.7433 | Train Acc: 98.67% | Val Acc (Unseen Writers): 98.76%\n"}
+,{"stream_name":"stdout","time":743.156185355,"data":"Fold 1 | Epoch 03/15 | Train Loss: 0.5835 | Train Acc: 99.51% | Val Acc (Unseen Writers): 99.38%\n"}
+,{"stream_name":"stdout","time":782.478719754,"data":"Fold 1 | Epoch 04/15 | Train Loss: 0.5364 | Train Acc: 99.74% | Val Acc (Unseen Writers): 99.48%\n"}
+,{"stream_name":"stdout","time":821.212411479,"data":"Fold 1 | Epoch 05/15 | Train Loss: 0.5361 | Train Acc: 99.73% | Val Acc (Unseen Writers): 99.57%\n"}
+,{"stream_name":"stdout","time":860.565005952,"data":"Fold 1 | Epoch 06/15 | Train Loss: 0.5558 | Train Acc: 99.55% | Val Acc (Unseen Writers): 99.43%\n"}
+,{"stream_name":"stdout","time":899.147162243,"data":"Fold 1 | Epoch 07/15 | Train Loss: 0.5348 | Train Acc: 99.60% | Val Acc (Unseen Writers): 99.62%\n"}
+,{"stream_name":"stdout","time":937.773007772,"data":"Fold 1 | Epoch 08/15 | Train Loss: 0.5072 | Train Acc: 99.80% | Val Acc (Unseen Writers): 99.67%\n"}
+,{"stream_name":"stdout","time":976.024858116,"data":"Fold 1 | Epoch 09/15 | Train Loss: 0.4906 | Train Acc: 99.88% | Val Acc (Unseen Writers): 99.67%\n"}
+,{"stream_name":"stdout","time":1014.748530211,"data":"Fold 1 | Epoch 10/15 | Train Loss: 0.4894 | Train Acc: 99.87% | Val Acc (Unseen Writers): 99.76%\n"}
+,{"stream_name":"stdout","time":1053.019055099,"data":"Fold 1 | Epoch 11/15 | Train Loss: 0.4874 | Train Acc: 99.89% | Val Acc (Unseen Writers): 99.57%\n"}
+,{"stream_name":"stdout","time":1091.463801898,"data":"Fold 1 | Epoch 12/15 | Train Loss: 0.4855 | Train Acc: 99.89% | Val Acc (Unseen Writers): 99.67%\n"}
+,{"stream_name":"stdout","time":1129.660835639,"data":"Fold 1 | Epoch 13/15 | Train Loss: 0.4852 | Train Acc: 99.89% | Val Acc (Unseen Writers): 99.67%\n"}
+,{"stream_name":"stdout","time":1167.947869778,"data":"Fold 1 | Epoch 14/15 | Train Loss: 0.4838 | Train Acc: 99.89% | Val Acc (Unseen Writers): 99.67%\n"}
+,{"stream_name":"stdout","time":1206.29021522,"data":"Fold 1 | Epoch 15/15 | Train Loss: 0.4834 | Train Acc: 99.89% | Val Acc (Unseen Writers): 99.67%\n"}
+,{"stream_name":"stdout","time":1206.290919515,"data":"\u003e\u003e\u003e [FOLD 2 COMPLETE] Best Val Accuracy: 99.76% -\u003e Saved to /kaggle/working/models/resnet18_cbam_fold1.pt\n"}
+,{"stream_name":"stdout","time":1206.290932205,"data":"\n"}
+,{"stream_name":"stdout","time":1206.290937401,"data":"\n"}
+,{"stream_name":"stdout","time":1206.290941787,"data":"\u003e\u003e\u003e [FOLD 3/5] INITIALIZATION\n"}
+,{"stream_name":"stdout","time":1206.297143585,"data":"Train samples: 9100 | Val samples (Unseen writers): 2100\n"}
+,{"stream_name":"stdout","time":1244.67297445,"data":"Fold 2 | Epoch 01/15 | Train Loss: 2.8707 | Train Acc: 63.20% | Val Acc (Unseen Writers): 97.38%\n"}
+,{"stream_name":"stdout","time":1282.968568928,"data":"Fold 2 | Epoch 02/15 | Train Loss: 0.6980 | Train Acc: 99.24% | Val Acc (Unseen Writers): 99.33%\n"}
+,{"stream_name":"stdout","time":1321.42623986,"data":"Fold 2 | Epoch 03/15 | Train Loss: 0.6134 | Train Acc: 99.38% | Val Acc (Unseen Writers): 99.71%\n"}
+,{"stream_name":"stdout","time":1359.952353139,"data":"Fold 2 | Epoch 04/15 | Train Loss: 0.5497 | Train Acc: 99.67% | Val Acc (Unseen Writers): 99.62%\n"}
+,{"stream_name":"stdout","time":1398.092146079,"data":"Fold 2 | Epoch 05/15 | Train Loss: 0.5469 | Train Acc: 99.58% | Val Acc (Unseen Writers): 99.05%\n"}
+,{"stream_name":"stdout","time":1436.582385797,"data":"Fold 2 | Epoch 06/15 | Train Loss: 0.5348 | Train Acc: 99.71% | Val Acc (Unseen Writers): 99.24%\n"}
+,{"stream_name":"stdout","time":1474.868659152,"data":"Fold 2 | Epoch 07/15 | Train Loss: 0.5142 | Train Acc: 99.77% | Val Acc (Unseen Writers): 99.67%\n"}
+,{"stream_name":"stdout","time":1513.242384476,"data":"Fold 2 | Epoch 08/15 | Train Loss: 0.5269 | Train Acc: 99.66% | Val Acc (Unseen Writers): 99.52%\n"}
+,{"stream_name":"stdout","time":1551.810056689,"data":"Fold 2 | Epoch 09/15 | Train Loss: 0.5015 | Train Acc: 99.82% | Val Acc (Unseen Writers): 99.81%\n"}
+,{"stream_name":"stdout","time":1590.200426523,"data":"Fold 2 | Epoch 10/15 | Train Loss: 0.4953 | Train Acc: 99.87% | Val Acc (Unseen Writers): 99.67%\n"}
+,{"stream_name":"stdout","time":1628.526660271,"data":"Fold 2 | Epoch 11/15 | Train Loss: 0.4889 | Train Acc: 99.89% | Val Acc (Unseen Writers): 99.76%\n"}
+,{"stream_name":"stdout","time":1667.011138295,"data":"Fold 2 | Epoch 12/15 | Train Loss: 0.4850 | Train Acc: 99.90% | Val Acc (Unseen Writers): 99.86%\n"}
+,{"stream_name":"stdout","time":1705.375798642,"data":"Fold 2 | Epoch 13/15 | Train Loss: 0.4864 | Train Acc: 99.88% | Val Acc (Unseen Writers): 99.86%\n"}
+,{"stream_name":"stdout","time":1743.951833367,"data":"Fold 2 | Epoch 14/15 | Train Loss: 0.4851 | Train Acc: 99.89% | Val Acc (Unseen Writers): 99.86%\n"}
+,{"stream_name":"stdout","time":1782.271205167,"data":"Fold 2 | Epoch 15/15 | Train Loss: 0.4825 | Train Acc: 99.90% | Val Acc (Unseen Writers): 99.86%\n"}
+,{"stream_name":"stdout","time":1782.271844472,"data":"\u003e\u003e\u003e [FOLD 3 COMPLETE] Best Val Accuracy: 99.86% -\u003e Saved to /kaggle/working/models/resnet18_cbam_fold2.pt\n"}
+,{"stream_name":"stdout","time":1782.271856496,"data":"\n"}
+,{"stream_name":"stdout","time":1782.271861109,"data":"\n"}
+,{"stream_name":"stdout","time":1782.271865261,"data":"\u003e\u003e\u003e [FOLD 4/5] INITIALIZATION\n"}
+,{"stream_name":"stdout","time":1782.278101046,"data":"Train samples: 9100 | Val samples (Unseen writers): 2100\n"}
+,{"stream_name":"stdout","time":1820.771438508,"data":"Fold 3 | Epoch 01/15 | Train Loss: 2.7157 | Train Acc: 68.48% | Val Acc (Unseen Writers): 95.81%\n"}
+,{"stream_name":"stdout","time":1859.317598099,"data":"Fold 3 | Epoch 02/15 | Train Loss: 0.6740 | Train Acc: 99.26% | Val Acc (Unseen Writers): 98.29%\n"}
+,{"stream_name":"stdout","time":1897.90650019,"data":"Fold 3 | Epoch 03/15 | Train Loss: 0.5839 | Train Acc: 99.51% | Val Acc (Unseen Writers): 98.86%\n"}
+,{"stream_name":"stdout","time":1936.547879273,"data":"Fold 3 | Epoch 04/15 | Train Loss: 0.5653 | Train Acc: 99.55% | Val Acc (Unseen Writers): 99.00%\n"}
+,{"stream_name":"stdout","time":1975.189129715,"data":"Fold 3 | Epoch 05/15 | Train Loss: 0.5248 | Train Acc: 99.80% | Val Acc (Unseen Writers): 98.33%\n"}
+,{"stream_name":"stdout","time":2013.771060286,"data":"Fold 3 | Epoch 06/15 | Train Loss: 0.5240 | Train Acc: 99.71% | Val Acc (Unseen Writers): 99.10%\n"}
+,{"stream_name":"stdout","time":2052.266482006,"data":"Fold 3 | Epoch 07/15 | Train Loss: 0.5037 | Train Acc: 99.79% | Val Acc (Unseen Writers): 98.62%\n"}
+,{"stream_name":"stdout","time":2091.167619813,"data":"Fold 3 | Epoch 08/15 | Train Loss: 0.4938 | Train Acc: 99.89% | Val Acc (Unseen Writers): 99.38%\n"}
+,{"stream_name":"stdout","time":2129.883408615,"data":"Fold 3 | Epoch 09/15 | Train Loss: 0.4845 | Train Acc: 99.92% | Val Acc (Unseen Writers): 99.57%\n"}
+,{"stream_name":"stdout","time":2168.292188396,"data":"Fold 3 | Epoch 10/15 | Train Loss: 0.4882 | Train Acc: 99.88% | Val Acc (Unseen Writers): 99.38%\n"}
+,{"stream_name":"stdout","time":2206.935176627,"data":"Fold 3 | Epoch 11/15 | Train Loss: 0.4834 | Train Acc: 99.92% | Val Acc (Unseen Writers): 99.62%\n"}
+,{"stream_name":"stdout","time":2245.347720454,"data":"Fold 3 | Epoch 12/15 | Train Loss: 0.4827 | Train Acc: 99.91% | Val Acc (Unseen Writers): 99.38%\n"}
+,{"stream_name":"stdout","time":2284.711632064,"data":"Fold 3 | Epoch 13/15 | Train Loss: 0.4835 | Train Acc: 99.89% | Val Acc (Unseen Writers): 99.57%\n"}
+,{"stream_name":"stdout","time":2322.982107835,"data":"Fold 3 | Epoch 14/15 | Train Loss: 0.4788 | Train Acc: 99.93% | Val Acc (Unseen Writers): 99.62%\n"}
+,{"stream_name":"stdout","time":2361.209062833,"data":"Fold 3 | Epoch 15/15 | Train Loss: 0.4766 | Train Acc: 99.96% | Val Acc (Unseen Writers): 99.57%\n"}
+,{"stream_name":"stdout","time":2361.209737703,"data":"\u003e\u003e\u003e [FOLD 4 COMPLETE] Best Val Accuracy: 99.62% -\u003e Saved to /kaggle/working/models/resnet18_cbam_fold3.pt\n"}
+,{"stream_name":"stdout","time":2361.209758211,"data":"\n"}
+,{"stream_name":"stdout","time":2361.20976412,"data":"\n"}
+,{"stream_name":"stdout","time":2361.209768322,"data":"\u003e\u003e\u003e [FOLD 5/5] INITIALIZATION\n"}
+,{"stream_name":"stdout","time":2361.21580857,"data":"Train samples: 9100 | Val samples (Unseen writers): 2100\n"}
+,{"stream_name":"stdout","time":2399.621906291,"data":"Fold 4 | Epoch 01/15 | Train Loss: 2.8456 | Train Acc: 66.70% | Val Acc (Unseen Writers): 97.86%\n"}
+,{"stream_name":"stdout","time":2438.139181486,"data":"Fold 4 | Epoch 02/15 | Train Loss: 0.7226 | Train Acc: 98.93% | Val Acc (Unseen Writers): 99.62%\n"}
+,{"stream_name":"stdout","time":2476.465000319,"data":"Fold 4 | Epoch 03/15 | Train Loss: 0.5840 | Train Acc: 99.47% | Val Acc (Unseen Writers): 99.71%\n"}
+,{"stream_name":"stdout","time":2514.701700406,"data":"Fold 4 | Epoch 04/15 | Train Loss: 0.5605 | Train Acc: 99.54% | Val Acc (Unseen Writers): 99.48%\n"}
+,{"stream_name":"stdout","time":2552.805441814,"data":"Fold 4 | Epoch 05/15 | Train Loss: 0.5804 | Train Acc: 99.35% | Val Acc (Unseen Writers): 99.71%\n"}
+,{"stream_name":"stdout","time":2591.063245806,"data":"Fold 4 | Epoch 06/15 | Train Loss: 0.5189 | Train Acc: 99.73% | Val Acc (Unseen Writers): 99.57%\n"}
+,{"stream_name":"stdout","time":2629.238827405,"data":"Fold 4 | Epoch 07/15 | Train Loss: 0.5274 | Train Acc: 99.73% | Val Acc (Unseen Writers): 99.52%\n"}
+,{"stream_name":"stdout","time":2667.524168363,"data":"Fold 4 | Epoch 08/15 | Train Loss: 0.5010 | Train Acc: 99.82% | Val Acc (Unseen Writers): 99.67%\n"}
+,{"stream_name":"stdout","time":2705.88898514,"data":"Fold 4 | Epoch 09/15 | Train Loss: 0.4994 | Train Acc: 99.81% | Val Acc (Unseen Writers): 99.71%\n"}
+,{"stream_name":"stdout","time":2744.380687361,"data":"Fold 4 | Epoch 10/15 | Train Loss: 0.4887 | Train Acc: 99.90% | Val Acc (Unseen Writers): 99.67%\n"}
+,{"stream_name":"stdout","time":2782.681529381,"data":"Fold 4 | Epoch 11/15 | Train Loss: 0.4832 | Train Acc: 99.91% | Val Acc (Unseen Writers): 99.81%\n"}
+,{"stream_name":"stdout","time":2820.995502961,"data":"Fold 4 | Epoch 12/15 | Train Loss: 0.4871 | Train Acc: 99.86% | Val Acc (Unseen Writers): 99.86%\n"}
+,{"stream_name":"stdout","time":2859.230836525,"data":"Fold 4 | Epoch 13/15 | Train Loss: 0.4820 | Train Acc: 99.92% | Val Acc (Unseen Writers): 99.86%\n"}
+,{"stream_name":"stdout","time":2897.417709593,"data":"Fold 4 | Epoch 14/15 | Train Loss: 0.4808 | Train Acc: 99.92% | Val Acc (Unseen Writers): 99.86%\n"}
+,{"stream_name":"stdout","time":2935.635927899,"data":"Fold 4 | Epoch 15/15 | Train Loss: 0.4813 | Train Acc: 99.91% | Val Acc (Unseen Writers): 99.86%\n"}
+,{"stream_name":"stdout","time":2935.636567175,"data":"\u003e\u003e\u003e [FOLD 5 COMPLETE] Best Val Accuracy: 99.86% -\u003e Saved to /kaggle/working/models/resnet18_cbam_fold4.pt\n"}
+,{"stream_name":"stdout","time":2935.63658064,"data":"\n"}
+,{"stream_name":"stdout","time":2935.647026536,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":2935.647047606,"data":"FINAL 5-FOLD OUT-OF-FOLD (OOF) BENCHMARK RESULTS\n"}
+,{"stream_name":"stdout","time":2935.647051395,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":2935.647054724,"data":"  • Fold 0: Accuracy = 99.86%\n"}
+,{"stream_name":"stdout","time":2935.647058482,"data":"  • Fold 1: Accuracy = 99.76%\n"}
+,{"stream_name":"stdout","time":2935.647061465,"data":"  • Fold 2: Accuracy = 99.86%\n"}
+,{"stream_name":"stdout","time":2935.647064366,"data":"  • Fold 3: Accuracy = 99.62%\n"}
+,{"stream_name":"stdout","time":2935.647097372,"data":"  • Fold 4: Accuracy = 99.86%\n"}
+,{"stream_name":"stdout","time":2935.64710498,"data":"----------------------------------------------------------------------\n"}
+,{"stream_name":"stdout","time":2935.647110664,"data":"OVERALL 5-FOLD OOF ACCURACY: 99.79%\n"}
+,{"stream_name":"stdout","time":2935.647448975,"data":"MEAN ACCURACY: 99.79% ± 0.09%\n"}
+,{"stream_name":"stdout","time":2935.647460307,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":2935.64859457,"data":"Classification Report:\n"}
+,{"stream_name":"stdout","time":2935.663650793,"data":"              precision    recall  f1-score   support\n"}
+,{"stream_name":"stdout","time":2935.66367423,"data":"\n"}
+,{"stream_name":"stdout","time":2935.663693761,"data":"           0     1.0000    1.0000    1.0000       700\n"}
+,{"stream_name":"stdout","time":2935.663698873,"data":"           1     0.9972    1.0000    0.9986       700\n"}
+,{"stream_name":"stdout","time":2935.663703958,"data":"           2     0.9986    0.9971    0.9979       700\n"}
+,{"stream_name":"stdout","time":2935.663709167,"data":"           3     0.9986    0.9971    0.9979       700\n"}
+,{"stream_name":"stdout","time":2935.6637143,"data":"           4     1.0000    0.9957    0.9979       700\n"}
+,{"stream_name":"stdout","time":2935.663719539,"data":"           5     0.9986    0.9986    0.9986       700\n"}
+,{"stream_name":"stdout","time":2935.663724097,"data":"           6     1.0000    0.9971    0.9986       700\n"}
+,{"stream_name":"stdout","time":2935.663739451,"data":"           7     0.9972    1.0000    0.9986       700\n"}
+,{"stream_name":"stdout","time":2935.663743173,"data":"           8     0.9986    0.9986    0.9986       700\n"}
+,{"stream_name":"stdout","time":2935.663746715,"data":"           9     0.9986    0.9986    0.9986       700\n"}
+,{"stream_name":"stdout","time":2935.663750255,"data":"          10     0.9943    0.9986    0.9964       700\n"}
+,{"stream_name":"stdout","time":2935.663756335,"data":"          11     0.9943    0.9986    0.9964       700\n"}
+,{"stream_name":"stdout","time":2935.663763477,"data":"          12     0.9986    0.9943    0.9964       700\n"}
+,{"stream_name":"stdout","time":2935.663765841,"data":"          13     0.9971    0.9986    0.9979       700\n"}
+,{"stream_name":"stdout","time":2935.663768131,"data":"          14     0.9971    0.9957    0.9964       700\n"}
+,{"stream_name":"stdout","time":2935.663770722,"data":"\n"}
+,{"stream_name":"stdout","time":2935.663772891,"data":"    accuracy                         0.9979     10500\n"}
+,{"stream_name":"stdout","time":2935.663775185,"data":"   macro avg     0.9979    0.9979    0.9979     10500\n"}
+,{"stream_name":"stdout","time":2935.663777445,"data":"weighted avg     0.9979    0.9979    0.9979     10500\n"}
+,{"stream_name":"stdout","time":2935.663779789,"data":"\n"}
+,{"stream_name":"stdout","time":2935.663782006,"data":"All 5-fold models and OOF metrics successfully saved in /kaggle/working/!\n"}
+,{"stream_name":"stderr","time":2942.531524738,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":2942.531564246,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":2942.845509632,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":2942.845536962,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":2943.565474968,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":2945.033061659,"data":"[NbConvertApp] Writing 382187 bytes to __results__.html\n"}
+]

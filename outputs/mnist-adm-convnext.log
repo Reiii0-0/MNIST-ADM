@@ -1,0 +1,62 @@
+[{"stream_name":"stdout","time":12.190221005,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":12.190273969,"data":"RUNNING ON DEVICE: cuda\n"}
+,{"stream_name":"stdout","time":12.240796725,"data":"GPU Model: Tesla T4\n"}
+,{"stream_name":"stdout","time":12.240822143,"data":"CUDA Memory: 15.64 GB\n"}
+,{"stream_name":"stdout","time":12.240825231,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":12.241097525,"data":"Scanning /kaggle/input for dataset files...\n"}
+,{"stream_name":"stdout","time":45.311770498,"data":"Resolved Dataset Root: /kaggle/input/datasets/reiiihel/chinese-mnist-adm\n"}
+,{"stream_name":"stdout","time":45.31300741,"data":"Using splits_kfold.csv from: /kaggle/input/datasets/reiiihel/chinese-mnist-adm/splits_kfold.csv\n"}
+,{"stream_name":"stdout","time":45.359737898,"data":"Total training images in splits: 10500\n"}
+,{"stream_name":"stdout","time":45.360710621,"data":"Using train_synthetic_labels.csv from: /kaggle/input/datasets/reiiihel/chinese-mnist-adm/train_synthetic_labels.csv\n"}
+,{"stream_name":"stdout","time":45.368603586,"data":"Synthetic traditional samples loaded: 700\n"}
+,{"stream_name":"stdout","time":45.368620148,"data":"Indexing all PNG image files in /kaggle and /tmp...\n"}
+,{"stream_name":"stdout","time":51.331927834,"data":"Total mapped unique image files: 11200\n"}
+,{"stream_name":"stdout","time":51.347848587,"data":"\n"}
+,{"stream_name":"stdout","time":51.347875673,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":51.347880746,"data":"STARTING TRAINING: FOLD 0 (ConvNeXt-Femto SOTA)\n"}
+,{"stream_name":"stdout","time":51.347885397,"data":"Train samples: 9100 | Val samples (Unseen Writers): 2100\n"}
+,{"stream_name":"stdout","time":51.34789007,"data":"======================================================================\n"}
+,{"stream_name":"stderr","time":57.730717012,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":57.732040877,"data":"  File \"/kaggle/src/script.py\", line 431, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":57.732071624,"data":"    val_acc, best_probs = train_and_eval_fold(fold, df_train_fold, df_val_fold, epochs=15, batch_size=64)\n"}
+,{"stream_name":"stderr","time":57.732079072,"data":"                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":57.732085553,"data":"  File \"/kaggle/src/script.py\", line 352, in train_and_eval_fold\n"}
+,{"stream_name":"stderr","time":57.732091614,"data":"    for imgs, labels in train_loader:\n"}
+,{"stream_name":"stderr","time":57.732097088,"data":"                        ^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":57.732102881,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/dataloader.py\", line 741, in __next__\n"}
+,{"stream_name":"stderr","time":57.732109009,"data":"    data = self._next_data()\n"}
+,{"stream_name":"stderr","time":57.732114222999996,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/dataloader.py\", line 1548, in _next_data\n"}
+,{"stream_name":"stderr","time":57.732120261,"data":"    return self._process_data(data, worker_id)\n"}
+,{"stream_name":"stderr","time":57.732125086,"data":"           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":57.732129321,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/dataloader.py\", line 1586, in _process_data\n"}
+,{"stream_name":"stderr","time":57.732133443,"data":"    data.reraise()\n"}
+,{"stream_name":"stderr","time":57.732158873,"data":"    ~~~~~~~~~~~~^^\n"}
+,{"stream_name":"stderr","time":57.732163593,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/_utils.py\", line 785, in reraise\n"}
+,{"stream_name":"stderr","time":57.732167299,"data":"    raise exception\n"}
+,{"stream_name":"stderr","time":57.732171304,"data":"RuntimeError: Caught RuntimeError in DataLoader worker process 0.\n"}
+,{"stream_name":"stderr","time":57.732175883,"data":"Original Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":57.732180169,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/_utils/worker.py\", line 358, in _worker_loop\n"}
+,{"stream_name":"stderr","time":57.732184473,"data":"    data = fetcher.fetch(index)  # type: ignore[possibly-undefined]\n"}
+,{"stream_name":"stderr","time":57.732188835,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/_utils/fetch.py\", line 57, in fetch\n"}
+,{"stream_name":"stderr","time":57.732193426,"data":"    return self.collate_fn(data)\n"}
+,{"stream_name":"stderr","time":57.732197754,"data":"           ~~~~~~~~~~~~~~~^^^^^^\n"}
+,{"stream_name":"stderr","time":57.732201715,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/_utils/collate.py\", line 401, in default_collate\n"}
+,{"stream_name":"stderr","time":57.732206095,"data":"    return collate(batch, collate_fn_map=default_collate_fn_map)\n"}
+,{"stream_name":"stderr","time":57.732210942,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/_utils/collate.py\", line 215, in collate\n"}
+,{"stream_name":"stderr","time":57.732215497,"data":"    collate(samples, collate_fn_map=collate_fn_map)\n"}
+,{"stream_name":"stderr","time":57.732220043,"data":"    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":57.732223487,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/_utils/collate.py\", line 155, in collate\n"}
+,{"stream_name":"stderr","time":57.732227663,"data":"    return collate_fn_map[elem_type](batch, collate_fn_map=collate_fn_map)\n"}
+,{"stream_name":"stderr","time":57.732232435,"data":"           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":57.732236026,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/_utils/collate.py\", line 275, in collate_tensor_fn\n"}
+,{"stream_name":"stderr","time":57.732239997,"data":"    return torch.stack(batch, 0, out=out)\n"}
+,{"stream_name":"stderr","time":57.732243981,"data":"           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":57.732247628,"data":"RuntimeError: stack expects each tensor to be equal size, but got [1, 64, 64] at entry 0 and [1, 4096, 1] at entry 1\n"}
+,{"stream_name":"stderr","time":57.732251941,"data":"\n"}
+,{"stream_name":"stderr","time":63.605707467,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":63.605734993,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":63.871454053,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":63.871488595,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":64.663730723,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":65.723535595,"data":"[NbConvertApp] Writing 366852 bytes to __results__.html\n"}
+]

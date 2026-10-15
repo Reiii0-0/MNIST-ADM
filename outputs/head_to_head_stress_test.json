@@ -1,0 +1,101 @@
+[
+  {
+    "scenario": "Clean Baseline",
+    "resnet_single": 99.6363639831543,
+    "resnet_ens": 99.6363639831543,
+    "resnet_tta": 99.6363639831543,
+    "convnext_single": 99.6363639831543,
+    "convnext_ens": 99.6363639831543,
+    "convnext_tta": 99.6363639831543,
+    "delta_ens": 0.0,
+    "delta_tta": 0.0
+  },
+  {
+    "scenario": "Mild Blur (k=3, s=0.8)",
+    "resnet_single": 99.6363639831543,
+    "resnet_ens": 99.6363639831543,
+    "resnet_tta": 99.6363639831543,
+    "convnext_single": 99.6363639831543,
+    "convnext_ens": 99.6363639831543,
+    "convnext_tta": 99.6363639831543,
+    "delta_ens": 0.0,
+    "delta_tta": 0.0
+  },
+  {
+    "scenario": "Heavy Blur (k=7, s=1.8)",
+    "resnet_single": 99.6363639831543,
+    "resnet_ens": 99.6363639831543,
+    "resnet_tta": 99.6363639831543,
+    "convnext_single": 99.6363639831543,
+    "convnext_ens": 99.6363639831543,
+    "convnext_tta": 99.6363639831543,
+    "delta_ens": 0.0,
+    "delta_tta": 0.0
+  },
+  {
+    "scenario": "Stroke Dilation (2x2)",
+    "resnet_single": 99.6363639831543,
+    "resnet_ens": 99.6363639831543,
+    "resnet_tta": 99.6363639831543,
+    "convnext_single": 99.2727279663086,
+    "convnext_ens": 99.6363639831543,
+    "convnext_tta": 99.6363639831543,
+    "delta_ens": 0.0,
+    "delta_tta": 0.0
+  },
+  {
+    "scenario": "Heavy Dilation (3x3)",
+    "resnet_single": 99.6363639831543,
+    "resnet_ens": 99.6363639831543,
+    "resnet_tta": 99.6363639831543,
+    "convnext_single": 98.54545593261719,
+    "convnext_ens": 99.6363639831543,
+    "convnext_tta": 99.6363639831543,
+    "delta_ens": 0.0,
+    "delta_tta": 0.0
+  },
+  {
+    "scenario": "Stroke Erosion (2x2)",
+    "resnet_single": 99.6363639831543,
+    "resnet_ens": 100.0,
+    "resnet_tta": 100.0,
+    "convnext_single": 99.6363639831543,
+    "convnext_ens": 99.6363639831543,
+    "convnext_tta": 99.6363639831543,
+    "delta_ens": 0.3636360168457031,
+    "delta_tta": 0.3636360168457031
+  },
+  {
+    "scenario": "Committee Compound (Dilate+Blur)",
+    "resnet_single": 99.6363639831543,
+    "resnet_ens": 99.6363639831543,
+    "resnet_tta": 99.6363639831543,
+    "convnext_single": 99.2727279663086,
+    "convnext_ens": 99.6363639831543,
+    "convnext_tta": 99.6363639831543,
+    "delta_ens": 0.0,
+    "delta_tta": 0.0
+  },
+  {
+    "scenario": "Additive Noise (Normal 15)",
+    "resnet_single": 99.6363639831543,
+    "resnet_ens": 100.0,
+    "resnet_tta": 100.0,
+    "convnext_single": 98.90909194946289,
+    "convnext_ens": 99.6363639831543,
+    "convnext_tta": 99.6363639831543,
+    "delta_ens": 0.3636360168457031,
+    "delta_tta": 0.3636360168457031
+  },
+  {
+    "scenario": "Salt & Pepper Ink Specks",
+    "resnet_single": 91.63636565208435,
+    "resnet_ens": 97.09091186523438,
+    "resnet_tta": 96.36363983154297,
+    "convnext_single": 92.00000166893005,
+    "convnext_ens": 93.09090971946716,
+    "convnext_tta": 92.72727370262146,
+    "delta_ens": 4.000002145767212,
+    "delta_tta": 3.636366128921509
+  }
+]

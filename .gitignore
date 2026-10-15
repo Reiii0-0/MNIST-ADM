@@ -1,0 +1,45 @@
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python & Caching
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter & Notebooks
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# Machine Learning Large Weights (Trained models are hosted on Kaggle Cloud)
+*.pt
+*.pth
+*.weights.h5
+*.ckpt
+*.bin
+
+# Raw image datasets (11,200+ loose PNGs - fetch via Kaggle CLI)
+train/
+train_synthetic/
+data_validasi/
+data_test/
+*.zip
+*.tar.gz
+
+# Submissions output
+submissions/
+
+# Keep outputs plots & metrics
+!outputs/*.png
+!outputs/*.json
+
+# Dokumentasi & Markdown (hanya README.md yang di-commit ke GitHub)
+dokumentasi/
+*.md
+!README.md

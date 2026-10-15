@@ -1,0 +1,68 @@
+{
+  "oof_summary": {
+    "resnet18_cbam_acc": 0.9979047619047619,
+    "convnext_femto_acc": 0.9955238095238095,
+    "blend_50_50_acc": 0.9973333333333333,
+    "blend_optimal_acc": 0.9977142857142857,
+    "errors_resnet_count": 22,
+    "errors_convnext_count": 47,
+    "common_errors_count": 14,
+    "blend_errors_count": 24
+  },
+  "stress_comparison": {
+    "Clean Baseline": {
+      "resnet_5f_acc": 99.63636363636364,
+      "convnext_5f_acc": 99.63636363636364,
+      "dual_blend_acc": 99.63636363636364,
+      "total": 275
+    },
+    "Mild Blur (k=3, s=0.8)": {
+      "resnet_5f_acc": 99.63636363636364,
+      "convnext_5f_acc": 99.63636363636364,
+      "dual_blend_acc": 99.63636363636364,
+      "total": 275
+    },
+    "Heavy Blur (k=7, s=1.8)": {
+      "resnet_5f_acc": 99.63636363636364,
+      "convnext_5f_acc": 99.63636363636364,
+      "dual_blend_acc": 99.63636363636364,
+      "total": 275
+    },
+    "Stroke Dilation (2x2)": {
+      "resnet_5f_acc": 99.63636363636364,
+      "convnext_5f_acc": 99.63636363636364,
+      "dual_blend_acc": 99.63636363636364,
+      "total": 275
+    },
+    "Heavy Dilation (3x3)": {
+      "resnet_5f_acc": 99.63636363636364,
+      "convnext_5f_acc": 99.63636363636364,
+      "dual_blend_acc": 99.63636363636364,
+      "total": 275
+    },
+    "Stroke Erosion (2x2)": {
+      "resnet_5f_acc": 100.0,
+      "convnext_5f_acc": 99.63636363636364,
+      "dual_blend_acc": 99.63636363636364,
+      "total": 275
+    },
+    "Committee Compound (Dilate+Blur)": {
+      "resnet_5f_acc": 99.63636363636364,
+      "convnext_5f_acc": 99.63636363636364,
+      "dual_blend_acc": 99.63636363636364,
+      "total": 275
+    },
+    "Additive Noise (Normal 15)": {
+      "resnet_5f_acc": 100.0,
+      "convnext_5f_acc": 99.63636363636364,
+      "dual_blend_acc": 99.63636363636364,
+      "total": 275
+    },
+    "Salt & Pepper Ink Specks": {
+      "resnet_5f_acc": 97.81818181818181,
+      "convnext_5f_acc": 93.0909090909091,
+      "dual_blend_acc": 96.0,
+      "total": 275
+    }
+  }
+}

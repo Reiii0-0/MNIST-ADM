@@ -1,0 +1,19 @@
+{
+  "id": "reiiihel/mnist-adm",
+  "title": "MNIST-ADM",
+  "code_file": "mnist-adm.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [
+    "multivariate",
+    "deep-learning",
+    "classification"
+  ],
+  "dataset_sources": [
+    "reiiihel/chinese-mnist-adm"
+  ]
+}
