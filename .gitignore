@@ -43,6 +43,10 @@ submissions/
 *.html
 *_files/
 
+# Active learning manual labeling files
+uncertain_samples_for_labeling.csv
+manual_labels.csv
+
 # Documentation & Internal Research Specifications (only README.md tracked in GitHub)
 dokumentasi/
 *.md

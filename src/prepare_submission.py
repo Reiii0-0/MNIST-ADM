@@ -92,7 +92,8 @@ def generate_predictions(
     use_tta=True,
     use_adabn=True,
     power_p=1.8,
-    device="cuda"
+    device="cuda",
+    save_probs_path=None
 ):
     print("=" * 70)
     print("GENERATING SOTA SUBMISSION PREDICTIONS FOR CODABENCH")
@@ -138,6 +139,7 @@ def generate_predictions(
     tta_weights = [1.0, 0.8, 0.8, 0.7, 0.7]
 
     results = []
+    all_final_probs = []
     print("\nRunning Ensemble Inference across test set...")
     with torch.no_grad():
         for i, fpath in enumerate(img_files):
@@ -169,11 +171,18 @@ def generate_predictions(
             final_prob = torch.mean(torch.stack(model_probs_list, dim=0), dim=0)
             pred_label = int(torch.argmax(final_prob).item())
             results.append({"id": basename, "label": pred_label})
+            all_final_probs.append(final_prob.cpu().numpy())
 
             if (i + 1) % 500 == 0 or (i + 1) == len(img_files):
                 print(f"  Processed {i + 1}/{len(img_files)} images ({((i + 1)/len(img_files))*100:.1f}%)...")
 
     df_preds = pd.DataFrame(results)
+    probs_arr = np.array(all_final_probs)
+    if save_probs_path:
+        os.makedirs(os.path.dirname(save_probs_path) or ".", exist_ok=True)
+        np.save(save_probs_path, probs_arr)
+        print(f"[+] Saved prediction probability array to: {save_probs_path}")
+
     os.makedirs(os.path.dirname(output_csv) or ".", exist_ok=True)
     df_preds.to_csv(output_csv, index=False)
     print(f"\n[+] Saved predictions to: {output_csv}")
@@ -217,21 +226,22 @@ def generate_predictions(
     else:
         print("[NOTE] All 15 classes appear in test predictions.")
 
-    # 6. Create flat root ZIP archive
+    # 6. Create flat root ZIP archive (CodaBench requires exactly 'predictions.csv' at zip root)
     os.makedirs(os.path.dirname(output_zip) or ".", exist_ok=True)
     with zipfile.ZipFile(output_zip, 'w', compression=zipfile.ZIP_DEFLATED) as zipf:
-        zipf.write(output_csv, arcname=os.path.basename(output_csv))
+        zipf.write(output_csv, arcname="predictions.csv")
     print(f"\n[+] Created flat root ZIP archive: {output_zip} ({os.path.getsize(output_zip):,} bytes)")
 
     # 7. Verify ZIP file internal hierarchy
     with zipfile.ZipFile(output_zip, 'r') as z:
         files = z.namelist()
-        assert os.path.basename(output_csv) in files, "CRITICAL: CSV file missing at zip root!"
+        assert "predictions.csv" in files, "CRITICAL: 'predictions.csv' missing at zip root!"
         assert len(files) == 1, f"CRITICAL: Extraneous files found in zip: {files}"
-    print("[PASS] Verified ZIP archive: File is located directly at root without subfolders.")
+    print("[PASS] Verified ZIP archive: 'predictions.csv' is located directly at root without subfolders.")
     print("=" * 70)
     print("SUBMISSION FILE 100% AUDITED, VERIFIED, AND READY FOR CODABENCH!")
     print("=" * 70)
+    return df_preds, probs_arr
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate CodaBench Submission with AdaBN & 5-Way TTA")

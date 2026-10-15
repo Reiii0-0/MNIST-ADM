@@ -17,6 +17,8 @@ import glob
 import argparse
 from pathlib import Path
 import torch
+import numpy as np
+import pandas as pd
 
 # Add project root to sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -73,7 +75,8 @@ def main():
     print("\n" + "#" * 80)
     print("STAGE 1: GENERATING SUBMISSION 1 (ANCHOR BASELINE)")
     print("#" * 80)
-    generate_predictions(
+    sub1_probs = os.path.join(args.output_dir, "probabilities_phase1_anchor.npy")
+    df_sub1, probs_sub1 = generate_predictions(
         test_dir=args.test_dir,
         ckpt_paths=ckpt_paths,
         output_csv=sub1_csv,
@@ -81,16 +84,18 @@ def main():
         use_tta=True,
         use_adabn=False,
         power_p=1.8,
-        device=device
+        device=device,
+        save_probs_path=sub1_probs
     )
 
     # 3. Generate Submission 2: SOTA Winning Recipe (AdaBN + 5-Way TTA)
     sub2_csv = os.path.join(args.output_dir, "submission_phase1_adabn_tta.csv")
     sub2_zip = os.path.join(args.output_dir, "submission_phase1_adabn_tta.zip")
+    sub2_probs = os.path.join(args.output_dir, "probabilities_phase1_adabn_tta.npy")
     print("\n" + "#" * 80)
     print("STAGE 2: GENERATING SUBMISSION 2 (SOTA RECIPE: AdaBN + 5-WAY TTA)")
     print("#" * 80)
-    generate_predictions(
+    df_sub2, probs_sub2 = generate_predictions(
         test_dir=args.test_dir,
         ckpt_paths=ckpt_paths,
         output_csv=sub2_csv,
@@ -98,15 +103,50 @@ def main():
         use_tta=True,
         use_adabn=True,
         power_p=1.8,
-        device=device
+        device=device,
+        save_probs_path=sub2_probs
     )
+
+    # 4. Comparative Consensus Audit & Confidence Diagnostics
+    print("\n" + "#" * 80)
+    print("STAGE 3: COMPARATIVE CONSENSUS AUDIT & CONFIDENCE PROFILING")
+    print("#" * 80)
+    agreements = (df_sub1["label"] == df_sub2["label"]).sum()
+    total_samples = len(df_sub1)
+    agreement_pct = (agreements / total_samples) * 100.0
+
+    print(f"Total Validation Samples   : {total_samples}")
+    print(f"Predictions in Agreement   : {agreements}/{total_samples} ({agreement_pct:.3f}%)")
+    
+    diff_mask = df_sub1["label"] != df_sub2["label"]
+    diff_count = diff_mask.sum()
+    print(f"Divergent Predictions Count: {diff_count}")
+
+    if diff_count > 0:
+        print("\n[DIVERGENCE DETAIL] Differences between Anchor and AdaBN+TTA:")
+        diff_df = df_sub1[diff_mask].copy()
+        for idx, row in diff_df.iterrows():
+            img_id = row["id"]
+            lbl_anchor = row["label"]
+            lbl_adabn = df_sub2.loc[idx, "label"]
+            p_anchor = probs_sub1[idx, lbl_anchor]
+            p_adabn = probs_sub2[idx, lbl_adabn]
+            print(f"  • ID: {img_id} | Anchor: {lbl_anchor} (p={p_anchor:.4f}) | AdaBN+TTA: {lbl_adabn} (p={p_adabn:.4f})")
+
+    # Confidence metrics
+    max_probs_anchor = np.max(probs_sub1, axis=1)
+    max_probs_adabn = np.max(probs_sub2, axis=1)
+    print(f"\nMean Confidence (Anchor)   : {np.mean(max_probs_anchor)*100:.2f}%")
+    print(f"Mean Confidence (AdaBN+TTA): {np.mean(max_probs_adabn)*100:.2f}%")
+    print(f"Ultra-High Confidence (>99%): {(max_probs_adabn > 0.99).sum()}/{total_samples} ({((max_probs_adabn > 0.99).sum()/total_samples)*100:.1f}%)")
+    print(f"Marginal / Uncertain (<90%) : {(max_probs_adabn < 0.90).sum()}/{total_samples}")
 
     print("\n" + "=" * 80)
     print("PHASE 1 SPRINT PIPELINE EXECUTION COMPLETED SUCCESSFULLY!")
     print("=" * 80)
     print(f"Submission 1 (Anchor): {sub1_zip}")
     print(f"Submission 2 (SOTA)  : {sub2_zip}")
-    print("\nReady for upload to CodaBench upon user command on October 15, 2026.")
+    print("\nReady for CodaBench submission upon explicit user confirmation.")
 
 if __name__ == "__main__":
     import torch
