@@ -39,7 +39,7 @@ submissions/
 !outputs/*.png
 !outputs/*.json
 
-# Dokumentasi & Markdown (hanya README.md yang di-commit ke GitHub)
+# Documentation & Internal Research Specifications (only README.md tracked in GitHub)
 dokumentasi/
 *.md
 !README.md
