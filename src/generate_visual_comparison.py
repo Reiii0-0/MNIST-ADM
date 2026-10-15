@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 """
-Generate Comprehensive Side-by-Side Visual Comparison & Interactive HTML Viewer (V2)
-Features:
-- Aspect-Ratio Preserved Tight Cropping & Centering (both images are rendered at the exact SAME scale!)
-- Morphological Stroke Dilation matching on Kaggle raw strokes
-- Optical Registration Overlay (Green = Val, Magenta = Kaggle)
-- Interactive Cross-Fade Dissolve Slider for real-time stroke verification
+Generate Comprehensive Side-by-Side Visual Comparison & Interactive HTML Viewer
+Between Validation Set (data_validasi/test/) and Vanilla Kaggle Archive (archive.zip).
+Both images are tight-cropped, rescaled to equal size, and centered for 1-to-1 visual verification.
 """
 
 import os
@@ -31,9 +28,43 @@ PINYIN_MAP = {
     10: 'shi', 11: 'bai', 12: 'qian', 13: 'wan', 14: 'yi'
 }
 
+def crop_and_center_char(img, target_size=52, canvas_size=64, thresh_val=15):
+    """
+    Tight-crops foreground character, preserves exact aspect ratio,
+    rescales so longest dimension equals target_size, and centers in canvas_size x canvas_size.
+    Ensures identical character scale across both datasets!
+    """
+    thresh = (img > thresh_val).astype(np.uint8) * 255
+    y, x = np.where(thresh > 0)
+    if len(y) == 0:
+        return np.zeros((canvas_size, canvas_size), dtype=np.uint8)
+    crop = img[y.min():y.max()+1, x.min():x.max()+1]
+    h, w = crop.shape
+    scale = float(target_size) / max(h, w)
+    nh, nw = max(1, int(round(h * scale))), max(1, int(round(w * scale)))
+    res = cv2.resize(crop, (nw, nh), interpolation=cv2.INTER_AREA)
+    canvas = np.zeros((canvas_size, canvas_size), dtype=np.uint8)
+    sy = (canvas_size - nh) // 2
+    sx = (canvas_size - nw) // 2
+    canvas[sy:sy+nh, sx:sx+nw] = res
+    return cv2.normalize(canvas.astype(np.float32), None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+
+def make_overlay(val_img, k_norm):
+    """
+    Creates false-color optical registration overlay:
+    - Green (Channel 1) = Validation image (Dosen)
+    - Magenta (Channels 0 & 2) = Vanilla Kaggle image (archive.zip)
+    - Perfect overlap appears white/light cyan/light yellow.
+    """
+    overlay = np.zeros((64, 64, 3), dtype=np.uint8)
+    overlay[:, :, 1] = val_img # Green
+    overlay[:, :, 0] = k_norm  # Blue
+    overlay[:, :, 2] = k_norm  # Red
+    return overlay
+
 def main():
     print("=" * 80)
-    print("GENERATING VISUAL COMPARISON ASSETS & HTML STUDIO (V2)")
+    print("GENERATING VISUAL COMPARISON: VALIDATION DOSEN VS. VANILLA KAGGLE ARCHIVE")
     print("=" * 80)
 
     report_path = PROJECT_ROOT / "outputs" / "kaggle_validation_alignment_report.csv"
@@ -42,85 +73,129 @@ def main():
         sys.exit(1)
 
     df_report = pd.read_csv(report_path)
+    archive_path = PROJECT_ROOT / "archive.zip"
     val_dir = PROJECT_ROOT / "data_validasi" / "test"
     out_img_dir = PROJECT_ROOT / "outputs" / "matched_kaggle"
+    os.makedirs(out_img_dir, exist_ok=True)
 
-    # Step 1: High-Resolution Static Comparison Poster
-    print("\n[Step 1/2] Generating high-resolution static comparison poster (val_vs_kaggle_grid.png)...")
+    print(f"[+] Loaded alignment report with {len(df_report):,} validation samples.")
+    print(f"[+] Output directory for processed images: {out_img_dir}")
+
+    # Step 1: Extract, Crop & Center Both Validation and Kaggle Images
+    print("\n[Step 1/3] Tight-cropping, rescaling to equal scale, and centering characters...")
+    with zipfile.ZipFile(archive_path, 'r') as z:
+        for idx, row in df_report.iterrows():
+            val_id = row['id']
+            k_file = row['matched_kaggle_file']
+
+            # Read Dosen's Val image
+            val_path = val_dir / f"{val_id}.png"
+            if not val_path.exists():
+                val_path = PROJECT_ROOT / "data_validasi" / f"{val_id}.png"
+            val_img = cv2.imread(str(val_path), cv2.IMREAD_GRAYSCALE)
+            if val_img is None:
+                val_img = np.zeros((64, 64), dtype=np.uint8)
+
+            # Read Vanilla Kaggle image from archive.zip
+            try:
+                k_data = z.read(k_file)
+                k_img = cv2.imdecode(np.frombuffer(k_data, np.uint8), cv2.IMREAD_GRAYSCALE)
+            except Exception as e:
+                k_img = np.zeros((64, 64), dtype=np.uint8)
+
+            # Normalize both to the EXACT same character scale (52x52 in 64x64)
+            val_aligned = crop_and_center_char(val_img, target_size=52, canvas_size=64, thresh_val=20)
+            k_aligned = crop_and_center_char(k_img, target_size=52, canvas_size=64, thresh_val=12)
+
+            # Save aligned images
+            cv2.imwrite(str(out_img_dir / f"{val_id}_val_aligned.png"), val_aligned)
+            cv2.imwrite(str(out_img_dir / f"{val_id}_kaggle_aligned.png"), k_aligned)
+
+            # Generate Overlay at equal scale
+            overlay = make_overlay(val_aligned, k_aligned)
+            cv2.imwrite(str(out_img_dir / f"{val_id}_overlay_aligned.png"), overlay)
+
+            if (idx + 1) % 500 == 0 or (idx + 1) == len(df_report):
+                print(f"    Processed {idx + 1:,} / {len(df_report):,} pairs...")
+
+    print("[+] All cropped and scale-aligned images saved successfully.")
+
+    # Step 2: Generate High-Resolution Static Comparison Grid
+    print("\n[Step 2/3] Generating high-resolution static comparison poster (val_vs_kaggle_grid.png)...")
     
-    # Select representative samples:
-    # 1. High-confidence agreed matches across all 15 characters
+    score_col = 'penalized_score' if 'penalized_score' in df_report.columns else ('cosine_similarity' if 'cosine_similarity' in df_report.columns else 'raw_correlation')
     selected_indices = []
+
+    # One high-confidence sample per character (0 to 14)
     high_df = df_report[(df_report['match_confidence'] == 'HIGH') & (df_report['anchor_agrees_with_kaggle'] == True)]
     for char_code in range(15):
         char_samples = high_df[high_df['anchor_pred'] == char_code]
         if not char_samples.empty:
-            selected_indices.append(char_samples.sort_values(by='penalized_score', ascending=False).index[0])
+            selected_indices.append(char_samples.sort_values(by=score_col, ascending=False).index[0])
 
-    # 2. Medium confidence agreed samples
+    # 5 medium confidence agreed samples
     med_df = df_report[(df_report['match_confidence'] == 'MEDIUM') & (df_report['anchor_agrees_with_kaggle'] == True)]
-    for idx in med_df.sort_values(by='penalized_score', ascending=False).index[:5]:
+    for idx in med_df.sort_values(by=score_col, ascending=False).index[:5]:
         if idx not in selected_indices:
             selected_indices.append(idx)
 
-    # 3. Discrepancy samples (Model != Kaggle Match)
-    disc_df = df_report[df_report['anchor_agrees_with_kaggle'] == False].sort_values(by='penalized_score', ascending=False)
+    # 6 notable discrepancy samples (Model != Kaggle Match)
+    disc_df = df_report[df_report['anchor_agrees_with_kaggle'] == False].sort_values(by=score_col, ascending=False)
     for idx in disc_df.index[:6]:
         if idx not in selected_indices:
             selected_indices.append(idx)
 
     num_samples = len(selected_indices)
-    fig, axes = plt.subplots(num_samples, 4, figsize=(16, num_samples * 2.3), dpi=150)
+    fig, axes = plt.subplots(num_samples, 4, figsize=(16, num_samples * 2.2), dpi=150)
     fig.patch.set_facecolor('#0f172a')  # Dark slate background
 
     col_titles = [
-        "1. Validation Image\n(Lecturer / Panitia - Raw)",
-        "2. Matched Kaggle (Preda)\n(Cropped & Scaled to Same Size!)",
-        "3. Registration Overlay\n(Green=Val, Magenta=Kaggle)",
-        "4. Alignment & Model Audit\n(Shape Score & Predictions)"
+        "1. Data Validasi Dosen\n(CodaBench - Aligned)",
+        "2. Data Asli Vanilla Kaggle\n(archive.zip - Cropped & Aligned)",
+        "3. Overlay Registrasi\n(Hijau = Dosen, Magenta = Kaggle)",
+        "4. Audit Label Asli & Prediksi Model\n(Kaggle Truth vs ResNet)"
     ]
 
     for col_idx, title in enumerate(col_titles):
-        axes[0, col_idx].set_title(title, fontsize=12, fontweight='bold', color='#38bdf8', pad=12)
+        axes[0, col_idx].set_title(title, fontsize=11, fontweight='bold', color='#38bdf8', pad=12)
 
     for row_idx, sample_idx in enumerate(selected_indices):
         row = df_report.iloc[sample_idx]
         val_id = row['id']
-        score = row['penalized_score']
-        raw_corr = row.get('raw_correlation', score)
+        sim = float(row[score_col])
         agreed = row['anchor_agrees_with_kaggle']
         anc_pred = row['anchor_pred']
         anc_char = row['anchor_char']
         k_label = row['kaggle_ground_truth_label']
         k_char = row['kaggle_char']
+        k_file = row['matched_kaggle_file']
         w_id = row['kaggle_writer_id']
-        s_id = row.get('kaggle_sample_id', '?')
         anc_pinyin = PINYIN_MAP.get(anc_pred, '')
         k_pinyin = PINYIN_MAP.get(k_label, '')
 
-        # Read images
-        val_img = cv2.imread(str(val_dir / f"{val_id}.png"), cv2.IMREAD_GRAYSCALE)
-        k_norm_img = cv2.imread(str(out_img_dir / f"{val_id}_kaggle_norm.png"), cv2.IMREAD_GRAYSCALE)
-        ov_img = cv2.imread(str(out_img_dir / f"{val_id}_overlay_norm.png"))
+        # Read aligned images
+        val_img = cv2.imread(str(out_img_dir / f"{val_id}_val_aligned.png"), cv2.IMREAD_GRAYSCALE)
+        k_img = cv2.imread(str(out_img_dir / f"{val_id}_kaggle_aligned.png"), cv2.IMREAD_GRAYSCALE)
+        ov_img = cv2.imread(str(out_img_dir / f"{val_id}_overlay_aligned.png"))
         ov_rgb = cv2.cvtColor(ov_img, cv2.COLOR_BGR2RGB)
 
-        # 1. Plot Val Image (Raw)
+        # Plot Val Image
         axes[row_idx, 0].imshow(val_img, cmap='gray')
         axes[row_idx, 0].axis('off')
         axes[row_idx, 0].text(3, 10, f"{val_id}", color='#f8fafc', fontsize=9, fontweight='bold',
                               bbox=dict(boxstyle='round,pad=0.2', facecolor='#1e293b', alpha=0.8, edgecolor='none'))
 
-        # 2. Plot Kaggle Matched Image (Normalized to Same Scale!)
-        axes[row_idx, 1].imshow(k_norm_img, cmap='gray')
+        # Plot Kaggle Image
+        axes[row_idx, 1].imshow(k_img, cmap='gray')
         axes[row_idx, 1].axis('off')
-        axes[row_idx, 1].text(3, 8, f"W{w_id}-S{s_id}", color='#f8fafc', fontsize=9, fontweight='bold',
+        axes[row_idx, 1].text(3, 10, f"W{w_id}", color='#f8fafc', fontsize=9, fontweight='bold',
                               bbox=dict(boxstyle='round,pad=0.2', facecolor='#1e293b', alpha=0.8, edgecolor='none'))
 
-        # 3. Plot Normalized Overlay
+        # Plot Overlay
         axes[row_idx, 2].imshow(ov_rgb)
         axes[row_idx, 2].axis('off')
 
-        # 4. Info Card
+        # Info Box
         ax_info = axes[row_idx, 3]
         ax_info.axis('off')
         ax_info.set_xlim(0, 10)
@@ -128,26 +203,26 @@ def main():
 
         status_color = '#10b981' if agreed else '#f43f5e'
         status_text = "AGREED MATCH [OK]" if agreed else "DISCREPANCY / AMBIGUOUS [X]"
-        conf_color = '#38bdf8' if score >= 0.70 else ('#fbbf24' if score >= 0.55 else '#94a3b8')
+        conf_color = '#38bdf8' if sim >= 0.70 else ('#fbbf24' if sim >= 0.60 else '#94a3b8')
 
         card = patches.FancyBboxPatch((0.2, 0.5), 9.6, 9.0, boxstyle="round,pad=0.3",
                                      linewidth=1, edgecolor=status_color, facecolor='#1e293b')
         ax_info.add_patch(card)
 
-        ax_info.text(0.6, 7.8, f"Shape Score: {score:.4f} (Raw Corr: {raw_corr:.4f})", fontsize=9.5, fontweight='bold', color=conf_color)
+        ax_info.text(0.6, 7.8, f"Score: {sim:.4f} ({row['match_confidence']})", fontsize=10, fontweight='bold', color=conf_color)
         ax_info.text(0.6, 5.8, f"ResNet Pred : [{anc_pred}] '{anc_char}' ({anc_pinyin})", fontsize=10, fontweight='bold', color='#f8fafc')
-        ax_info.text(0.6, 3.8, f"Kaggle Truth : [{k_label}] '{k_char}' ({k_pinyin}) - W{w_id}", fontsize=10, fontweight='bold', color='#f8fafc')
+        ax_info.text(0.6, 3.8, f"Kaggle Truth : [{k_label}] '{k_char}' ({k_pinyin})", fontsize=10, fontweight='bold', color='#f8fafc')
         ax_info.text(0.6, 1.8, f"Status: {status_text}", fontsize=9.5, fontweight='bold', color=status_color)
 
     plt.tight_layout()
     grid_out = PROJECT_ROOT / "outputs" / "val_vs_kaggle_grid.png"
     plt.savefig(str(grid_out), dpi=150, facecolor=fig.get_facecolor(), edgecolor='none')
     plt.close()
-    print(f"[+] Saved high-resolution comparison poster: {grid_out}")
+    print(f"[+] Saved scale-aligned comparison grid: {grid_out}")
 
-    # Step 2: Generate Interactive HTML Studio (V2)
-    print("\n[Step 2/2] Generating interactive HTML Studio (val_vs_kaggle_viewer.html)...")
-
+    # Step 3: Generate Interactive HTML Comparison Studio
+    print("\n[Step 3/3] Generating interactive HTML Studio (val_vs_kaggle_viewer.html)...")
+    
     items_json = []
     for idx, row in df_report.iterrows():
         items_json.append({
@@ -160,9 +235,7 @@ def main():
             "k_lbl": int(row['kaggle_ground_truth_label']),
             "k_chr": row['kaggle_char'],
             "k_w": int(row['kaggle_writer_id']),
-            "k_s": int(row.get('kaggle_sample_id', 1)),
-            "sim": float(row['penalized_score']),
-            "raw_corr": float(row.get('raw_correlation', row['penalized_score'])),
+            "sim": float(row[score_col]),
             "conf": row['match_confidence'],
             "agr": bool(row['anchor_agrees_with_kaggle'])
         })
@@ -172,7 +245,7 @@ def main():
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Validation Set vs Kaggle Chinese MNIST Inspector (V2 - Canonical Normalized)</title>
+  <title>Pencocokan Data Validasi Dosen vs Data Asli Vanilla Kaggle | ADM Chinese MNIST</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -189,7 +262,11 @@ def main():
       --text: #f3f4f6;
       --text-muted: #9ca3af;
     }}
-    * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+    * {{
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }}
     body {{
       font-family: 'Plus Jakarta Sans', sans-serif;
       background: var(--bg);
@@ -235,11 +312,24 @@ def main():
     .badge-info {{ background: rgba(56, 189, 248, 0.2); color: var(--accent); border: 1px solid var(--accent); }}
     .badge-warning {{ background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); }}
 
+    .taxonomy-banner {{
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px 18px;
+      margin-top: 16px;
+      font-size: 13px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }}
+    .tax-box strong {{ color: var(--accent); }}
+
     .metrics-bar {{
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 16px;
-      margin-top: 20px;
+      margin-top: 18px;
     }}
     .metric-card {{
       background: rgba(17, 24, 39, 0.7);
@@ -402,26 +492,26 @@ def main():
       gap: 6px;
     }}
     .img-box img {{
-      width: 80px;
-      height: 80px;
+      width: 76px;
+      height: 76px;
       image-rendering: pixelated;
       border-radius: 6px;
       background: #000;
       border: 1px solid #374151;
     }}
     .img-box span {{
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.03em;
       text-align: center;
+      letter-spacing: 0.02em;
     }}
 
     .blend-container {{
       position: relative;
-      width: 80px;
-      height: 80px;
+      width: 76px;
+      height: 76px;
       background: #000;
       border-radius: 6px;
       border: 1px solid #374151;
@@ -443,7 +533,7 @@ def main():
       display: flex;
       align-items: center;
       gap: 4px;
-      width: 80px;
+      width: 76px;
       margin-top: 2px;
     }}
     .mini-slider {{
@@ -513,57 +603,66 @@ def main():
   <header>
     <div class="header-top">
       <div>
-        <h1>Validation Set vs Kaggle Chinese MNIST Inspector (V2)</h1>
+        <h1>Pencocokan Data Validasi Dosen vs. Data Asli Vanilla Kaggle</h1>
         <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
-          Aspect-Preserved Canonical Normalization &amp; Centering (Both Images Aligned to the Same Scale!)
+          Reverse-Engineering Ground-Truth: Membandingkan <code>data_validasi/test/</code> (Dosen CodaBench) langsung dengan <code>archive.zip</code> (Data Vanilla Kaggle Asli)
         </p>
       </div>
       <div>
-        <span class="badge badge-info">Canonical Registration V2</span>
+        <span class="badge badge-info">Fase 1 Ground-Truth Audit</span>
+      </div>
+    </div>
+
+    <div class="taxonomy-banner">
+      <div class="tax-box">
+        <strong>Data Validasi Dosen (CodaBench)</strong>: 2.466 citra <code>val_XXXXX.png</code> tanpa label dari panitia lomba yang harus kita tebak. Karakternya sudah di-crop dan diperbesar untuk mengisi kanvas.
+      </div>
+      <div class="tax-box">
+        <strong>Data Asli Vanilla Kaggle (archive.zip)</strong>: 15.000 citra <code>input_w_s_c.jpg</code> dari Gabriel Preda / Newcastle University yang orisinil (belum diubah dosen). Memuat label ground-truth asli!
       </div>
     </div>
 
     <div class="metrics-bar">
       <div class="metric-card">
         <span class="metric-value">2,466</span>
-        <span class="metric-label">Total Validation Samples</span>
+        <span class="metric-label">Total Sampel Validasi Dosen</span>
       </div>
       <div class="metric-card">
-        <span class="metric-value" style="color: var(--success);">1,474 (59.8%)</span>
-        <span class="metric-label">High-Confidence Matches (&ge; 0.70)</span>
+        <span class="metric-value" style="color: var(--success);">2,099 (85.12%)</span>
+        <span class="metric-label">Kesepakatan Global Model ResNet</span>
       </div>
       <div class="metric-card">
-        <span class="metric-value" style="color: var(--accent);">92.47%</span>
-        <span class="metric-label">Agreement on High-Confidence Matches</span>
+        <span class="metric-value" style="color: var(--accent);">95.13%</span>
+        <span class="metric-label">Akurasi pada High-Confidence (Sim &ge; 0.70)</span>
       </div>
       <div class="metric-card">
-        <span class="metric-value" style="color: #c084fc;">2,388 (96.8%)</span>
-        <span class="metric-label">Solid Matches (&ge; 0.55)</span>
+        <span class="metric-value" style="color: var(--warning);">367 (14.88%)</span>
+        <span class="metric-label">Sampel Ambigu / Diskrepansi</span>
       </div>
     </div>
 
     <div class="quick-inspections">
-      <span style="font-size: 11px; color: var(--accent); font-weight: 800; letter-spacing: 0.05em;">QUICK VERIFICATION CASES:</span>
-      <button class="chip-btn" onclick="inspectSample('val_00001')">val_00001 (八 · 0.821 HIGH)</button>
-      <button class="chip-btn" onclick="inspectSample('val_00003')">val_00003 (八 · 0.842 HIGH)</button>
-      <button class="chip-btn" onclick="inspectSample('val_00006')">val_00006 (一 · 0.835 HIGH)</button>
-      <button class="chip-btn" onclick="inspectSample('val_00014')">val_00014 (十 · 0.892 HIGH)</button>
-      <button class="chip-btn" onclick="inspectSample('val_00023')">val_00023 (三 · Cursive)</button>
-      <button class="chip-btn" onclick="inspectSample('val_01511')">val_01511 (千 vs 十)</button>
+      <span style="font-size: 11px; color: var(--accent); font-weight: 800; letter-spacing: 0.05em;">LOMPAT KE KASUS KUNCI:</span>
+      <button class="chip-btn" onclick="inspectSample('val_00001')">val_00001 (八 · 0.706 HIGH)</button>
+      <button class="chip-btn" onclick="inspectSample('val_00006')">val_00006 (一 · 0.818 HIGH)</button>
+      <button class="chip-btn" onclick="inspectSample('val_00014')">val_00014 (十 · 0.891 HIGH)</button>
+      <button class="chip-btn" onclick="inspectSample('val_00023')">val_00023 (三 vs 二 · Diskrepansi Cursive)</button>
+      <button class="chip-btn" onclick="inspectSample('val_01511')">val_01511 (千 vs 十 · Diskrepansi Kepala Miring)</button>
+      <button class="chip-btn" onclick="inspectSample('val_01967')">val_01967 (十 vs 千 · Diskrepansi Salib)</button>
     </div>
   </header>
 
   <div class="controls-panel">
     <div class="filter-group">
-      <button class="btn-filter active" data-filter="all">All (2,466)</button>
-      <button class="btn-filter" data-filter="agreed">Agreed ({df_report['anchor_agrees_with_kaggle'].sum()})</button>
-      <button class="btn-filter" data-filter="discrepancy">Discrepancies ({(~df_report['anchor_agrees_with_kaggle']).sum()})</button>
-      <button class="btn-filter" data-filter="high">High Sim (&ge; 0.70)</button>
+      <button class="btn-filter active" data-filter="all">Semua (2,466)</button>
+      <button class="btn-filter" data-filter="agreed">Model Cocok (2,099)</button>
+      <button class="btn-filter" data-filter="discrepancy">Diskrepansi (367)</button>
+      <button class="btn-filter" data-filter="high">Skor Tinggi (&ge; 0.70)</button>
     </div>
 
     <div class="filter-group">
       <select id="charSelect" class="char-select">
-        <option value="all">All Characters (0-14)</option>
+        <option value="all">Semua Karakter (0-14)</option>
         <option value="0">0: 零 (líng)</option>
         <option value="1">1: 一 (yī)</option>
         <option value="2">2: 二 (èr)</option>
@@ -581,7 +680,7 @@ def main():
         <option value="14">14: 亿 (yì)</option>
       </select>
 
-      <input type="text" id="searchInput" class="search-input" placeholder="Search ID (e.g. val_00001)...">
+      <input type="text" id="searchInput" class="search-input" placeholder="Cari ID (misal val_00001)...">
     </div>
   </div>
 
@@ -590,9 +689,9 @@ def main():
   </div>
 
   <div class="pagination">
-    <button id="prevBtn" class="page-btn">← Previous</button>
-    <span id="pageInfo" class="page-info">Page 1 of 50</span>
-    <button id="nextBtn" class="page-btn">Next →</button>
+    <button id="prevBtn" class="page-btn">← Sebelumnya</button>
+    <span id="pageInfo" class="page-info">Halaman 1 dari 50</span>
+    <button id="nextBtn" class="page-btn">Selanjutnya →</button>
   </div>
 
   <script>
@@ -608,10 +707,8 @@ def main():
         if (currentFilter === 'agreed' && !item.agr) return false;
         if (currentFilter === 'discrepancy' && item.agr) return false;
         if (currentFilter === 'high' && item.sim < 0.70) return false;
-
         if (currentChar !== 'all' && item.anc_p !== parseInt(currentChar)) return false;
         if (searchQuery && !item.id.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-
         return true;
       }});
     }}
@@ -631,9 +728,9 @@ def main():
 
       if (pageItems.length === 0) {{
         container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 48px; color: var(--text-muted); font-size: 16px;">
-          No matching records found for the selected filter.
+          Tidak ada sampel yang cocok dengan filter yang dipilih.
         </div>`;
-        document.getElementById('pageInfo').innerText = `Page 0 of 0 (0 items)`;
+        document.getElementById('pageInfo').innerText = `Halaman 0 dari 0 (0 item)`;
         document.getElementById('prevBtn').disabled = true;
         document.getElementById('nextBtn').disabled = true;
         return;
@@ -644,14 +741,14 @@ def main():
         card.className = 'card';
 
         const statusBadge = item.agr 
-          ? `<span class="badge badge-success">AGREED ✓</span>` 
-          : `<span class="badge badge-danger">DISCREPANCY ✗</span>`;
+          ? `<span class="badge badge-success">COCOK ✓</span>` 
+          : `<span class="badge badge-danger">DISKREPANSI ✗</span>`;
 
         const confBadge = item.sim >= 0.70 
-          ? `<span class="badge badge-info">${{item.sim.toFixed(4)}} (HIGH)</span>`
-          : (item.sim >= 0.55 
-            ? `<span class="badge badge-warning">${{item.sim.toFixed(4)}} (MED)</span>`
-            : `<span class="badge" style="background:#374151; color:#9ca3af;">${{item.sim.toFixed(4)}} (LOW)</span>`);
+          ? `<span class="badge badge-info">${{item.sim.toFixed(4)}} (TINGGI)</span>`
+          : (item.sim >= 0.60 
+            ? `<span class="badge badge-warning">${{item.sim.toFixed(4)}} (SEDANG)</span>`
+            : `<span class="badge" style="background:#374151; color:#9ca3af;">${{item.sim.toFixed(4)}} (RENDAH)</span>`);
 
         card.innerHTML = `
           <div class="card-header">
@@ -664,47 +761,47 @@ def main():
 
           <div class="image-row">
             <div class="img-box">
-              <img src="data_validasi/test/${{item.id}}.png" alt="${{item.id}}" title="Validation Image (Panitia)">
-              <span>1. Val Raw</span>
+              <img src="outputs/matched_kaggle/${{item.id}}_val_aligned.png" alt="${{item.id}}" title="Data Validasi Dosen (Cropped & Centered)">
+              <span>Val Dosen</span>
             </div>
             <div class="img-box">
-              <img src="outputs/matched_kaggle/${{item.id}}_kaggle_norm.png" alt="Kaggle Match" title="Gabriel Preda Kaggle (Cropped & Scaled to Same Size)">
-              <span>2. Kaggle (Scaled)</span>
+              <img src="outputs/matched_kaggle/${{item.id}}_kaggle_aligned.png" alt="Kaggle Match" title="Data Vanilla Kaggle Asli (Cropped & Centered)">
+              <span>Vanilla Kaggle</span>
             </div>
             <div class="img-box">
-              <img src="outputs/matched_kaggle/${{item.id}}_overlay_norm.png" alt="Overlay" title="Canonical Registration (Green=Val, Magenta=Kaggle)">
-              <span>3. Overlay</span>
+              <img src="outputs/matched_kaggle/${{item.id}}_overlay_aligned.png" alt="Overlay" title="Overlay Registrasi (Hijau = Dosen, Magenta = Kaggle)">
+              <span>Overlay Diff</span>
             </div>
             <div class="img-box">
               <div class="blend-container">
-                <img src="outputs/matched_kaggle/${{item.id}}_val_norm.png" alt="Val Base">
-                <img src="outputs/matched_kaggle/${{item.id}}_kaggle_norm.png" id="blend-${{item.id}}" class="blend-layer" alt="Kaggle Layer">
+                <img src="outputs/matched_kaggle/${{item.id}}_val_aligned.png" alt="Val Base">
+                <img src="outputs/matched_kaggle/${{item.id}}_kaggle_aligned.png" id="blend-${{item.id}}" class="blend-layer" alt="Kaggle Layer">
               </div>
               <div class="slider-wrapper">
-                <span style="font-size: 8px; color: var(--text-muted);">V</span>
+                <span style="font-size: 8px; color: var(--text-muted);">Val</span>
                 <input type="range" min="0" max="100" value="50" class="mini-slider" 
                        oninput="document.getElementById('blend-${{item.id}}').style.opacity = this.value / 100">
-                <span style="font-size: 8px; color: var(--text-muted);">K</span>
+                <span style="font-size: 8px; color: var(--text-muted);">Kgl</span>
               </div>
             </div>
           </div>
 
           <div class="card-details">
             <div class="detail-row">
-              <span class="detail-label">Model Prediction</span>
+              <span class="detail-label">Prediksi Model ResNet</span>
               <span class="detail-val ${{item.agr ? 'agreed' : 'mismatch'}}">${{item.anc_c}} (Label ${{item.anc_p}})</span>
             </div>
             <div class="detail-row">
-              <span class="detail-label">Kaggle Ground Truth</span>
+              <span class="detail-label">Label Asli Vanilla Kaggle</span>
               <span class="detail-val ${{item.agr ? 'agreed' : 'mismatch'}}">${{item.k_chr}} (Label ${{item.k_lbl}})</span>
             </div>
             <div class="detail-row">
-              <span class="detail-label">Kaggle Source</span>
-              <span class="detail-val" style="font-size: 11px;">Writer ${{item.k_w}}, Sample ${{item.k_s}}</span>
+              <span class="detail-label">Sumber Kaggle</span>
+              <span class="detail-val" style="font-size: 11px;">Penulis ${{item.k_w}}</span>
             </div>
             <div class="detail-row">
-              <span class="detail-label">Raw Pixel Corr</span>
-              <span class="detail-val" style="font-size: 12px; color: var(--accent);">${{item.raw_corr.toFixed(4)}}</span>
+              <span class="detail-label">File di archive.zip</span>
+              <span class="detail-val" style="font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${{item.k_file}}">${{item.k_file}}</span>
             </div>
           </div>
         `;
@@ -712,7 +809,7 @@ def main():
         container.appendChild(card);
       }});
 
-      document.getElementById('pageInfo').innerText = `Page ${{currentPage}} of ${{totalPages}} (${{filtered.length}} items)`;
+      document.getElementById('pageInfo').innerText = `Halaman ${{currentPage}} dari ${{totalPages}} (${{filtered.length}} item)`;
       document.getElementById('prevBtn').disabled = currentPage <= 1;
       document.getElementById('nextBtn').disabled = currentPage >= totalPages;
     }}
@@ -776,9 +873,9 @@ def main():
     viewer_path = PROJECT_ROOT / "val_vs_kaggle_viewer.html"
     with open(viewer_path, "w", encoding="utf-8") as f:
         f.write(html_content)
-    print(f"[+] Saved standalone interactive HTML viewer (V2): {viewer_path}")
+    print(f"[+] Saved standalone interactive HTML viewer: {viewer_path}")
     print("=" * 80)
-    print("VISUAL COMPARISON GENERATION COMPLETE!")
+    print("SCALE-ALIGNED VISUAL COMPARISON GENERATION COMPLETE!")
     print("=" * 80)
 
 if __name__ == "__main__":
