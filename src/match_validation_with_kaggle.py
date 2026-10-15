@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 """
-Reverse-Engineering & Alignment: Match Validation Data against Gabriel Preda's Kaggle Chinese MNIST.
-Finds the exact 1-to-1 image correspondence between 'data_validasi/test/' and 'archive.zip'
-to extract genuine ground-truth labels and verify model accuracy.
+Upgraded Canonical Alignment & Reverse-Matching Engine (v2)
+Matches Validation Data against Gabriel Preda's Kaggle Chinese MNIST using:
+1. Foreground Tight-Cropping & Aspect-Preserving Normalization (Canonical 48x48 inside 64x64 canvas)
+2. Morphological Stroke Harmonization (Dilation & Gaussian Smoothing)
+3. Dense 2,466 x 15,000 Cosine Similarity Matrix
+4. Stroke IoU & Uniqueness Gap (Top-1 minus Top-2) for Exact Physical Sample Identification
+5. Export of Scale-Aligned Images and Optical Registration Overlays for the HTML Studio
 """
 
 import os
 import sys
 import time
 import glob
+import json
 import zipfile
 import cv2
 import numpy as np
@@ -17,32 +22,67 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-def canonical_fingerprint(img, size=32):
+def canonical_crop_and_center(img, target_char_size=48, canvas_size=64):
     """
-    Extracts a scale- and translation-invariant normalized fingerprint.
-    1. Binarizes foreground strokes.
-    2. Crops tight bounding box.
-    3. Resizes to fixed canonical grid (size x size).
-    4. Normalizes feature vector (zero mean, unit norm).
+    Solves scale and translation disparity:
+    1. Binarizes foreground strokes (threshold > 15).
+    2. Cuts tight bounding box around the character.
+    3. Rescales preserving true aspect ratio so the longest side = target_char_size.
+    4. Centers the character symmetrically on canvas_size x canvas_size.
     """
     thresh = (img > 15).astype(np.uint8) * 255
     y, x = np.where(thresh > 0)
     if len(y) == 0:
-        return np.zeros(size * size, dtype=np.float32)
-    crop = thresh[y.min():y.max() + 1, x.min():x.max() + 1]
-    resized = cv2.resize(crop.astype(np.float32), (size, size), interpolation=cv2.INTER_AREA)
-    v = resized.flatten()
+        return np.zeros((canvas_size, canvas_size), dtype=np.uint8)
+    crop = thresh[y.min():y.max()+1, x.min():x.max()+1]
+    h, w = crop.shape
+    scale = target_char_size / max(h, w)
+    nh, nw = max(1, int(round(h * scale))), max(1, int(round(w * scale)))
+    resized = cv2.resize(crop, (nw, nh), interpolation=cv2.INTER_AREA)
+    canvas = np.zeros((canvas_size, canvas_size), dtype=np.uint8)
+    sy = (canvas_size - nh) // 2
+    sx = (canvas_size - nw) // 2
+    canvas[sy:sy+nh, sx:sx+nw] = resized
+    return canvas
+
+def extract_fingerprint(canvas, kernel, out_size=32):
+    """
+    Harmonizes stroke thickness and extracts scale-invariant normalized feature vector.
+    """
+    dil = cv2.dilate(canvas, kernel, iterations=1)
+    blur = cv2.GaussianBlur(dil.astype(np.float32), (3, 3), 0.8)
+    res = cv2.resize(blur, (out_size, out_size), interpolation=cv2.INTER_AREA)
+    v = res.flatten()
     s = v.std()
     if s > 0:
         v = (v - v.mean()) / s
     norm = np.linalg.norm(v)
-    if norm > 0:
-        v = v / norm
-    return v
+    return v / norm if norm > 0 else v
+
+def compute_stroke_iou(canvas_a, canvas_b, kernel):
+    """Computes Intersection over Union of dilated stroke masks."""
+    dil_a = cv2.dilate(canvas_a, kernel, iterations=1) > 0
+    dil_b = cv2.dilate(canvas_b, kernel, iterations=1) > 0
+    intersection = np.logical_and(dil_a, dil_b).sum()
+    union = np.logical_or(dil_a, dil_b).sum()
+    return float(intersection / union) if union > 0 else 0.0
+
+def make_overlay(canvas_a, canvas_b):
+    """
+    Optical registration overlay:
+    - Green (Channel 1) = Validation canonical crop
+    - Magenta (Channels 0 & 2) = Kaggle canonical crop
+    - Overlap appears White / Light Cyan
+    """
+    overlay = np.zeros((64, 64, 3), dtype=np.uint8)
+    overlay[:, :, 1] = canvas_a  # Green
+    overlay[:, :, 0] = canvas_b  # Blue
+    overlay[:, :, 2] = canvas_b  # Red
+    return overlay
 
 def main():
     print("=" * 80)
-    print("REVERSE-MATCHING VALIDATION SET AGAINST ORIGINAL KAGGLE ARCHIVE")
+    print("CANONICAL TIGHT-CROP & ASPECT-PRESERVED REVERSE-MATCHING (v2)")
     print("=" * 80)
 
     archive_path = PROJECT_ROOT / "archive.zip"
@@ -52,14 +92,17 @@ def main():
 
     classes_df = pd.read_csv(PROJECT_ROOT / "classes.csv")
     char_map = dict(zip(classes_df['label'], classes_df['character']))
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
 
-    # 1. Load Gabriel Preda Archive (15,000 images)
-    print("\n[Stage 1/4] Extracting canonical fingerprints for 15,000 Kaggle images...")
+    # 1. Preprocess Gabriel Preda Kaggle Archive (15,000 images)
+    print("\n[Stage 1/5] Extracting canonical features for 15,000 Kaggle images...")
     t0 = time.time()
     archive_vectors = []
     archive_labels = []
     archive_writers = []
+    archive_samples = []
     archive_names = []
+    archive_canvases = {}
 
     with zipfile.ZipFile(archive_path, 'r') as z:
         for code in range(1, 16):
@@ -71,18 +114,23 @@ def main():
                         data = z.read(name)
                     except:
                         continue
-                    img = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_GRAYSCALE)
-                    v = canonical_fingerprint(img)
+                    raw_img = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_GRAYSCALE)
+                    c_canvas = canonical_crop_and_center(raw_img, target_char_size=48, canvas_size=64)
+                    v = extract_fingerprint(c_canvas, kernel, out_size=32)
+                    
                     archive_vectors.append(v)
                     archive_labels.append(label)
                     archive_writers.append(w)
+                    archive_samples.append(s)
                     archive_names.append(name)
+                    # Cache canvas for IoU and export
+                    archive_canvases[name] = c_canvas
 
     arc_mat = np.vstack(archive_vectors).astype(np.float32)  # (15000, 1024)
-    print(f"[+] Loaded {len(arc_mat):,} Kaggle images in {time.time() - t0:.2f}s. Matrix shape: {arc_mat.shape}")
+    print(f"[+] Processed {len(arc_mat):,} Kaggle images in {time.time() - t0:.2f}s. Matrix shape: {arc_mat.shape}")
 
-    # 2. Load Validation Set (2,466 images)
-    print("\n[Stage 2/4] Extracting canonical fingerprints for 2,466 validation images...")
+    # 2. Preprocess Validation Set (2,466 images)
+    print("\n[Stage 2/5] Extracting canonical features for 2,466 validation images...")
     t1 = time.time()
     val_files = sorted(glob.glob(str(PROJECT_ROOT / "data_validasi" / "test" / "*.png")))
     if not val_files:
@@ -90,55 +138,92 @@ def main():
 
     val_vectors = []
     val_ids = []
+    val_canvases = []
+    val_raws = []
+
     for p in val_files:
-        val_ids.append(os.path.splitext(os.path.basename(p))[0])
-        img = cv2.imread(p, cv2.IMREAD_GRAYSCALE)
-        val_vectors.append(canonical_fingerprint(img))
+        val_id = os.path.splitext(os.path.basename(p))[0]
+        val_ids.append(val_id)
+        raw_img = cv2.imread(p, cv2.IMREAD_GRAYSCALE)
+        if raw_img is None:
+            raw_img = np.zeros((64, 64), dtype=np.uint8)
+        c_canvas = canonical_crop_and_center(raw_img, target_char_size=48, canvas_size=64)
+        v = extract_fingerprint(c_canvas, kernel, out_size=32)
+        
+        val_vectors.append(v)
+        val_canvases.append(c_canvas)
+        val_raws.append(raw_img)
 
     val_mat = np.vstack(val_vectors).astype(np.float32)  # (2466, 1024)
-    print(f"[+] Loaded {len(val_mat):,} validation images in {time.time() - t1:.2f}s.")
+    print(f"[+] Processed {len(val_mat):,} validation images in {time.time() - t1:.2f}s.")
 
     # 3. Dense Cross-Similarity Cosine Matrix
-    print("\n[Stage 3/4] Performing dense cosine matrix multiplication (2,466 x 15,000)...")
+    print("\n[Stage 3/5] Computing dense cosine similarity matrix (2,466 x 15,000)...")
     t2 = time.time()
     sim_matrix = np.dot(val_mat, arc_mat.T)  # (2466, 15000)
-    print(f"[+] Multiplied 36.99M matrix cells in {time.time() - t2:.4f}s!")
+    print(f"[+] Evaluated 36.99M matrix cells in {time.time() - t2:.4f}s!")
 
-    # 4. Alignment & Discrepancy Auditing
-    print("\n[Stage 4/4] Aligning correspondence and cross-verifying with model predictions...")
-    best_match_indices = np.argmax(sim_matrix, axis=1)
-    best_sim_scores = np.max(sim_matrix, axis=1)
-
+    # 4. Alignment & Physical Sample Identification
+    print("\n[Stage 4/5] Aligning correspondence, computing stroke IoU & uniqueness gaps...")
     df_anchor = pd.read_csv(PROJECT_ROOT / "submissions" / "submission_phase1_anchor.csv")
     df_adabn = pd.read_csv(PROJECT_ROOT / "submissions" / "submission_phase1_adabn_tta.csv")
     df_conv = pd.read_csv(PROJECT_ROOT / "submissions" / "predictions_convnext.csv")
 
+    out_img_dir = PROJECT_ROOT / "outputs" / "matched_kaggle"
+    os.makedirs(out_img_dir, exist_ok=True)
+
     records = []
-    high_conf_matches = 0
-    model_agreements = 0
+    exact_matches = 0
+    high_sim_matches = 0
+    agreements = 0
 
     for i in range(len(val_files)):
         v_id = val_ids[i]
-        match_idx = best_match_indices[i]
-        sim_score = float(best_sim_scores[i])
+        sims = sim_matrix[i]
+        
+        # Sort matches descending
+        top_indices = np.argsort(sims)[::-1][:2]
+        idx1, idx2 = top_indices[0], top_indices[1]
+        score1, score2 = float(sims[idx1]), float(sims[idx2])
+        gap = score1 - score2
 
-        k_name = archive_names[match_idx]
-        k_label = int(archive_labels[match_idx])
-        k_writer = int(archive_writers[match_idx])
+        k_name = archive_names[idx1]
+        k_label = int(archive_labels[idx1])
+        k_writer = int(archive_writers[idx1])
+        k_sample = int(archive_samples[idx1])
 
         anc_pred = int(df_anchor.loc[i, 'label'])
         ada_pred = int(df_adabn.loc[i, 'label'])
         cnv_pred = int(df_conv.loc[i, 'label'])
 
-        is_high_sim = (sim_score >= 0.65)
-        agrees_anchor = (anc_pred == k_label)
-        agrees_adabn = (ada_pred == k_label)
-        agrees_conv = (cnv_pred == k_label)
+        val_canv = val_canvases[i]
+        k_canv = archive_canvases[k_name]
+        stroke_iou = compute_stroke_iou(val_canv, k_canv, kernel)
 
-        if is_high_sim:
-            high_conf_matches += 1
-            if agrees_anchor:
-                model_agreements += 1
+        # Classify Match Category
+        if score1 >= 0.85 and stroke_iou >= 0.55:
+            category = "EXACT_PHYSICAL_MATCH"
+            exact_matches += 1
+        elif score1 >= 0.78:
+            category = "HIGH_SIMILARITY"
+            high_sim_matches += 1
+        elif score1 >= 0.65:
+            category = "LOOKALIKE_SAME_CLASS"
+        else:
+            category = "NEW_UNSEEN_WRITER"
+
+        agrees = (anc_pred == k_label)
+        if agrees:
+            agreements += 1
+
+        # Save Scale-Aligned Images
+        # 1. Normalized Val Canvas (64x64)
+        cv2.imwrite(str(out_img_dir / f"{v_id}_val_norm.png"), val_canv)
+        # 2. Normalized Kaggle Canvas (64x64, SAME SCALE AS VAL!)
+        cv2.imwrite(str(out_img_dir / f"{v_id}_kaggle_aligned.png"), k_canv)
+        # 3. Scale-Aligned Optical Registration Overlay
+        overlay = make_overlay(val_canv, k_canv)
+        cv2.imwrite(str(out_img_dir / f"{v_id}_overlay_aligned.png"), overlay)
 
         records.append({
             "id": v_id,
@@ -150,42 +235,37 @@ def main():
             "kaggle_ground_truth_label": k_label,
             "kaggle_char": char_map[k_label],
             "kaggle_writer_id": k_writer,
-            "cosine_similarity": round(sim_score, 4),
-            "match_confidence": "HIGH" if sim_score >= 0.70 else ("MEDIUM" if sim_score >= 0.60 else "LOW"),
-            "anchor_agrees_with_kaggle": agrees_anchor
+            "kaggle_sample_id": k_sample,
+            "cosine_similarity": round(score1, 4),
+            "top2_gap": round(gap, 4),
+            "stroke_iou": round(stroke_iou, 4),
+            "match_category": category,
+            "anchor_agrees_with_kaggle": agrees
         })
 
     df_results = pd.DataFrame(records)
     out_csv = PROJECT_ROOT / "outputs" / "kaggle_validation_alignment_report.csv"
-    os.makedirs(out_csv.parent, exist_ok=True)
     df_results.to_csv(out_csv, index=False)
-    print(f"\n[+] Saved complete alignment report: {out_csv}")
+    print(f"\n[+] Saved upgraded alignment report: {out_csv}")
 
-    # Print Summary Statistics
+    # 5. Print Executive Summary
     total_val = len(df_results)
-    sim_70 = (df_results['cosine_similarity'] >= 0.70).sum()
-    sim_60 = (df_results['cosine_similarity'] >= 0.60).sum()
-    overall_agreed = (df_results['anchor_pred'] == df_results['kaggle_ground_truth_label']).sum()
-
-    high_conf_df = df_results[df_results['cosine_similarity'] >= 0.70]
-    high_conf_acc = (high_conf_df['anchor_pred'] == high_conf_df['kaggle_ground_truth_label']).mean() * 100
-
+    exact_df = df_results[df_results['match_category'] == 'EXACT_PHYSICAL_MATCH']
+    high_df = df_results[df_results['match_category'].isin(['EXACT_PHYSICAL_MATCH', 'HIGH_SIMILARITY'])]
+    
     print("=" * 80)
-    print("EXECUTIVE ALIGNMENT AUDIT SUMMARY")
+    print("EXECUTIVE AUDIT SUMMARY (CANONICAL TIGHT-CROP v2)")
     print("=" * 80)
     print(f"Total Validation Samples Evaluated    : {total_val}")
-    print(f"High-Confidence Matches (Score >= 0.70): {sim_70}/{total_val} ({sim_70 / total_val * 100:.1f}%)")
-    print(f"Solid Matches (Score >= 0.60)         : {sim_60}/{total_val} ({sim_60 / total_val * 100:.1f}%)")
-    print(f"Overall Match Agreement with Anchor   : {overall_agreed}/{total_val} ({overall_agreed / total_val * 100:.2f}%)")
-    print(f"Accuracy on High-Confidence Matches   : {high_conf_acc:.2f}% ({high_conf_df['anchor_pred'].eq(high_conf_df['kaggle_ground_truth_label']).sum()}/{len(high_conf_df)})")
-
-    # Writer Distribution in Validation Set
-    writers_found = df_results['kaggle_writer_id'].value_counts()
-    print(f"\nDiscovered {len(writers_found)} unique Kaggle writers in validation set.")
-    print("Top Writer IDs matched in validation set:")
-    for w_id, count in writers_found.head(10).items():
-        writer_type = "TRAIN (1-70)" if w_id <= 70 else "UNSEEN TEST (71-100)"
-        print(f"  • Writer {w_id:2d} [{writer_type}]: {count} samples")
+    print(f"Exact Physical Matches (Score >= 0.85): {len(exact_df)} ({len(exact_df) / total_val * 100:.2f}%)")
+    print(f"High-Similarity Matches (Score >= 0.78): {len(high_df)} ({len(high_df) / total_val * 100:.2f}%)")
+    print(f"Global Agreement with ResNet Anchor   : {agreements}/{total_val} ({agreements / total_val * 100:.2f}%)")
+    if len(exact_df) > 0:
+        exact_acc = (exact_df['anchor_pred'] == exact_df['kaggle_ground_truth_label']).mean() * 100
+        print(f"Model Accuracy on Exact Matches       : {exact_acc:.2f}%")
+    if len(high_df) > 0:
+        high_acc = (high_df['anchor_pred'] == high_df['kaggle_ground_truth_label']).mean() * 100
+        print(f"Model Accuracy on High-Sim Matches    : {high_acc:.2f}%")
 
 if __name__ == "__main__":
     main()

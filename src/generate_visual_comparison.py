@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
-Generate Comprehensive Side-by-Side Visual Comparison & Interactive HTML Viewer
-Between Validation Set (data_validasi/test/) and Matched Gabriel Preda Kaggle Images (archive.zip).
+Generate High-Resolution Visual Comparison Poster & Interactive HTML Studio (v2)
+Features:
+- True Scale-Aligned & Centered Kaggle Images (Tight-Cropped to 48px in 64x64 Canvas)
+- Morphological Stroke Overlays (Green = Val, Magenta = Kaggle)
+- Interactive Live Dissolve Cross-Fade Sliders (Smooth Morphing in Same Coordinate Space)
+- Exact Match vs Lookalike vs Discrepancy Auditing (Cosine Sim, Stroke IoU, Top-2 Gap)
 """
 
 import os
@@ -27,22 +31,9 @@ PINYIN_MAP = {
     10: 'shi', 11: 'bai', 12: 'qian', 13: 'wan', 14: 'yi'
 }
 
-def make_overlay(val_img, k_norm):
-    """
-    Creates false-color optical registration overlay:
-    - Green (Channel 1) = Validation image (Dilated/processed by lecturer)
-    - Magenta (Channels 0 & 2) = Kaggle original normalized
-    - Perfect overlap appears white/light cyan/light yellow.
-    """
-    overlay = np.zeros((64, 64, 3), dtype=np.uint8)
-    overlay[:, :, 1] = val_img # Green
-    overlay[:, :, 0] = k_norm  # Blue
-    overlay[:, :, 2] = k_norm  # Red
-    return overlay
-
 def main():
     print("=" * 80)
-    print("GENERATING VISUAL COMPARISON ASSETS & HTML STUDIO")
+    print("GENERATING SCALE-ALIGNED VISUAL COMPARISON ASSETS & HTML STUDIO (v2)")
     print("=" * 80)
 
     report_path = PROJECT_ROOT / "outputs" / "kaggle_validation_alignment_report.csv"
@@ -51,72 +42,36 @@ def main():
         sys.exit(1)
 
     df_report = pd.read_csv(report_path)
-    archive_path = PROJECT_ROOT / "archive.zip"
     val_dir = PROJECT_ROOT / "data_validasi" / "test"
     out_img_dir = PROJECT_ROOT / "outputs" / "matched_kaggle"
-    os.makedirs(out_img_dir, exist_ok=True)
 
     print(f"[+] Loaded report with {len(df_report):,} validation samples.")
-    print(f"[+] Output directory for matched images: {out_img_dir}")
+    print(f"[+] Image assets directory: {out_img_dir}")
 
-    # Step 1: Extract and Save Matched Kaggle Images & Overlays
-    print("\n[Step 1/3] Extracting matched Kaggle images & generating overlays...")
-    with zipfile.ZipFile(archive_path, 'r') as z:
-        for idx, row in df_report.iterrows():
-            val_id = row['id']
-            k_file = row['matched_kaggle_file']
+    # Step 1: Generate High-Resolution Static Comparison Grid
+    print("\n[Step 1/2] Generating high-resolution static comparison poster (val_vs_kaggle_grid.png)...")
 
-            # Read Val image
-            val_path = val_dir / f"{val_id}.png"
-            if not val_path.exists():
-                val_path = PROJECT_ROOT / "data_validasi" / f"{val_id}.png"
-            val_img = cv2.imread(str(val_path), cv2.IMREAD_GRAYSCALE)
-            if val_img is None:
-                val_img = np.zeros((64, 64), dtype=np.uint8)
-
-            # Read Kaggle image from zip
-            try:
-                k_data = z.read(k_file)
-                k_img = cv2.imdecode(np.frombuffer(k_data, np.uint8), cv2.IMREAD_GRAYSCALE)
-            except Exception as e:
-                k_img = np.zeros((64, 64), dtype=np.uint8)
-
-            # Normalize Kaggle raw
-            k_norm = cv2.normalize(k_img.astype(np.float32), None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
-            
-            # Save normalized Kaggle image
-            k_save_path = out_img_dir / f"{val_id}_kaggle.png"
-            cv2.imwrite(str(k_save_path), k_norm)
-
-            # Generate Overlay
-            overlay = make_overlay(val_img, k_norm)
-            ov_save_path = out_img_dir / f"{val_id}_overlay.png"
-            cv2.imwrite(str(ov_save_path), overlay)
-
-            if (idx + 1) % 500 == 0 or (idx + 1) == len(df_report):
-                print(f"    Processed {idx + 1:,} / {len(df_report):,} pairs...")
-
-    print("[+] All matched Kaggle images and optical registration overlays generated successfully.")
-
-    # Step 2: Generate High-Resolution Static Comparison Grid
-    print("\n[Step 2/3] Generating high-resolution static comparison poster (val_vs_kaggle_grid.png)...")
-    
     # Select representative samples:
-    # 1. High-confidence matches across all characters (15 characters)
-    # 2. Medium-confidence matches (5 pairs)
-    # 3. Discrepancy cases (6 pairs)
+    # 1. Exact physical matches across all 15 characters (0 to 14)
+    # 2. High-similarity samples (5 pairs)
+    # 3. Notable discrepancy cases (6 pairs)
     selected_indices = []
 
-    # One high-confidence sample per character (0 to 14)
-    high_df = df_report[(df_report['match_confidence'] == 'HIGH') & (df_report['anchor_agrees_with_kaggle'] == True)]
+    # One exact match per character (0 to 14)
+    exact_df = df_report[df_report['match_category'] == 'EXACT_PHYSICAL_MATCH']
     for char_code in range(15):
-        char_samples = high_df[high_df['anchor_pred'] == char_code]
+        char_samples = exact_df[exact_df['anchor_pred'] == char_code]
         if not char_samples.empty:
             selected_indices.append(char_samples.sort_values(by='cosine_similarity', ascending=False).index[0])
+        else:
+            # Fallback to highest similarity agreed sample
+            fb_samples = df_report[(df_report['anchor_pred'] == char_code) & (df_report['anchor_agrees_with_kaggle'] == True)]
+            if not fb_samples.empty:
+                selected_indices.append(fb_samples.sort_values(by='cosine_similarity', ascending=False).index[0])
 
-    # 5 medium confidence agreed samples
-    med_df = df_report[(df_report['match_confidence'] == 'MEDIUM') & (df_report['anchor_agrees_with_kaggle'] == True)]
-    for idx in med_df.sort_values(by='cosine_similarity', ascending=False).index[:5]:
+    # 5 high-similarity agreed samples
+    high_df = df_report[(df_report['match_category'] == 'HIGH_SIMILARITY') & (df_report['anchor_agrees_with_kaggle'] == True)]
+    for idx in high_df.sort_values(by='cosine_similarity', ascending=False).index[:5]:
         if idx not in selected_indices:
             selected_indices.append(idx)
 
@@ -130,12 +85,11 @@ def main():
     fig, axes = plt.subplots(num_samples, 4, figsize=(16, num_samples * 2.2), dpi=150)
     fig.patch.set_facecolor('#0f172a')  # Dark slate background
 
-    # Column titles
     col_titles = [
-        "1. Validation Image\n(Lecturer / Panitia)",
-        "2. Matched Kaggle Raw\n(Gabriel Preda - Normalized)",
+        "1. Validation Image\n(Dosen - Normalized Canvas)",
+        "2. Matched Kaggle Image\n(Preda - Scaled to Match)",
         "3. Registration Overlay\n(Green=Val, Magenta=Kaggle)",
-        "4. Alignment & Model Audit\n(Sim Score & Labels)"
+        "4. Alignment & Physical Audit\n(Sim, IoU & Model Labels)"
     ]
 
     for col_idx, title in enumerate(col_titles):
@@ -145,32 +99,40 @@ def main():
         row = df_report.iloc[sample_idx]
         val_id = row['id']
         sim = row['cosine_similarity']
+        iou = row['stroke_iou']
+        cat = row['match_category']
         agreed = row['anchor_agrees_with_kaggle']
         anc_pred = row['anchor_pred']
         anc_char = row['anchor_char']
         k_label = row['kaggle_ground_truth_label']
         k_char = row['kaggle_char']
-        k_file = row['matched_kaggle_file']
         w_id = row['kaggle_writer_id']
+        s_id = row['kaggle_sample_id']
+        gap = row['top2_gap']
+
         anc_pinyin = PINYIN_MAP.get(anc_pred, '')
         k_pinyin = PINYIN_MAP.get(k_label, '')
 
-        # Read images
-        val_img = cv2.imread(str(val_dir / f"{val_id}.png"), cv2.IMREAD_GRAYSCALE)
-        k_img = cv2.imread(str(out_img_dir / f"{val_id}_kaggle.png"), cv2.IMREAD_GRAYSCALE)
-        ov_img = cv2.imread(str(out_img_dir / f"{val_id}_overlay.png"))
+        # Read scale-aligned images
+        val_norm_path = out_img_dir / f"{val_id}_val_norm.png"
+        k_align_path = out_img_dir / f"{val_id}_kaggle_aligned.png"
+        ov_path = out_img_dir / f"{val_id}_overlay_aligned.png"
+
+        val_norm = cv2.imread(str(val_norm_path), cv2.IMREAD_GRAYSCALE)
+        k_align = cv2.imread(str(k_align_path), cv2.IMREAD_GRAYSCALE)
+        ov_img = cv2.imread(str(ov_path))
         ov_rgb = cv2.cvtColor(ov_img, cv2.COLOR_BGR2RGB)
 
         # Plot Val Image
-        axes[row_idx, 0].imshow(val_img, cmap='gray')
+        axes[row_idx, 0].imshow(val_norm, cmap='gray')
         axes[row_idx, 0].axis('off')
         axes[row_idx, 0].text(3, 10, f"{val_id}", color='#f8fafc', fontsize=9, fontweight='bold',
                               bbox=dict(boxstyle='round,pad=0.2', facecolor='#1e293b', alpha=0.8, edgecolor='none'))
 
-        # Plot Kaggle Image
-        axes[row_idx, 1].imshow(k_img, cmap='gray')
+        # Plot Kaggle Image (SAME SCALE!)
+        axes[row_idx, 1].imshow(k_align, cmap='gray')
         axes[row_idx, 1].axis('off')
-        axes[row_idx, 1].text(3, 10, f"W{w_id}", color='#f8fafc', fontsize=9, fontweight='bold',
+        axes[row_idx, 1].text(3, 10, f"W{w_id} S{s_id}", color='#f8fafc', fontsize=9, fontweight='bold',
                               bbox=dict(boxstyle='round,pad=0.2', facecolor='#1e293b', alpha=0.8, edgecolor='none'))
 
         # Plot Overlay
@@ -185,17 +147,26 @@ def main():
 
         # Color coding
         status_color = '#10b981' if agreed else '#f43f5e'
-        status_text = "AGREED MATCH [OK]" if agreed else "DISCREPANCY / AMBIGUOUS [X]"
-        conf_color = '#38bdf8' if sim >= 0.70 else ('#fbbf24' if sim >= 0.60 else '#94a3b8')
+        status_text = "AGREED MATCH [OK]" if agreed else "DISCREPANCY [X]"
+        
+        if cat == 'EXACT_PHYSICAL_MATCH':
+            cat_color = '#10b981'
+            cat_label = "EXACT PHYSICAL MATCH"
+        elif cat == 'HIGH_SIMILARITY':
+            cat_color = '#38bdf8'
+            cat_label = "HIGH SIMILARITY"
+        else:
+            cat_color = '#f59e0b'
+            cat_label = cat.replace('_', ' ')
 
         # Draw a subtle card background
         card = patches.FancyBboxPatch((0.2, 0.5), 9.6, 9.0, boxstyle="round,pad=0.3",
                                      linewidth=1, edgecolor=status_color, facecolor='#1e293b')
         ax_info.add_patch(card)
 
-        ax_info.text(0.6, 7.8, f"Cosine Sim: {sim:.4f} ({row['match_confidence']})", fontsize=10, fontweight='bold', color=conf_color)
+        ax_info.text(0.6, 7.8, f"{cat_label} (Sim: {sim:.4f} | IoU: {iou:.3f})", fontsize=9.5, fontweight='bold', color=cat_color)
         ax_info.text(0.6, 5.8, f"ResNet Pred : [{anc_pred}] '{anc_char}' ({anc_pinyin})", fontsize=10, fontweight='bold', color='#f8fafc')
-        ax_info.text(0.6, 3.8, f"Kaggle Truth : [{k_label}] '{k_char}' ({k_pinyin})", fontsize=10, fontweight='bold', color='#f8fafc')
+        ax_info.text(0.6, 3.8, f"Kaggle Truth : [{k_label}] '{k_char}' ({k_pinyin}) [Top2 Gap: +{gap:.3f}]", fontsize=9.5, fontweight='bold', color='#f8fafc')
         ax_info.text(0.6, 1.8, f"Status: {status_text}", fontsize=9.5, fontweight='bold', color=status_color)
 
     plt.tight_layout()
@@ -204,10 +175,9 @@ def main():
     plt.close()
     print(f"[+] Saved high-resolution comparison grid: {grid_out}")
 
-    # Step 3: Generate Interactive HTML Comparison Studio
-    print("\n[Step 3/3] Generating interactive HTML Comparison Studio (val_vs_kaggle_viewer.html)...")
+    # Step 2: Generate Interactive HTML Comparison Studio
+    print("\n[Step 2/2] Generating interactive HTML Comparison Studio (val_vs_kaggle_viewer.html)...")
     
-    # Prepare JSON dataset for client-side instant browsing
     items_json = []
     for idx, row in df_report.iterrows():
         items_json.append({
@@ -220,8 +190,11 @@ def main():
             "k_lbl": int(row['kaggle_ground_truth_label']),
             "k_chr": row['kaggle_char'],
             "k_w": int(row['kaggle_writer_id']),
+            "k_s": int(row['kaggle_sample_id']),
             "sim": float(row['cosine_similarity']),
-            "conf": row['match_confidence'],
+            "iou": float(row['stroke_iou']),
+            "gap": float(row['top2_gap']),
+            "cat": row['match_category'],
             "agr": bool(row['anchor_agrees_with_kaggle'])
         })
 
@@ -230,7 +203,7 @@ def main():
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Validation Set vs Original Kaggle Dataset Inspector | ADM Chinese MNIST</title>
+  <title>Scale-Aligned Validation vs Kaggle Ground-Truth Studio (v2)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -247,11 +220,7 @@ def main():
       --text: #f3f4f6;
       --text-muted: #9ca3af;
     }}
-    * {{
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }}
+    * {{ box-sizing: border-box; margin: 0; padding: 0; }}
     body {{
       font-family: 'Plus Jakarta Sans', sans-serif;
       background: var(--bg);
@@ -285,9 +254,9 @@ def main():
     .badge {{
       display: inline-flex;
       align-items: center;
-      padding: 4px 12px;
+      padding: 4px 10px;
       border-radius: 9999px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -416,7 +385,7 @@ def main():
 
     .grid-container {{
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(410px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(430px, 1fr));
       gap: 20px;
       margin-bottom: 32px;
     }}
@@ -464,8 +433,8 @@ def main():
       gap: 6px;
     }}
     .img-box img {{
-      width: 76px;
-      height: 76px;
+      width: 82px;
+      height: 82px;
       image-rendering: pixelated;
       border-radius: 6px;
       background: #000;
@@ -481,8 +450,8 @@ def main():
 
     .blend-container {{
       position: relative;
-      width: 76px;
-      height: 76px;
+      width: 82px;
+      height: 82px;
       background: #000;
       border-radius: 6px;
       border: 1px solid #374151;
@@ -504,12 +473,12 @@ def main():
       display: flex;
       align-items: center;
       gap: 4px;
-      width: 76px;
+      width: 82px;
       margin-top: 2px;
     }}
     .mini-slider {{
       width: 100%;
-      height: 3px;
+      height: 4px;
       accent-color: var(--accent);
       cursor: pointer;
     }}
@@ -574,13 +543,13 @@ def main():
   <header>
     <div class="header-top">
       <div>
-        <h1>Validation Set vs Original Kaggle Dataset Inspector</h1>
+        <h1>Canonical Scale-Aligned Validation vs Kaggle Ground-Truth Studio (v2)</h1>
         <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
-          Comparing Lecturer's Validation Data (<code>data_validasi/test/</code>) vs Gabriel Preda's Chinese MNIST (<code>archive.zip</code>)
+          Tight-Cropped & Aspect-Preserved Character Normalization (48px Canvas Box) · Direct Stroke Alignment
         </p>
       </div>
       <div>
-        <span class="badge badge-info">Phase 1 Validation Audit</span>
+        <span class="badge badge-info">Canonical Alignment v2</span>
       </div>
     </div>
 
@@ -590,36 +559,37 @@ def main():
         <span class="metric-label">Total Validation Samples</span>
       </div>
       <div class="metric-card">
-        <span class="metric-value" style="color: var(--success);">2,099 (85.12%)</span>
-        <span class="metric-label">Global Model Agreement</span>
+        <span class="metric-value" style="color: var(--success);">1,428 (57.91%)</span>
+        <span class="metric-label">Exact Physical Matches (Score &ge; 0.85, 97.97% Acc)</span>
       </div>
       <div class="metric-card">
-        <span class="metric-value" style="color: var(--accent);">95.13%</span>
-        <span class="metric-label">High-Confidence Agreement (Score &ge; 0.70)</span>
+        <span class="metric-value" style="color: var(--accent);">1,983 (80.41%)</span>
+        <span class="metric-label">High-Similarity Matches (Score &ge; 0.78, 94.76% Acc)</span>
       </div>
       <div class="metric-card">
-        <span class="metric-value" style="color: var(--warning);">367 (14.88%)</span>
-        <span class="metric-label">Discrepancies Audited</span>
+        <span class="metric-value" style="color: var(--warning);">356 (14.44%)</span>
+        <span class="metric-label">Total Model Discrepancies</span>
       </div>
     </div>
 
     <div class="quick-inspections">
       <span style="font-size: 11px; color: var(--accent); font-weight: 800; letter-spacing: 0.05em;">QUICK CASE INSPECTIONS:</span>
-      <button class="chip-btn" onclick="inspectSample('val_00001')">val_00001 (八 · 0.706 HIGH)</button>
-      <button class="chip-btn" onclick="inspectSample('val_00006')">val_00006 (一 · 0.818 HIGH)</button>
-      <button class="chip-btn" onclick="inspectSample('val_00014')">val_00014 (十 · 0.891 HIGH)</button>
+      <button class="chip-btn" onclick="inspectSample('val_00001')">val_00001 (八 · Sim 0.860 · W85 Exact)</button>
+      <button class="chip-btn" onclick="inspectSample('val_00002')">val_00002 (三 · Sim 0.884 · W88 Exact)</button>
+      <button class="chip-btn" onclick="inspectSample('val_00003')">val_00003 (八 · Sim 0.902 · IoU 0.686 · W16 Exact)</button>
+      <button class="chip-btn" onclick="inspectSample('val_00006')">val_00006 (一 · Sim 0.923 · W21 Exact)</button>
+      <button class="chip-btn" onclick="inspectSample('val_00014')">val_00014 (十 · Sim 0.938 · W11 Exact)</button>
       <button class="chip-btn" onclick="inspectSample('val_00023')">val_00023 (三 vs 二 · Cursive Discrepancy)</button>
       <button class="chip-btn" onclick="inspectSample('val_01511')">val_01511 (千 vs 十 · Slant Discrepancy)</button>
-      <button class="chip-btn" onclick="inspectSample('val_01967')">val_01967 (十 vs 千 · Cross Discrepancy)</button>
     </div>
   </header>
 
   <div class="controls-panel">
     <div class="filter-group">
       <button class="btn-filter active" data-filter="all">All (2,466)</button>
-      <button class="btn-filter" data-filter="agreed">Agreed (2,099)</button>
-      <button class="btn-filter" data-filter="discrepancy">Discrepancies (367)</button>
-      <button class="btn-filter" data-filter="high">High Sim (&ge; 0.70)</button>
+      <button class="btn-filter" data-filter="exact">Exact Matches (1,428)</button>
+      <button class="btn-filter" data-filter="high">High Sim (1,983)</button>
+      <button class="btn-filter" data-filter="discrepancy">Discrepancies (356)</button>
     </div>
 
     <div class="filter-group">
@@ -652,7 +622,7 @@ def main():
 
   <div class="pagination">
     <button id="prevBtn" class="page-btn">← Previous</button>
-    <span id="pageInfo" class="page-info">Page 1 of 50</span>
+    <span id="pageInfo" class="page-info">Page 1 of 62</span>
     <button id="nextBtn" class="page-btn">Next →</button>
   </div>
 
@@ -666,15 +636,11 @@ def main():
 
     function getFilteredData() {{
       return DATA.filter(item => {{
-        // Filter button
-        if (currentFilter === 'agreed' && !item.agr) return false;
+        if (currentFilter === 'exact' && item.cat !== 'EXACT_PHYSICAL_MATCH') return false;
+        if (currentFilter === 'high' && item.sim < 0.78) return false;
         if (currentFilter === 'discrepancy' && item.agr) return false;
-        if (currentFilter === 'high' && item.sim < 0.70) return false;
 
-        // Character select
         if (currentChar !== 'all' && item.anc_p !== parseInt(currentChar)) return false;
-
-        // Search query
         if (searchQuery && !item.id.toLowerCase().includes(searchQuery.toLowerCase())) return false;
 
         return true;
@@ -712,38 +678,41 @@ def main():
           ? `<span class="badge badge-success">AGREED ✓</span>` 
           : `<span class="badge badge-danger">DISCREPANCY ✗</span>`;
 
-        const confBadge = item.sim >= 0.70 
-          ? `<span class="badge badge-info">${{item.sim.toFixed(4)}} (HIGH)</span>`
-          : (item.sim >= 0.60 
-            ? `<span class="badge badge-warning">${{item.sim.toFixed(4)}} (MED)</span>`
-            : `<span class="badge" style="background:#374151; color:#9ca3af;">${{item.sim.toFixed(4)}} (LOW)</span>`);
+        let catBadge = '';
+        if (item.cat === 'EXACT_PHYSICAL_MATCH') {{
+          catBadge = `<span class="badge badge-success" title="IoU: ${{item.iou.toFixed(3)}}">EXACT MATCH (${{item.sim.toFixed(3)}})</span>`;
+        }} else if (item.sim >= 0.78) {{
+          catBadge = `<span class="badge badge-info">HIGH SIM (${{item.sim.toFixed(3)}})</span>`;
+        }} else {{
+          catBadge = `<span class="badge badge-warning">LOOKALIKE (${{item.sim.toFixed(3)}})</span>`;
+        }}
 
         card.innerHTML = `
           <div class="card-header">
             <span class="card-title">${{item.id}}</span>
             <div style="display: flex; gap: 6px;">
-              ${{confBadge}}
+              ${{catBadge}}
               ${{statusBadge}}
             </div>
           </div>
 
           <div class="image-row">
             <div class="img-box">
-              <img src="data_validasi/test/${{item.id}}.png" alt="${{item.id}}" title="Validation Image (Panitia)">
-              <span>Val (Panitia)</span>
+              <img src="outputs/matched_kaggle/${{item.id}}_val_norm.png" alt="Val Norm" title="Validation Crop (Dosen)">
+              <span>Val (Norm)</span>
             </div>
             <div class="img-box">
-              <img src="outputs/matched_kaggle/${{item.id}}_kaggle.png" alt="Kaggle Match" title="Gabriel Preda Kaggle Match">
-              <span>Kaggle Raw</span>
+              <img src="outputs/matched_kaggle/${{item.id}}_kaggle_aligned.png" alt="Kaggle Aligned" title="Matched Kaggle Crop (Same Scale!)">
+              <span>Kaggle (Aligned)</span>
             </div>
             <div class="img-box">
-              <img src="outputs/matched_kaggle/${{item.id}}_overlay.png" alt="Overlay" title="Registration Overlay (Green=Val, Magenta=Kaggle)">
-              <span>Overlay Diff</span>
+              <img src="outputs/matched_kaggle/${{item.id}}_overlay_aligned.png" alt="Overlay" title="Registration Overlay (Green=Val, Magenta=Kaggle)">
+              <span>Overlay (Diff)</span>
             </div>
             <div class="img-box">
               <div class="blend-container">
-                <img src="data_validasi/test/${{item.id}}.png" alt="Val Base">
-                <img src="outputs/matched_kaggle/${{item.id}}_kaggle.png" id="blend-${{item.id}}" class="blend-layer" alt="Kaggle Layer">
+                <img src="outputs/matched_kaggle/${{item.id}}_val_norm.png" alt="Val Base">
+                <img src="outputs/matched_kaggle/${{item.id}}_kaggle_aligned.png" id="blend-${{item.id}}" class="blend-layer" alt="Kaggle Layer">
               </div>
               <div class="slider-wrapper">
                 <span style="font-size: 8px; color: var(--text-muted);">V</span>
@@ -765,11 +734,11 @@ def main():
             </div>
             <div class="detail-row">
               <span class="detail-label">Kaggle Source</span>
-              <span class="detail-val" style="font-size: 11px;">Writer ${{item.k_w}}</span>
+              <span class="detail-val" style="font-size: 11px;">Writer ${{item.k_w}} · Sample ${{item.k_s}}</span>
             </div>
             <div class="detail-row">
-              <span class="detail-label">Kaggle File</span>
-              <span class="detail-val" style="font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${{item.k_file}}">${{item.k_file}}</span>
+              <span class="detail-label">Metrics (IoU / Gap)</span>
+              <span class="detail-val" style="font-size: 11px; color: var(--accent);">IoU: ${{item.iou.toFixed(3)}} | Gap: +${{item.gap.toFixed(3)}}</span>
             </div>
           </div>
         `;
@@ -848,7 +817,7 @@ def main():
         f.write(html_content)
     print(f"[+] Saved standalone interactive HTML viewer: {viewer_path}")
     print("=" * 80)
-    print("VISUAL COMPARISON GENERATION COMPLETE!")
+    print("SCALE-ALIGNED VISUAL COMPARISON ASSETS COMPLETE!")
     print("=" * 80)
 
 if __name__ == "__main__":
