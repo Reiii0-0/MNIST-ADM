@@ -39,7 +39,12 @@ submissions/
 !outputs/*.png
 !outputs/*.json
 
+# HTML renders & assets
+*.html
+*_files/
+
 # Documentation & Internal Research Specifications (only README.md tracked in GitHub)
 dokumentasi/
 *.md
 !README.md
+
