@@ -24,22 +24,24 @@ htmlcov/
 *.ckpt
 *.bin
 
-# Raw image datasets (11,200+ loose PNGs - fetch via Kaggle CLI)
+# Raw image datasets (fetch via Kaggle CLI / raw archives)
 train/
+data_latih
 train_synthetic/
 data_validasi/
 data_test/
-outputs/matched_kaggle/
+data_vanilla/
 *.zip
 *.tar.gz
+*.tfrecords
 
 # Submissions output
 submissions/
 
-# Keep outputs plots, metrics & alignment reports
+# Keep outputs plots & metrics
 !outputs/*.png
 !outputs/*.json
-!outputs/*.csv
+outputs/matched_kaggle/
 
 # HTML renders & assets
 *.html

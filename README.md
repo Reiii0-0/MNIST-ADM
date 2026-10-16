@@ -23,6 +23,16 @@ To rigorously address this problem, this investigation establishes a dual-paradi
 
 All empirical evaluations are strictly governed by a **5-Fold StratifiedGroupKFold validation scheme across 70 independent writers**, guaranteeing **zero writer leakage** between training and validation partitions.
 
+### 📦 Tri-Dataset Taxonomy & Morphological Alignment
+
+The project operates across three distinct dataset stages to bridge raw data collection with competition evaluation:
+
+| Dataset Partition | Sample Count | Image Format | Mean Pixel Intensity | Morphological State & Preprocessing | Provenance & Methodological Role |
+| :--- | :---: | :---: | :---: | :--- | :--- |
+| **`data_vanilla/`** | 15,000 | `.jpg` (64×64) | $\approx 5.51$ (low) | Uncropped, wide margins, raw thin strokes | Raw Gabriel Preda (Newcastle Univ.) across 100 writers |
+| **`data_latih/` (`train/`)** | 10,500 | `.png` (64×64) | $\approx 37.48$ (dense) | Tight bounding box crop, scaled, morphological dilation $+6.8\times$, contrast normalized | Writers 1–70 adapted by course instructor |
+| **`data_validasi/`** | 2,466 | `.png` (64×64) | $\approx 39.42$ (dense) | Tight crop, scaled, naturally thick strokes + mild Gaussian edge blur ($\sigma=0.8$) | Unseen writers from new collection, Phase 1 evaluation |
+
 ---
 
 ## 📊 Executive Summary & Empirical Benchmark Matrix
@@ -217,31 +227,6 @@ where $\text{Margin}(x) = P_{(1)}(x) - P_{(2)}(x)$ represents the probability ga
 
 ---
 
-## 🔬 Empirical Ground-Truth Alignment: Reverse-Matching against Original Kaggle Archive
-
-To definitively verify whether the lecturer's validation set (`data_validasi/test/`, 2,466 images) originates from Gabriel Preda's canonical Newcastle University Chinese MNIST dataset (`archive.zip`, 15,000 images), we built a high-throughput **Scale- and Translation-Invariant Canonical Template Matcher** (`src/match_validation_with_kaggle.py`):
-1. **Canonical Fingerprinting**: Tight foreground bounding-box cropping, isotropic aspect-preserving scaling to a normalized $32 \times 32$ canonical grid, followed by zero-mean and unit-norm feature standardization.
-2. **Dense Cross-Similarity Multiplication**: Evaluated all $2,466 \times 15,000 = 36,990,000$ matrix cells via BLAS matrix multiplication in $0.18$ seconds.
-3. **Registration & Discrepancy Auditing**:
-   - **High-Confidence Matches ($\text{Cosine} \ge 0.70$, 1,150 samples)**: ResNet-18 Anchor model achieves **95.13% agreement** with Kaggle ground truth.
-   - **Solid Matches ($\text{Cosine} \ge 0.60$, 1,821 samples)**: **94.01% agreement**.
-   - **Global Match Agreement**: **85.12% (2,099 / 2,466 samples)**.
-
-### Discrepancy Case Analysis:
-Inspection of top discrepancies (where template similarity differs from ResNet prediction, such as `val_01511`, `val_01967`, and `val_00023`) reveals that the neural network is strictly superior to flat pixel correlation:
-- **Ten ('十') vs. Thousand ('千') Ambiguity**: The shared cross radical accounts for $>85\%$ of foreground energy. A flat template matcher aligns the cross and confuses them, whereas ResNet's multi-scale attention detects the top diagonal stroke (`丿`), correctly classifying `千`.
-- **Cursive Three ('三') vs. Two ('二')**: Continuous cursive ligatures mislead flat pixel overlap, but deep convolution maintains stroke topology.
-
-### Visual Comparison Suite & Interactive Studio:
-- **Static High-Resolution Comparison Poster (`outputs/val_vs_kaggle_grid.png`)**: Side-by-side multi-panel comparison showing Lecturer's Val Image, Matched Kaggle Raw (Normalized), and Optical Registration Overlay (Green = Val, Magenta = Kaggle).
-- **Interactive HTML Studio (`val_vs_kaggle_viewer.html`)**: A standalone client-side web application featuring:
-  - Real-time interactive dissolve/cross-fade sliders to smoothly morph between Validation and Kaggle images.
-  - Optical registration difference overlays.
-  - Quick-jump inspection bookmarks for notable case studies.
-  - Instant filtering by agreement status, confidence score, and character class.
-
----
-
 ## 📁 Repository Architecture & Directory Taxonomy
 
 ```text
@@ -253,7 +238,11 @@ FinalProject/
 ├── splits_kfold.csv                             # Zero-leakage 5-Fold StratifiedGroupKFold splits
 ├── train_synthetic_labels.csv                   # Labels for 700 synthetic traditional characters ('萬' & '億')
 ├── labeling_tool.html                           # Standalone interactive active learning studio
-├── val_vs_kaggle_viewer.html                    # Interactive Validation vs. Kaggle Ground-Truth Studio
+│
+├── train/                                       # Course training set (10,500 dilated PNGs, writers 1-70)
+├── data_validasi/                               # Phase 1 validation images (2,466 test PNGs)
+├── data_vanilla/                                # Raw Gabriel Preda dataset (15,000 uncropped JPGs)
+├── dokumentasi/                                 # 11 In-depth research specifications & playbooks (local)
 │
 ├── src/                                         # Algorithmic and execution source code
 │   ├── models.py                                # ResNet18-CBAM, ConvNeXt-Femto, SubCenterArcFace architectures
@@ -265,8 +254,6 @@ FinalProject/
 │   ├── run_phase1_pipeline.py                   # Automated single-command pipeline runner for Phase 1
 │   ├── generate_labeling_suite.py               # Active learning ambiguity extractor & HTML builder
 │   ├── apply_manual_labels.py                   # Human verification merger & submission compiler
-│   ├── match_validation_with_kaggle.py          # Reverse-matching engine against Gabriel Preda Kaggle dataset
-│   ├── generate_visual_comparison.py            # Visual registration grid & interactive HTML generator
 │   ├── stress_test_blur_dilation.py             # Rapid morphological verification utility
 │   ├── comprehensive_stress_test.py             # 8-scenario comprehensive perturbation benchmark
 │   └── compare_stress_test_architectures.py     # ResNet vs. ConvNeXt head-to-head evaluation runner
@@ -276,8 +263,6 @@ FinalProject/
 │   ├── eigen_characters.png                     # Visualizations of top 20 Eigen-character components
 │   ├── lda_canonical_projection.png             # 2D Fisher LDA canonical variate scatter plot
 │   ├── mahalanobis_qq_plot.png                  # Chi-Square Q-Q normality diagnostic plot
-│   ├── val_vs_kaggle_grid.png                   # High-res static visual registration comparison grid
-│   ├── kaggle_validation_alignment_report.csv   # Reverse-matching audit against Gabriel Preda ground truth
 │   ├── head_to_head_stress_test.json            # Comparative performance metrics across architectures
 │   └── stress_test_metrics.json                 # Comprehensive stress-test results across 8 regimes
 │
