@@ -1,14 +1,30 @@
 import os
+import sys
+from pathlib import Path
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import StratifiedGroupKFold
 
+SRC_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SRC_DIR.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from src.config import get_train_labels_csv, get_splits_kfold_csv
+
 def create_folds(
-    input_csv="FinalProject/train_labels.csv",
-    output_csv="FinalProject/splits_kfold.csv",
+    input_csv=None,
+    output_csv=None,
     n_splits=5,
     random_state=42
 ):
+    if input_csv is None:
+        input_csv = str(get_train_labels_csv())
+    if output_csv is None:
+        output_csv = str(get_splits_kfold_csv())
+
     print("=" * 60)
     print("CREATING LEAK-FREE STRATIFIED GROUP K-FOLD SPLITS")
     print("=" * 60)

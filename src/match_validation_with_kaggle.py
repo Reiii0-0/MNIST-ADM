@@ -20,7 +20,22 @@ from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from scipy.optimize import linear_sum_assignment
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+SRC_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SRC_DIR.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from src.config import (
+    PROJECT_ROOT,
+    OUTPUTS_DIR,
+    get_archive_zip,
+    get_train_labels_csv,
+    get_classes_csv,
+    get_validation_dir
+)
+
 
 def extract_canonical_features(img, dilate_k=0, target_size=48, canvas_size=64):
     """
@@ -77,7 +92,7 @@ def process_archive_entry(entry):
 
 def process_train_entry(row):
     tr_id, label, writer = row['id'], row['label'], row['writer_id']
-    p = PROJECT_ROOT / "train" / f"{tr_id}.png"
+    p = get_train_dir() / f"{tr_id}.png"
     img = cv2.imread(str(p), cv2.IMREAD_GRAYSCALE)
     v, ar, vis = extract_canonical_features(img, dilate_k=0, target_size=48, canvas_size=64)
     return v, ar, tr_id, label, writer
@@ -88,9 +103,9 @@ def main():
     print("Mencocokkan Data Latih -> Eliminasi dari Archive -> Mencocokkan Validasi ke Pool 4.500")
     print("=" * 80)
 
-    archive_path = PROJECT_ROOT / "archive.zip"
-    train_csv = PROJECT_ROOT / "train_labels.csv"
-    val_dir = PROJECT_ROOT / "data_validasi" / "test"
+    archive_path = get_archive_zip()
+    train_csv = get_train_labels_csv()
+    val_dir = get_validation_dir()
     
     if not archive_path.exists():
         print(f"[!] Error: {archive_path} not found!")
@@ -99,8 +114,9 @@ def main():
         print(f"[!] Error: {train_csv} not found!")
         sys.exit(1)
 
-    classes_df = pd.read_csv(PROJECT_ROOT / "classes.csv")
+    classes_df = pd.read_csv(get_classes_csv())
     char_map = dict(zip(classes_df['label'], classes_df['character']))
+
 
     # -------------------------------------------------------------------------
     # STAGE 1: Load All 15,000 Images from Vanilla Kaggle Archive (archive.zip)

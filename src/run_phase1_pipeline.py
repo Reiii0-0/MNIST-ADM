@@ -20,19 +20,24 @@ import torch
 import numpy as np
 import pandas as pd
 
-# Add project root to sys.path
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.append(str(PROJECT_ROOT.parent))
+SRC_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SRC_DIR.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
 
-from FinalProject.src.prepare_submission import generate_predictions
+from src.prepare_submission import generate_predictions
+from src.config import get_validation_dir, SUBMISSIONS_DIR, MODELS_DIR
 
 def main():
     parser = argparse.ArgumentParser(description="Phase 1 Automated Runner for CodaBench")
-    parser.add_argument("--test_dir", type=str, default=str(PROJECT_ROOT / "data_validasi"),
+    parser.add_argument("--test_dir", type=str, default=str(get_validation_dir()),
                         help="Path to Phase 1 validation images directory")
-    parser.add_argument("--output_dir", type=str, default=str(PROJECT_ROOT / "submissions"),
+    parser.add_argument("--output_dir", type=str, default=str(SUBMISSIONS_DIR),
                         help="Output directory for generated submission archives")
     args = parser.parse_args()
+
 
     os.makedirs(args.output_dir, exist_ok=True)
     device = "cuda" if torch.cuda.is_available() else "cpu"

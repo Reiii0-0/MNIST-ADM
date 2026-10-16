@@ -1,10 +1,22 @@
 import os
+import sys
 import random
+from pathlib import Path
 import cv2
 import numpy as np
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 from scipy.ndimage import gaussian_filter
+
+SRC_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SRC_DIR.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from src.config import get_train_synthetic_dir, get_train_synthetic_labels_csv
+
 
 def elastic_transform(image, alpha=14, sigma=3):
     shape = image.shape
@@ -85,11 +97,16 @@ def apply_handwriting_augmentations(img_arr):
     return transformed
 
 def generate_synthetic_dataset(
-    output_dir="FinalProject/train_synthetic",
-    output_csv="FinalProject/train_synthetic_labels.csv",
+    output_dir=None,
+    output_csv=None,
     num_per_char=350
 ):
+    if output_dir is None:
+        output_dir = str(get_train_synthetic_dir())
+    if output_csv is None:
+        output_csv = str(get_train_synthetic_labels_csv())
     os.makedirs(output_dir, exist_ok=True)
+
     
     font_candidates = [
         "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",

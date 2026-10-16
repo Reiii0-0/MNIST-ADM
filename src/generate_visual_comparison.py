@@ -17,10 +17,21 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
 # Configure CJK font for matplotlib
-plt.rcParams['font.sans-serif'] = ['Noto Sans CJK SC', 'Noto Serif CJK SC', 'DejaVu Sans']
-plt.rcParams['axes.unicode_minus'] = False
+SRC_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SRC_DIR.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+from src.config import (
+    PROJECT_ROOT,
+    OUTPUTS_DIR,
+    TOOLS_DIR,
+    get_archive_zip,
+    get_validation_dir
+)
+
 
 PINYIN_MAP = {
     0: 'ling', 1: 'yi', 2: 'er', 3: 'san', 4: 'si',
@@ -67,16 +78,17 @@ def main():
     print("GENERATING VISUAL COMPARISON: VALIDATION DOSEN VS. VANILLA KAGGLE ARCHIVE")
     print("=" * 80)
 
-    report_path = PROJECT_ROOT / "outputs" / "kaggle_validation_alignment_report.csv"
+    report_path = OUTPUTS_DIR / "kaggle_validation_alignment_report.csv"
     if not report_path.exists():
         print(f"[!] Error: {report_path} not found!")
         sys.exit(1)
 
     df_report = pd.read_csv(report_path)
-    archive_path = PROJECT_ROOT / "archive.zip"
-    val_dir = PROJECT_ROOT / "data_validasi" / "test"
-    out_img_dir = PROJECT_ROOT / "outputs" / "matched_kaggle"
+    archive_path = get_archive_zip()
+    val_dir = get_validation_dir()
+    out_img_dir = OUTPUTS_DIR / "matched_kaggle"
     os.makedirs(out_img_dir, exist_ok=True)
+
 
     print(f"[+] Loaded alignment report with {len(df_report):,} validation samples.")
     print(f"[+] Output directory for processed images: {out_img_dir}")
@@ -870,10 +882,11 @@ def main():
 </html>
 """
 
-    viewer_path = PROJECT_ROOT / "val_vs_kaggle_viewer.html"
+    viewer_path = TOOLS_DIR / "val_vs_kaggle_viewer.html"
     with open(viewer_path, "w", encoding="utf-8") as f:
         f.write(html_content)
     print(f"[+] Saved standalone interactive HTML viewer: {viewer_path}")
+
     print("=" * 80)
     print("SCALE-ALIGNED VISUAL COMPARISON GENERATION COMPLETE!")
     print("=" * 80)

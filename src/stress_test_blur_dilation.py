@@ -5,19 +5,30 @@ Tests committee preprocessing notes on synthetic and real character subsets.
 """
 
 import os
+import sys
 import glob
+from pathlib import Path
 import torch
 import torch.nn.functional as F
 import numpy as np
 import cv2
-from pathlib import Path
-import sys
+import pandas as pd
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.append(str(PROJECT_ROOT.parent))
+SRC_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SRC_DIR.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
 
-from FinalProject.src.models import ResNet18_CBAM
-from FinalProject.src.prepare_submission import apply_adabn, load_and_preprocess_img
+from src.models import ResNet18_CBAM
+from src.prepare_submission import apply_adabn, load_and_preprocess_img
+from src.config import (
+    get_train_synthetic_dir,
+    get_train_synthetic_labels_csv,
+    MODELS_DIR
+)
+
 
 def apply_simulated_perturbations(img_path, blur_ksize=3, blur_sigma=0.8, dilate=False):
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
@@ -52,11 +63,11 @@ def main():
     m.eval()
 
     # Test on a slice of synthetic images (label 13 & 14)
-    synth_imgs = sorted(glob.glob(str(PROJECT_ROOT / "train_synthetic" / "*.png")))[:100]
-    labels = [13 if "traditional_13" in p or "wan" in p else 14 for p in synth_imgs]
-    # Actually synth labels: read from train_synthetic_labels.csv
-    import pandas as pd
-    df_synth = pd.read_csv(PROJECT_ROOT / "train_synthetic_labels.csv").set_index("id")
+    synth_dir = get_train_synthetic_dir()
+    synth_csv = get_train_synthetic_labels_csv()
+    synth_imgs = sorted(glob.glob(str(synth_dir / "*.png")))[:100]
+    df_synth = pd.read_csv(synth_csv).set_index("id")
+
 
     test_samples = []
     for p in synth_imgs:

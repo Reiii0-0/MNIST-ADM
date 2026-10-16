@@ -1,5 +1,7 @@
 import os
+import sys
 import json
+from pathlib import Path
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,11 +13,25 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticD
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
+SRC_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SRC_DIR.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from src.config import get_splits_kfold_csv, get_train_dir, OUTPUTS_DIR
+
 # Set style
 plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
 plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial']
 
-def load_dataset(splits_csv="FinalProject/splits_kfold.csv", img_dir="FinalProject/train"):
+def load_dataset(splits_csv=None, img_dir=None):
+    if splits_csv is None:
+        splits_csv = str(get_splits_kfold_csv())
+    if img_dir is None:
+        img_dir = str(get_train_dir())
+
     print("Loading images and labels...")
     df = pd.read_csv(splits_csv)
     n = len(df)
@@ -35,8 +51,11 @@ def load_dataset(splits_csv="FinalProject/splits_kfold.csv", img_dir="FinalProje
     print(f"Loaded feature matrix X: shape {X.shape}, labels y: shape {y.shape}")
     return X, y, writers, folds, df
 
-def run_pca_analysis(X, output_dir="FinalProject/outputs"):
+def run_pca_analysis(X, output_dir=None):
+    if output_dir is None:
+        output_dir = str(OUTPUTS_DIR)
     os.makedirs(output_dir, exist_ok=True)
+
     print("\n" + "=" * 60)
     print("1. PRINCIPAL COMPONENT ANALYSIS (PCA & EIGEN-CHARACTERS)")
     print("=" * 60)
@@ -109,7 +128,10 @@ def run_pca_analysis(X, output_dir="FinalProject/outputs"):
     
     return pca, cpve_85, cpve_90
 
-def run_manova_and_diagnostics(X_pca, y, output_dir="FinalProject/outputs"):
+def run_manova_and_diagnostics(X_pca, y, output_dir=None):
+    if output_dir is None:
+        output_dir = str(OUTPUTS_DIR)
+    os.makedirs(output_dir, exist_ok=True)
     print("\n" + "=" * 60)
     print("2. MULTIVARIATE HYPOTHESIS TESTING (MANOVA) & DIAGNOSTICS")
     print("=" * 60)
@@ -194,7 +216,10 @@ def run_manova_and_diagnostics(X_pca, y, output_dir="FinalProject/outputs"):
         "partial_eta_squared": float(eta_sq)
     }
 
-def run_cross_validation_models(X, y, folds, output_dir="FinalProject/outputs"):
+def run_cross_validation_models(X, y, folds, output_dir=None):
+    if output_dir is None:
+        output_dir = str(OUTPUTS_DIR)
+    os.makedirs(output_dir, exist_ok=True)
     print("\n" + "=" * 60)
     print("3. MULTIVARIATE CLASSIFICATION BENCHMARK (5-FOLD STRATIFIED GROUP K-FOLD)")
     print("=" * 60)

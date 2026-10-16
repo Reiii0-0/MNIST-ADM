@@ -29,9 +29,10 @@ The project operates across three distinct dataset stages to bridge raw data col
 
 | Dataset Partition | Sample Count | Image Format | Mean Pixel Intensity | Morphological State & Preprocessing | Provenance & Methodological Role |
 | :--- | :---: | :---: | :---: | :--- | :--- |
-| **`data_vanilla/`** | 15,000 | `.jpg` (64×64) | $\approx 5.51$ (low) | Uncropped, wide margins, raw thin strokes | Raw Gabriel Preda (Newcastle Univ.) across 100 writers |
-| **`data_latih/` (`train/`)** | 10,500 | `.png` (64×64) | $\approx 37.48$ (dense) | Tight bounding box crop, scaled, morphological dilation $+6.8\times$, contrast normalized | Writers 1–70 adapted by course instructor |
-| **`data_validasi/`** | 2,466 | `.png` (64×64) | $\approx 39.42$ (dense) | Tight crop, scaled, naturally thick strokes + mild Gaussian edge blur ($\sigma=0.8$) | Unseen writers from new collection, Phase 1 evaluation |
+| **`data/vanilla/`** | 15,000 | `.jpg` (64×64) | $\approx 5.51$ (low) | Uncropped, wide margins, raw thin strokes | Raw Gabriel Preda (Newcastle Univ.) across 100 writers |
+| **`data/train/`** | 10,500 | `.png` (64×64) | $\approx 37.48$ (dense) | Tight bounding box crop, scaled, morphological dilation $+6.8\times$, contrast normalized | Writers 1–70 adapted by course instructor |
+| **`data/validasi/`** | 2,466 | `.png` (64×64) | $\approx 39.42$ (dense) | Tight crop, scaled, naturally thick strokes + mild Gaussian edge blur ($\sigma=0.8$) | Unseen writers from new collection, Phase 1 evaluation |
+
 
 ---
 
@@ -233,18 +234,21 @@ where $\text{Margin}(x) = P_{(1)}(x) - P_{(2)}(x)$ represents the probability ga
 FinalProject/
 ├── README.md                                    # Comprehensive academic documentation
 ├── requirements.txt                             # Production environment dependencies
-├── classes.csv                                  # Chinese numerical classes metadata (15 classes)
-├── train_labels.csv                             # Primary training annotations (10,500 images)
-├── splits_kfold.csv                             # Zero-leakage 5-Fold StratifiedGroupKFold splits
-├── train_synthetic_labels.csv                   # Labels for 700 synthetic traditional characters ('萬' & '億')
-├── labeling_tool.html                           # Standalone interactive active learning studio
 │
-├── train/                                       # Course training set (10,500 dilated PNGs, writers 1-70)
-├── data_validasi/                               # Phase 1 validation images (2,466 test PNGs)
-├── data_vanilla/                                # Raw Gabriel Preda dataset (15,000 uncropped JPGs)
-├── dokumentasi/                                 # 11 In-depth research specifications & playbooks (local)
+├── data/                                        # Unified Data Architecture & Multi-Source Datasets
+│   ├── metadata/                                # Tracked experimental ground-truth & split metadata
+│   │   ├── classes.csv                          # Chinese numerical classes metadata (15 classes)
+│   │   ├── train_labels.csv                     # Primary training annotations (10,500 images)
+│   │   ├── splits_kfold.csv                     # Zero-leakage 5-Fold StratifiedGroupKFold splits
+│   │   └── train_synthetic_labels.csv           # Labels for 700 synthetic traditional characters ('萬' & '億')
+│   ├── train/                                   # Course training set (10,500 dilated PNGs, writers 1-70)
+│   ├── train_synthetic/                         # 700 synthetic traditional character PNGs
+│   ├── validasi/                                # Phase 1 validation package (2,466 test PNGs + sample submission)
+│   ├── vanilla/                                 # Raw Gabriel Preda archive (15,000 uncropped JPGs + CSV)
+│   └── archives/                                # Raw immutable dataset archives (data_latih, data_validasi, archive.zip)
 │
 ├── src/                                         # Algorithmic and execution source code
+│   ├── config.py                                # Central Path & Environment Manager (Auto-resolvers with fallbacks)
 │   ├── models.py                                # ResNet18-CBAM, ConvNeXt-Femto, SubCenterArcFace architectures
 │   ├── split_data.py                            # Leak-free cross-validation split generator
 │   ├── generate_traditional_data.py             # Synthetic generator for traditional Hanzi variants
@@ -256,7 +260,12 @@ FinalProject/
 │   ├── apply_manual_labels.py                   # Human verification merger & submission compiler
 │   ├── stress_test_blur_dilation.py             # Rapid morphological verification utility
 │   ├── comprehensive_stress_test.py             # 8-scenario comprehensive perturbation benchmark
-│   └── compare_stress_test_architectures.py     # ResNet vs. ConvNeXt head-to-head evaluation runner
+│   ├── compare_stress_test_architectures.py     # ResNet vs. ConvNeXt head-to-head evaluation runner
+│   ├── match_validation_with_kaggle.py          # Forensic dataset alignment & reverse-matching engine
+│   └── generate_visual_comparison.py            # Side-by-side scale-aligned visual comparison generator
+│
+├── tools/                                       # Interactive developer & active learning utilities
+│   └── labeling_tool.html                       # Standalone active learning studio (embedded base64 images)
 │
 ├── outputs/                                     # High-resolution figures and evaluation metrics
 │   ├── scree_plot.png                           # PCA Scree plot and Kaiser criterion threshold
@@ -265,6 +274,10 @@ FinalProject/
 │   ├── mahalanobis_qq_plot.png                  # Chi-Square Q-Q normality diagnostic plot
 │   ├── head_to_head_stress_test.json            # Comparative performance metrics across architectures
 │   └── stress_test_metrics.json                 # Comprehensive stress-test results across 8 regimes
+│
+├── submissions/                                 # Generated CodaBench submission archives (.zip & .csv)
+│   ├── submission_phase1_anchor.zip             # 5-Model Ensemble baseline
+│   └── submission_phase1_adabn_tta.zip          # SOTA AdaBN Domain Adaptation + 5-Way TTA
 │
 ├── kaggle_kernel/                               # Kaggle Cloud training pipeline for ResNet18-CBAM
 │   ├── kernel-metadata.json
@@ -277,7 +290,8 @@ FinalProject/
 ├── kaggle_dataset/                              # Kaggle Dataset push metadata (reiiihel/chinese-mnist-adm)
 │   └── dataset-metadata.json
 │
-└── references/                                  # Curated library of 30+ peer-reviewed papers (TPAMI, CVPR, PR)
+├── references/                                  # Curated library of 30+ peer-reviewed papers (TPAMI, CVPR, PR)
+└── dokumentasi/                                 # 11 In-depth research specifications & playbooks (local)
 ```
 
 ---

@@ -14,22 +14,35 @@ Evaluates both 5-Fold architectures across 9 spatial and morphological degradati
 """
 
 import os
+import sys
 import glob
 import json
+from pathlib import Path
 import numpy as np
 import pandas as pd
 import cv2
 import torch
 import torch.nn.functional as F
-from pathlib import Path
-import sys
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.append(str(PROJECT_ROOT.parent))
+SRC_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SRC_DIR.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
 
-from FinalProject.src.models import ResNet18_CBAM, ConvNeXt_Femto
-from FinalProject.src.prepare_submission import tta_variants
-from FinalProject.src.comprehensive_stress_test import perturb_image
+from src.models import ResNet18_CBAM, ConvNeXt_Femto
+from src.prepare_submission import tta_variants
+from src.comprehensive_stress_test import perturb_image
+from src.config import (
+    get_splits_kfold_csv,
+    get_train_dir,
+    get_train_synthetic_dir,
+    get_train_synthetic_labels_csv,
+    OUTPUTS_DIR,
+    MODELS_DIR
+)
+
 
 def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -63,16 +76,17 @@ def main():
     print(f"Loaded {len(convnext_models)} ConvNeXt-Femto models.")
 
     # 3. Prepare identical evaluation set
-    df_splits = pd.read_csv(PROJECT_ROOT / "splits_kfold.csv")
+    df_splits = pd.read_csv(get_splits_kfold_csv())
     df_val = df_splits[df_splits["fold"] == 0]
 
     raw_images = []
     true_labels = []
+    train_dir = get_train_dir()
 
     for cls in range(15):
         cls_sub = df_val[df_val["label"] == cls].head(15)
         for _, row in cls_sub.iterrows():
-            img_path = PROJECT_ROOT / "train" / f"{row['id']}.png"
+            img_path = train_dir / f"{row['id']}.png"
             if img_path.exists():
                 img = cv2.imread(str(img_path), cv2.IMREAD_GRAYSCALE)
                 if img is not None:
@@ -81,15 +95,19 @@ def main():
                     raw_images.append(img)
                     true_labels.append(int(cls))
 
-    synth_imgs = sorted(glob.glob(str(PROJECT_ROOT / "train_synthetic" / "*.png")))[:50]
-    df_synth = pd.read_csv(PROJECT_ROOT / "train_synthetic_labels.csv").set_index("id")
-    for sp in synth_imgs:
-        stem = Path(sp).stem
-        if stem in df_synth.index:
-            img = cv2.imread(sp, cv2.IMREAD_GRAYSCALE)
-            if img is not None:
-                if img.shape != (64, 64):
-                    img = cv2.resize(img, (64, 64))
+    synth_dir = get_train_synthetic_dir()
+    synth_csv = get_train_synthetic_labels_csv()
+    synth_imgs = sorted(glob.glob(str(synth_dir / "*.png")))[:50]
+    if synth_csv.exists():
+        df_synth = pd.read_csv(synth_csv).set_index("id")
+        for sp in synth_imgs:
+            stem = Path(sp).stem
+            if stem in df_synth.index:
+                img = cv2.imread(sp, cv2.IMREAD_GRAYSCALE)
+                if img is not None:
+                    if img.shape != (64, 64):
+                        img = cv2.resize(img, (64, 64))
+
                 raw_images.append(img)
                 true_labels.append(int(df_synth.loc[stem, "label"]))
 
@@ -203,10 +221,11 @@ def main():
 
         print(f"[{name:<32}] ResNet Ens: {acc_r_ens:6.2f}% (TTA: {acc_r_tta:6.2f}%) | ConvNeXt Ens: {acc_c_ens:6.2f}% (TTA: {acc_c_tta:6.2f}%) | Delta: {delta_ens:+5.2f}%")
 
-    with open(PROJECT_ROOT / "outputs" / "head_to_head_stress_test.json", "w") as f:
+    with open(OUTPUTS_DIR / "head_to_head_stress_test.json", "w") as f:
         json.dump(comparison_table, f, indent=2)
 
-    print("\n[+] Head-to-head comparison saved to FinalProject/outputs/head_to_head_stress_test.json")
+    print(f"\n[+] Head-to-head comparison saved to {OUTPUTS_DIR / 'head_to_head_stress_test.json'}")
+
 
 if __name__ == "__main__":
     main()

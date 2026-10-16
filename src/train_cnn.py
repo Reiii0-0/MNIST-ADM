@@ -1,6 +1,8 @@
 import os
+import sys
 import random
 import argparse
+from pathlib import Path
 import numpy as np
 import pandas as pd
 from PIL import Image
@@ -9,13 +11,24 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms as T
-import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
-
-from FinalProject.src.models import ResNet18_CBAM, CompactCNN, SubCenterArcFace
 import cv2
 from scipy.ndimage import gaussian_filter
+
+SRC_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SRC_DIR.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from src.models import ResNet18_CBAM, CompactCNN, SubCenterArcFace
+from src.config import (
+    get_splits_kfold_csv,
+    get_train_synthetic_labels_csv,
+    get_train_dir,
+    get_train_synthetic_dir,
+    MODELS_DIR
+)
 
 def elastic_transform_np(image, alpha=12, sigma=3):
     shape = image.shape
@@ -35,11 +48,12 @@ def elastic_transform_np(image, alpha=12, sigma=3):
     return distorted
 
 class ChineseCharacterDataset(Dataset):
-    def __init__(self, df, img_dir="FinalProject/train", synth_dir="FinalProject/train_synthetic", is_train=True):
+    def __init__(self, df, img_dir=None, synth_dir=None, is_train=True):
         self.df = df.reset_index(drop=True)
-        self.img_dir = img_dir
-        self.synth_dir = synth_dir
+        self.img_dir = str(img_dir or get_train_dir())
+        self.synth_dir = str(synth_dir or get_train_synthetic_dir())
         self.is_train = is_train
+
 
     def __len__(self):
         return len(self.df)
@@ -104,13 +118,14 @@ def train_one_fold(
     print(f"Device: {device} | Synthetic Data: {use_synthetic} | Epochs: {epochs}")
     print("=" * 60)
 
-    splits_df = pd.read_csv("FinalProject/splits_kfold.csv")
+    splits_df = pd.read_csv(get_splits_kfold_csv())
     train_df = splits_df[splits_df['fold'] != fold].copy()
     val_df = splits_df[splits_df['fold'] == fold].copy()
 
     # Append synthetic traditional samples to train set only
-    if use_synthetic and os.path.exists("FinalProject/train_synthetic_labels.csv"):
-        synth_df = pd.read_csv("FinalProject/train_synthetic_labels.csv")
+    synth_csv = get_train_synthetic_labels_csv()
+    if use_synthetic and synth_csv.exists():
+        synth_df = pd.read_csv(synth_csv)
         train_df = pd.concat([train_df, synth_df], ignore_index=True)
         print(f"Added {len(synth_df)} synthetic samples to Train set. Total train: {len(train_df)}")
 
@@ -141,8 +156,9 @@ def train_one_fold(
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=1e-6)
 
     best_val_acc = 0.0
-    os.makedirs("FinalProject/models", exist_ok=True)
-    ckpt_path = f"FinalProject/models/{model_type}_fold{fold}.pt"
+    os.makedirs(MODELS_DIR, exist_ok=True)
+    ckpt_path = str(MODELS_DIR / f"{model_type}_fold{fold}.pt")
+
 
     for epoch in range(1, epochs + 1):
         model.train()

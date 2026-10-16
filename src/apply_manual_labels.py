@@ -8,10 +8,18 @@ import os
 import sys
 import zipfile
 import argparse
-import pandas as pd
 from pathlib import Path
+import pandas as pd
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+SRC_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SRC_DIR.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from src.config import PROJECT_ROOT, get_classes_csv, SUBMISSIONS_DIR
+
 
 def main():
     parser = argparse.ArgumentParser(description="Merge manual labels into final CodaBench submission")
@@ -62,8 +70,9 @@ def main():
     overrides_applied = 0
     changed_count = 0
 
-    classes_df = pd.read_csv(PROJECT_ROOT / "classes.csv")
+    classes_df = pd.read_csv(get_classes_csv())
     char_map = dict(zip(classes_df['label'], classes_df['character']))
+
 
     for idx, row in df_final.iterrows():
         img_id = row['id']

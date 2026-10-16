@@ -24,9 +24,14 @@ htmlcov/
 *.ckpt
 *.bin
 
-# Raw image datasets (fetch via Kaggle CLI / raw archives)
+# Raw image datasets & archives (fetch via Kaggle CLI / raw archives)
+data/train/
+data/train_synthetic/
+data/validasi/
+data/test/
+data/vanilla/
+data/archives/
 train/
-data_latih
 train_synthetic/
 data_validasi/
 data_test/
@@ -34,6 +39,9 @@ data_vanilla/
 *.zip
 *.tar.gz
 *.tfrecords
+
+# Explicitly track metadata CSV files
+!data/metadata/*.csv
 
 # Submissions output
 submissions/

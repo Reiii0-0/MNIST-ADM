@@ -10,21 +10,34 @@ Tests 5-Fold Ensemble & TTA against all forms of spatial/morphological degradati
 """
 
 import os
+import sys
 import glob
 import json
+from pathlib import Path
 import numpy as np
 import pandas as pd
 import cv2
 import torch
 import torch.nn.functional as F
-from pathlib import Path
-import sys
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.append(str(PROJECT_ROOT.parent))
+SRC_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SRC_DIR.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
 
-from FinalProject.src.models import ResNet18_CBAM
-from FinalProject.src.prepare_submission import tta_variants
+from src.models import ResNet18_CBAM
+from src.prepare_submission import tta_variants
+from src.config import (
+    get_splits_kfold_csv,
+    get_train_dir,
+    get_train_synthetic_dir,
+    get_train_synthetic_labels_csv,
+    OUTPUTS_DIR,
+    MODELS_DIR
+)
+
 
 def perturb_image(img, mode="clean"):
     """
@@ -89,24 +102,29 @@ def main():
         models.append(m)
 
     # Prepare a robust evaluation set of 300 diverse samples (20 per class across unseen writers + synthetic traditional)
-    df_splits = pd.read_csv(PROJECT_ROOT / "splits_kfold.csv")
+    df_splits = pd.read_csv(get_splits_kfold_csv())
     df_val = df_splits[df_splits["fold"] == 0]  # Fold 0 validation set (14 unseen writers, 2100 images)
 
     eval_samples = []
+    train_dir = get_train_dir()
     for cls in range(15):
         cls_sub = df_val[df_val["label"] == cls].head(15)
         for _, row in cls_sub.iterrows():
-            img_path = PROJECT_ROOT / "train" / f"{row['id']}.png"
+            img_path = train_dir / f"{row['id']}.png"
             if img_path.exists():
                 eval_samples.append((str(img_path), int(cls)))
 
     # Add 50 synthetic traditional samples for classes 13 & 14
-    synth_imgs = sorted(glob.glob(str(PROJECT_ROOT / "train_synthetic" / "*.png")))[:50]
-    df_synth = pd.read_csv(PROJECT_ROOT / "train_synthetic_labels.csv").set_index("id")
-    for sp in synth_imgs:
-        stem = Path(sp).stem
-        if stem in df_synth.index:
-            eval_samples.append((sp, int(df_synth.loc[stem, "label"])))
+    synth_dir = get_train_synthetic_dir()
+    synth_csv = get_train_synthetic_labels_csv()
+    synth_imgs = sorted(glob.glob(str(synth_dir / "*.png")))[:50]
+    if synth_csv.exists():
+        df_synth = pd.read_csv(synth_csv).set_index("id")
+        for sp in synth_imgs:
+            stem = Path(sp).stem
+            if stem in df_synth.index:
+                eval_samples.append((sp, int(df_synth.loc[stem, "label"])))
+
 
     print(f"Evaluating {len(eval_samples)} stratified samples across 15 classes under 8 degradation regimes.\n")
 
@@ -192,9 +210,10 @@ def main():
         print(f"[{name:<32}] Single: {acc_single:6.2f}% | 5-Fold Ens: {acc_ens:6.2f}% | Ens+TTA: {acc_tta:6.2f}%")
 
     # Save metrics JSON
-    with open(PROJECT_ROOT / "outputs" / "stress_test_metrics.json", "w") as f:
+    with open(OUTPUTS_DIR / "stress_test_metrics.json", "w") as f:
         json.dump(summary_results, f, indent=2)
-    print("\n[+] Full metrics saved to FinalProject/outputs/stress_test_metrics.json")
+    print(f"\n[+] Full metrics saved to {OUTPUTS_DIR / 'stress_test_metrics.json'}")
+
 
 if __name__ == "__main__":
     main()

@@ -7,14 +7,28 @@ Extracts the most ambiguous / low-confidence validation samples and prepares:
 """
 
 import os
+import sys
 import glob
 import base64
 import json
+from pathlib import Path
 import numpy as np
 import pandas as pd
-from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+SRC_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SRC_DIR.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from src.config import (
+    PROJECT_ROOT,
+    SUBMISSIONS_DIR,
+    TOOLS_DIR,
+    get_classes_csv,
+    get_validation_dir
+)
 
 def main():
     print("=" * 70)
@@ -22,13 +36,14 @@ def main():
     print("=" * 70)
 
     # 1. Load predictions & probabilities
-    df_anchor = pd.read_csv(PROJECT_ROOT / "submissions" / "submission_phase1_anchor.csv")
-    df_adabn = pd.read_csv(PROJECT_ROOT / "submissions" / "submission_phase1_adabn_tta.csv")
-    df_conv = pd.read_csv(PROJECT_ROOT / "submissions" / "predictions_convnext.csv")
-    p_res = np.load(PROJECT_ROOT / "submissions" / "probabilities_phase1_anchor.npy")
-    p_conv = np.load(PROJECT_ROOT / "submissions" / "probabilities_convnext.npy")
+    df_anchor = pd.read_csv(SUBMISSIONS_DIR / "submission_phase1_anchor.csv")
+    df_adabn = pd.read_csv(SUBMISSIONS_DIR / "submission_phase1_adabn_tta.csv")
+    df_conv = pd.read_csv(SUBMISSIONS_DIR / "predictions_convnext.csv")
+    p_res = np.load(SUBMISSIONS_DIR / "probabilities_phase1_anchor.npy")
+    p_conv = np.load(SUBMISSIONS_DIR / "probabilities_convnext.npy")
 
-    classes_df = pd.read_csv(PROJECT_ROOT / "classes.csv")
+    classes_df = pd.read_csv(get_classes_csv())
+
     char_map = dict(zip(classes_df['label'], classes_df['character']))
     pinyin_map = dict(zip(classes_df['label'], classes_df['pinyin']))
     arti_map = dict(zip(classes_df['label'], classes_df['arti']))
@@ -58,11 +73,13 @@ def main():
     records = []
     items_for_html = []
 
+    val_dir = get_validation_dir()
     for rank, idx in enumerate(flagged_indices, start=1):
         img_id = df_anchor.loc[idx, 'id']
-        img_path = PROJECT_ROOT / "data_validasi" / "test" / f"{img_id}.png"
+        img_path = val_dir / f"{img_id}.png"
         if not img_path.exists():
-            img_path = PROJECT_ROOT / "data_validasi" / f"{img_id}.png"
+            img_path = val_dir.parent / f"{img_id}.png"
+
 
         l_anc = int(df_anchor.loc[idx, 'label'])
         l_ada = int(df_adabn.loc[idx, 'label'])
@@ -358,10 +375,11 @@ updateUI();
 </html>
 """
 
-    html_out = PROJECT_ROOT / "labeling_tool.html"
+    html_out = TOOLS_DIR / "labeling_tool.html"
     with open(html_out, "w", encoding="utf-8") as f:
         f.write(html_content)
     print(f"[+] Saved standalone interactive HTML labeling studio: {html_out}")
+
 
 if __name__ == "__main__":
     main()
