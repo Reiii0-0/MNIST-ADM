@@ -5,9 +5,11 @@
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![PyTorch 2.x](https://img.shields.io/badge/PyTorch-2.x-EE4C2C.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![Kaggle GPU](https://img.shields.io/badge/Kaggle-Tesla%20T4-20BEFF.svg?logo=kaggle&logoColor=white)](https://www.kaggle.com/)
+[![CodaBench Rank 1](https://img.shields.io/badge/CodaBench%20Leaderboard-Rank%201%20(93.19%25)-gold.svg)]()
 [![OOF Accuracy](https://img.shields.io/badge/OOF%20Accuracy-99.790%25-brightgreen.svg)]()
 [![Ensemble Accuracy](https://img.shields.io/badge/Ensemble%20%2B%20TTA-99.914%25-success.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 
 ---
 

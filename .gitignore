@@ -50,6 +50,8 @@ submissions/
 !outputs/*.png
 !outputs/*.json
 outputs/matched_kaggle/
+outputs/scoring_results/
+
 
 # HTML renders & assets
 *.html
@@ -58,6 +60,10 @@ outputs/matched_kaggle/
 # Active learning manual labeling files
 uncertain_samples_for_labeling.csv
 manual_labels.csv
+
+# Temporary Kaggle downloads
+kaggle_pulled/
+
 
 # Documentation & Internal Research Specifications (only README.md tracked in GitHub)
 dokumentasi/
