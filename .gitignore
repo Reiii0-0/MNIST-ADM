@@ -61,9 +61,6 @@ outputs/scoring_results/
 # HTML renders & assets
 *.html
 *_files/
-tools/
-uncertain_samples_for_labeling.csv
-manual_labels.csv
 dokumentasi/
 *.md
 !README.md
