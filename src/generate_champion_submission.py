@@ -90,7 +90,7 @@ def main():
         "--strategy",
         type=str,
         default="blend",
-        choices=["blend", "moe", "human_verified", "anchor", "adabn", "hccr_senet", "quad_ensemble"],
+        choices=["blend", "blend_prior_adapted", "moe", "human_verified", "anchor", "adabn", "hccr_senet", "quad_ensemble"],
         help="Submission recipe to build (default: blend, which holds Rank 1 score 0.9319)",
     )
     parser.add_argument(
@@ -109,6 +109,7 @@ def main():
 
     strategy_files = {
         "blend": SUBMISSIONS_DIR / "submission_phase1_blend_resnet_convnext.csv",
+        "blend_prior_adapted": SUBMISSIONS_DIR / "submission_phase1_blend_prior_adapted.csv",
         "moe": SUBMISSIONS_DIR / "submission_phase1_gated_moe.csv",
         "human_verified": SUBMISSIONS_DIR / "submission_phase1_human_verified.csv",
         "anchor": SUBMISSIONS_DIR / "submission_phase1_anchor.csv",

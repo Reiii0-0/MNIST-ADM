@@ -444,3 +444,6 @@ class HCCRSENet(nn.Module):
         return logits
 
 
+# SOTA Model #3 candidates for Tri-Ensemble
+from src.model_densenet_cbam import DenseNet121_CBAM
+from src.model_swin_compact import SwinHCCR_64
