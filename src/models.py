@@ -327,3 +327,120 @@ class ConvNeXt_Femto(nn.Module):
         logits = self.classifier(feats)
         return logits, feats
 
+
+class SEBlock(nn.Module):
+    """
+    Squeeze-and-Excitation Block (Hu et al., CVPR 2018).
+    Dynamically recalibrates channel-wise feature responses.
+    """
+    def __init__(self, channels, reduction=8):
+        super().__init__()
+        self.fc = nn.Sequential(
+            nn.AdaptiveAvgPool2d(1),
+            nn.Conv2d(channels, channels // reduction, kernel_size=1),
+            nn.SiLU(inplace=True),
+            nn.Conv2d(channels // reduction, channels, kernel_size=1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        return x * self.fc(x)
+
+
+class InvertedResidual(nn.Module):
+    """
+    Inverted Residual Block with Depthwise Separable Conv and SE Attention.
+    """
+    def __init__(self, in_ch, out_ch, stride=1, expand_ratio=2, use_se=True):
+        super().__init__()
+        self.stride = stride
+        self.use_residual = self.stride == 1 and in_ch == out_ch
+        hidden_dim = int(in_ch * expand_ratio)
+
+        layers = []
+        # 1x1 Expansion
+        if expand_ratio != 1:
+            layers.extend([
+                nn.Conv2d(in_ch, hidden_dim, kernel_size=1, bias=False),
+                nn.BatchNorm2d(hidden_dim),
+                nn.SiLU(inplace=True)
+            ])
+        # 3x3 Depthwise Conv
+        layers.extend([
+            nn.Conv2d(hidden_dim, hidden_dim, kernel_size=3, stride=stride, padding=1, groups=hidden_dim, bias=False),
+            nn.BatchNorm2d(hidden_dim),
+            nn.SiLU(inplace=True)
+        ])
+        # Squeeze-and-Excitation
+        if use_se:
+            layers.append(SEBlock(hidden_dim, reduction=8))
+        # 1x1 Linear Projection
+        layers.extend([
+            nn.Conv2d(hidden_dim, out_ch, kernel_size=1, bias=False),
+            nn.BatchNorm2d(out_ch)
+        ])
+        self.conv = nn.Sequential(*layers)
+
+    def forward(self, x):
+        if self.use_residual:
+            return x + self.conv(x)
+        return self.conv(x)
+
+
+class HCCRSENet(nn.Module):
+    """
+    Model 4: HCCR-SENet (Handwritten Chinese Character Recognition with Squeeze-and-Excitation).
+    Lightweight specialized architecture (~262k parameters) with Inverted Residuals + SE + GAP.
+    """
+    def __init__(self, in_channels=1, num_classes=15):
+        super().__init__()
+        # Stem: 64x64 -> 64x64
+        self.stem = nn.Sequential(
+            nn.Conv2d(in_channels, 32, kernel_size=3, stride=1, padding=1, bias=False),
+            nn.BatchNorm2d(32),
+            nn.SiLU(inplace=True)
+        )
+        # Stage 1: 64x64 -> 32x32
+        self.stage1 = nn.Sequential(
+            InvertedResidual(32, 64, stride=1, expand_ratio=2, use_se=True),
+            nn.MaxPool2d(kernel_size=2, stride=2)
+        )
+        # Stage 2: 32x32 -> 16x16
+        self.stage2 = nn.Sequential(
+            InvertedResidual(64, 128, stride=1, expand_ratio=2, use_se=True),
+            nn.MaxPool2d(kernel_size=2, stride=2)
+        )
+        # Stage 3: 16x16 -> 8x8
+        self.stage3 = nn.Sequential(
+            InvertedResidual(128, 256, stride=1, expand_ratio=2, use_se=True),
+            nn.MaxPool2d(kernel_size=2, stride=2)
+        )
+        # Feature Projection & GAP
+        self.conv_head = nn.Sequential(
+            nn.Conv2d(256, 384, kernel_size=1, bias=False),
+            nn.BatchNorm2d(384),
+            nn.SiLU(inplace=True)
+        )
+        self.gap = nn.AdaptiveAvgPool2d(1)
+        self.dropout = nn.Dropout(0.35)
+        self.classifier = nn.Linear(384, num_classes)
+
+    def extract_features(self, x):
+        x = self.stem(x)
+        x = self.stage1(x)
+        x = self.stage2(x)
+        x = self.stage3(x)
+        x = self.conv_head(x)
+        x = self.gap(x)
+        feats = torch.flatten(x, 1)
+        return feats
+
+    def forward(self, x, return_features=False):
+        feats = self.extract_features(x)
+        x = self.dropout(feats)
+        logits = self.classifier(x)
+        if return_features:
+            return logits, feats
+        return logits
+
+

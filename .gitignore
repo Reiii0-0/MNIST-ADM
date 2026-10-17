@@ -45,27 +45,25 @@ data_vanilla/
 
 # Submissions output
 submissions/
+predictions.csv
+predictions.zip
+predictions_*.zip
+
+# Model checkpoints & local outputs
+models/kaggle_outputs_hccr_senet/
+kaggle_pulled/
 
 # Keep outputs plots & metrics
 !outputs/*.png
 !outputs/*.json
 outputs/matched_kaggle/
 outputs/scoring_results/
-
-
 # HTML renders & assets
 *.html
 *_files/
-
-# Active learning manual labeling files
+tools/
 uncertain_samples_for_labeling.csv
 manual_labels.csv
-
-# Temporary Kaggle downloads
-kaggle_pulled/
-
-
-# Documentation & Internal Research Specifications (only README.md tracked in GitHub)
 dokumentasi/
 *.md
 !README.md

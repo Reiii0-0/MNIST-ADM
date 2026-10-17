@@ -264,7 +264,8 @@ FinalProject/
 │   ├── comprehensive_stress_test.py             # 8-scenario comprehensive perturbation benchmark
 │   ├── compare_stress_test_architectures.py     # ResNet vs. ConvNeXt head-to-head evaluation runner
 │   ├── match_validation_with_kaggle.py          # Forensic dataset alignment & reverse-matching engine
-│   └── generate_visual_comparison.py            # Side-by-side scale-aligned visual comparison generator
+│   ├── generate_visual_comparison.py            # Side-by-side scale-aligned visual comparison generator
+│   └── generate_champion_submission.py          # Unified submission generator with CLI args & validation
 │
 ├── tools/                                       # Interactive developer & active learning utilities
 │   └── labeling_tool.html                       # Standalone active learning studio (embedded base64 images)
@@ -278,8 +279,11 @@ FinalProject/
 │   └── stress_test_metrics.json                 # Comprehensive stress-test results across 8 regimes
 │
 ├── submissions/                                 # Generated CodaBench submission archives (.zip & .csv)
-│   ├── submission_phase1_anchor.zip             # 5-Model Ensemble baseline
-│   └── submission_phase1_adabn_tta.zip          # SOTA AdaBN Domain Adaptation + 5-Way TTA
+│   ├── submission_phase1_blend_resnet_conv.zip  # Current Leaderboard Rank 1 Champion (Score: 0.9319)
+│   ├── submission_phase1_gated_moe.zip          # Gated Mixture of Experts (Score: 0.9286)
+│   ├── submission_phase1_anchor.zip             # 5-Model ResNet18-CBAM Baseline (Score: 0.9278)
+│   ├── submission_phase1_adabn_tta.zip          # AdaBN Domain Adaptation + TTA (Score: 0.9120)
+│   └── submission_phase1_hccr_senet.zip         # Lightweight HCCR-SENet (Score: 0.8771)
 │
 ├── kaggle_kernel/                               # Kaggle Cloud training pipeline for ResNet18-CBAM
 │   ├── kernel-metadata.json
