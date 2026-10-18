@@ -444,6 +444,13 @@ class HCCRSENet(nn.Module):
         return logits
 
 
-# SOTA Model #3 candidates for Tri-Ensemble
-from src.model_densenet_cbam import DenseNet121_CBAM
-from src.model_swin_compact import SwinHCCR_64
+# SOTA Model #3 candidates for Tri-Ensemble (resolved via PEP 562 lazy import to prevent circular import)
+def __getattr__(name):
+    if name == "DenseNet121_CBAM":
+        from src.model_densenet_cbam import DenseNet121_CBAM
+        return DenseNet121_CBAM
+    elif name == "SwinHCCR_64":
+        from src.model_swin_compact import SwinHCCR_64
+        return SwinHCCR_64
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
+

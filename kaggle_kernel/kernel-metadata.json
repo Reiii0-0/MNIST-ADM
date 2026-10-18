@@ -1,9 +1,9 @@
 {
   "id": "reiiihel/mnist-adm",
   "title": "MNIST-ADM",
-  "code_file": "mnist-adm.py",
+  "code_file": "standalone_cpc_sota_pipeline.ipynb",
   "language": "python",
-  "kernel_type": "script",
+  "kernel_type": "notebook",
   "is_private": true,
   "enable_gpu": true,
   "enable_tpu": false,
