@@ -27,6 +27,8 @@ htmlcov/
 # Raw image datasets & archives (fetch via Kaggle CLI / raw archives)
 data/train/
 data/train_synthetic/
+data/train_synthetic_calligraphy/
+data/fonts/
 data/validasi/
 data/test/
 data/vanilla/

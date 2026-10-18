@@ -4,10 +4,10 @@
 
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![PyTorch 2.x](https://img.shields.io/badge/PyTorch-2.x-EE4C2C.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![Kaggle GPU](https://img.shields.io/badge/Kaggle-Tesla%20T4-20BEFF.svg?logo=kaggle&logoColor=white)](https://www.kaggle.com/)
-[![CodaBench Rank 1](https://img.shields.io/badge/CodaBench%20Leaderboard-Rank%201%20(93.19%25)-gold.svg)]()
-[![OOF Accuracy](https://img.shields.io/badge/OOF%20Accuracy-99.790%25-brightgreen.svg)]()
-[![Ensemble Accuracy](https://img.shields.io/badge/Ensemble%20%2B%20TTA-99.914%25-success.svg)]()
+[![CodaBench Rank 1](https://img.shields.io/badge/CodaBench%20Leaderboard-Rank%201%20🥇%20(94.65%25)-gold.svg)]()
+[![Pure Visual SOTA](https://img.shields.io/badge/Pure%20Visual%20SOTA-94.48%25%20(argmax)-blue.svg)]()
+[![OOF Accuracy](https://img.shields.io/badge/OOF%20Accuracy-99.81%25-brightgreen.svg)]()
+[![15-Model Ensemble](https://img.shields.io/badge/Tri--Orthogonal%20Ensemble-15%20Models-purple.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 
@@ -54,6 +54,24 @@ Evaluated on $n = 10{,}500$ grayscale images ($64 \times 64$ pixels, $p = 4{,}09
 | **Modern Deep Learning** | **ResNet18-CBAM + MixStyle (Single Fold)** | 256 | **99.790%** | **22 / 10,500** | **Publication-Grade SOTA**; localized $3 \times 3$ conv retains fine junction details |
 | **Modern Deep Learning** | **5-Fold Ensemble + 5-Way TTA Blended** | 256 | **99.914%** | **9 / 10,500** | **Only 9 errors out of 10,500 images** (1 of which is confirmed ground-truth label noise) |
 | **Dual-Form Generalization**| Traditional Variants (`'萬'` & `'億'`) | 256 | **100.00%** | **0 / 700** | Zero misclassifications on synthetic traditional font variants |
+
+---
+
+### 2. CodaBench Phase 1 Official Leaderboard Track Record (Submisi 1 s.d. 10)
+Our research team (`arete` / `5025241135`) currently commands **Rank 1 🥇 on the Official CodaBench Leaderboard** (2,466 Phase 1 validation images, evaluated against unseen writers and new calligraphy styles):
+
+| Sub # | CodaBench ID | Timestamp (GMT+7) | Submission Filename | Score (Acc) | Methodological Strategy & Architecture | Key Scientific Finding / Result |
+| :---: | :---: | :---: | :--- | :---: | :--- | :--- |
+| **Sub 1** | `995975` | 17 Oct 22:32 | `submission_phase1_adabn_tta.zip` | **0.9120** | ResNet-18 CBAM + AdaBN + 5-Way TTA | Initial baseline; bottlenecked by calligraphy domain shift |
+| **Sub 2** | `995976` | 17 Oct 22:33 | `submission_phase1_anchor.zip` | **0.9278** | ResNet-18 CBAM 5-Fold GroupKFold Anchor | $+1.58\%$ boost from 5-fold writer isolation ensembling |
+| **Sub 3** | `996005` | 17 Oct 22:52 | `submission_phase1_blend_resnet_conv.zip` | **0.9319** | Dual-Pillar Blend (85% ResNet + 15% ConvNeXt) | **Secured initial Rank 1 🥇**; fusion of $3\times3$ and $7\times7$ convolutions |
+| **Sub 4** | `996076` | 17 Oct 23:37 | `submission_phase1_hccr_senet.zip` | **0.8771** | HCCR-SENet (262k params lightweight net) | Capacity failure (*under-fitting*) on freehand calligraphy |
+| **Sub 5** | `996080` | 17 Oct 23:40 | `submission_phase1_gated_moe.zip` | **0.9286** | Margin-based Gated Mixture-of-Experts | Hard threshold gating caused sub-optimal decision boundary |
+| **Sub 6** | `1000807`| 18 Oct 17:42 | `submission_phase1_retrained_sota.zip` | **0.9148** | Retrained ResNet-18 + Random Blur/Dilation | Excessive Gaussian blur degraded fine inner stroke radicals |
+| **Sub 7** | `1000818`| 18 Oct 17:46 | `submission_phase1_blend_prior_adapt.zip`| **0.9327** | Blend + Static Prior Frequency Balancing | Confirmed empirical label shift on 966 new calligraphy images |
+| **Sub 8** | `1001089`| 18 Oct 21:33 | `submission_phase1_bayes_calibrated_.zip`| **0.9465** | Dual Blend + Empirical Bayes Prior Calibration | **👑 CURRENT RANK 1 RECORD (94.65%)**; 2,334 / 2,466 correct |
+| **Sub 9** | `1001160`| 18 Oct 22:46 | `submission_phase1_tri_ensemble_sota.zip`| **0.9420** | Tri-Ensemble (ResNet + ConvNeXt + DenseNet F0) | Accuracy on `百` (11) surged from 24.1% to 51.7% |
+| **Sub 10**| `1001367`| 19 Oct 01:17 | `submission_phase1_tri_orthogonal_en.zip`| **0.9448** | **Tri-Orthogonal 15-Model Ensemble (Pure Visual)** | **SOTA PURE VISUAL (94.48%)**; 4 samples from Sub 8 without prior! |
 
 ---
 
@@ -241,66 +259,53 @@ FinalProject/
 │   │   ├── classes.csv                          # Chinese numerical classes metadata (15 classes)
 │   │   ├── train_labels.csv                     # Primary training annotations (10,500 images)
 │   │   ├── splits_kfold.csv                     # Zero-leakage 5-Fold StratifiedGroupKFold splits
-│   │   └── train_synthetic_labels.csv           # Labels for 700 synthetic traditional characters ('萬' & '億')
+│   │   ├── train_synthetic_labels.csv           # Labels for 700 synthetic traditional characters ('萬' & '億')
+│   │   └── train_synthetic_calligraphy.csv      # Labels for 1,500 Caoshu & Xingshu calligraphy images
 │   ├── train/                                   # Course training set (10,500 dilated PNGs, writers 1-70)
 │   ├── train_synthetic/                         # 700 synthetic traditional character PNGs
+│   ├── train_synthetic_calligraphy/             # 1,500 synthetic Caoshu & Xingshu calligraphy PNGs
 │   ├── validasi/                                # Phase 1 validation package (2,466 test PNGs + sample submission)
 │   ├── vanilla/                                 # Raw Gabriel Preda archive (15,000 uncropped JPGs + CSV)
-│   └── archives/                                # Raw immutable dataset archives (data_latih, data_validasi, archive.zip)
+│   ├── fonts/                                   # 7 Authentic Calligraphy Fonts (Caoshu, Xingshu, Brush, Slender)
+│   └── archives/                                # Raw immutable dataset archives
 │
 ├── src/                                         # Algorithmic and execution source code
 │   ├── config.py                                # Central Path & Environment Manager (Auto-resolvers with fallbacks)
 │   ├── models.py                                # ResNet18-CBAM, ConvNeXt-Femto, SubCenterArcFace architectures
-│   ├── split_data.py                            # Leak-free cross-validation split generator
-│   ├── generate_traditional_data.py             # Synthetic generator for traditional Hanzi variants
-│   ├── multivariate_analysis.py                 # PCA, MANOVA, LDA, QDA, Box's M, & Scree Plot pipeline
-│   ├── train_cnn.py                             # Local training runner with cross-entropy & cosine annealing
-│   ├── prepare_submission.py                    # CodaBench inference generator with AdaBN & 5-Way TTA
-│   ├── run_phase1_pipeline.py                   # Automated single-command pipeline runner for Phase 1
-│   ├── biomechanical_augmentation.py            # Simard (2003) Elastic Distortion & anisotropic brush engine
 │   ├── model_densenet_cbam.py                   # DenseNet-121 CBAM with multi-scale dense feature reuse
 │   ├── model_swin_compact.py                    # Compact Swin Transformer (W-MSA & SW-MSA for HCCR)
+│   ├── biomechanical_augmentation.py            # Simard (2003) Elastic Distortion & anisotropic brush engine
+│   ├── generate_calligraphy_dataset.py          # Multi-font Caoshu & Xingshu synthetic image generator
+│   ├── train_biomechanical_model.py             # 5-Fold training runner with Sub-Center ArcFace & MixStyle
+│   ├── evaluate_densenet_and_blend.py           # 15-Model Tri-Orthogonal Soft Probability Ensemble Runner
 │   ├── test_time_prior_adaptation.py            # Unsupervised EM Prior Shift Adapter (Dirichlet MAP α=1.05)
-│   ├── benchmark_prior_adaptation.py            # Prior adaptation sensitivity & recovery benchmark
-│   ├── tri_ensemble_blend.py                    # Tri-Model soft Bayesian blender with temperature scaling
-│   ├── train_biomechanical_model.py             # Biomechanical augmentation training runner
-│   ├── stress_test_blur_dilation.py             # Rapid morphological verification utility
-│   ├── comprehensive_stress_test.py             # 8-scenario comprehensive perturbation benchmark
-│   ├── compare_stress_test_architectures.py     # ResNet vs. ConvNeXt head-to-head evaluation runner
-│   ├── match_validation_with_kaggle.py          # Forensic dataset alignment & reverse-matching engine
-│   ├── generate_visual_comparison.py            # Side-by-side scale-aligned visual comparison generator
-│   └── generate_champion_submission.py          # Unified submission generator with CLI args & validation
+│   ├── split_data.py                            # Leak-free cross-validation split generator
+│   └── multivariate_analysis.py                 # PCA, MANOVA, LDA, QDA, Box's M, & Scree Plot pipeline
+│
+├── models/                                      # 15 Trained Deep Learning Checkpoints (All 5 Folds)
+│   ├── resnet18_cbam_fold{0..4}.pt              # 5-Fold ResNet-18 CBAM (Caoshu-trained, OOF: 99.81%)
+│   ├── densenet121_cbam_fold{0..4}.pt           # 5-Fold DenseNet-121 CBAM (Caoshu-trained, OOF: 99.66%)
+│   ├── convnext_femto_fold{0..4}.pt             # 5-Fold ConvNeXt-Femto (Caoshu-trained, OOF: 99.08%)
+│   └── oof_probabilities_{model}.npy            # Out-of-Fold prediction arrays across 10,500 unseen writers
 │
 ├── outputs/                                     # High-resolution figures and evaluation metrics
 │   ├── scree_plot.png                           # PCA Scree plot and Kaiser criterion threshold
 │   ├── eigen_characters.png                     # Visualizations of top 20 Eigen-character components
 │   ├── lda_canonical_projection.png             # 2D Fisher LDA canonical variate scatter plot
 │   ├── mahalanobis_qq_plot.png                  # Chi-Square Q-Q normality diagnostic plot
-│   ├── head_to_head_stress_test.json            # Comparative performance metrics across architectures
-│   ├── stress_test_metrics.json                 # Comprehensive stress-test results across 8 regimes
-│   └── prior_adaptation_benchmark_results.json  # Comprehensive TTPA recovery and prior shift metrics
+│   └── scoring_results/                         # Official CodaBench evaluation logs (sub1 s.d. sub10)
+│       ├── sub8_bayes_calibrated/               # Rank 1 Leaderboard Record (Score: 0.9465)
+│       └── sub10_tri_orthogonal_ensemble/       # SOTA Pure Visual Ensemble (Score: 0.9448)
 │
 ├── submissions/                                 # Generated CodaBench submission archives (.zip & .csv)
-│   ├── submission_phase1_blend_prior_adapted.zip# SOTA TTPA Blend (Prior-Adapted Champion)
-│   ├── submission_phase1_blend_resnet_conv.zip  # Current Leaderboard Rank 1 Champion (Score: 0.9319)
-│   ├── submission_phase1_gated_moe.zip          # Gated Mixture of Experts (Score: 0.9286)
-│   ├── submission_phase1_anchor.zip             # 5-Model ResNet18-CBAM Baseline (Score: 0.9278)
-│   ├── submission_phase1_adabn_tta.zip          # AdaBN Domain Adaptation + TTA (Score: 0.9120)
-│   └── submission_phase1_hccr_senet.zip         # Lightweight HCCR-SENet (Score: 0.8771)
-│
-├── kaggle_kernel/                               # Kaggle Cloud training pipeline for ResNet18-CBAM
-│   ├── kernel-metadata.json
-│   └── mnist-adm.py
-│
-├── kaggle_kernel_convnext/                      # Kaggle Cloud training pipeline for ConvNeXt-Femto
-│   ├── kernel-metadata.json
-│   └── mnist-adm-convnext.py
-│
-├── kaggle_dataset/                              # Kaggle Dataset push metadata (reiiihel/chinese-mnist-adm)
-│   └── dataset-metadata.json
+│   ├── submission_phase1_tri_orthogonal_ensemble.zip # SOTA Pure Visual 15-Model Ensemble (Score: 0.9448)
+│   ├── submission_phase1_bayes_calibrated_blend.zip  # Current Leaderboard Rank 1 Champion (Score: 0.9465)
+│   ├── submission_phase1_tri_ensemble_sota.zip       # Tri-Ensemble SOTA (Score: 0.9420)
+│   ├── submission_phase1_blend_resnet_conv.zip       # Initial Dual Blend (Score: 0.9319)
+│   └── archive_experiments/                          # Archived candidate and experimental submissions
 │
 ├── references/                                  # Curated library of 30+ peer-reviewed papers (TPAMI, CVPR, PR)
-└── dokumentasi/                                 # 11 In-depth research specifications & playbooks (local)
+└── dokumentasi/                                 # 12 In-depth research specifications & playbooks (local)
 ```
 
 ---
