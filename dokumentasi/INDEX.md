@@ -28,9 +28,10 @@ status: verified
 |:---:|:---|:---|
 | **16** | [[16_MASTER_PRESENTASI_DOSEN_DAN_TESTING_GUIDE]] | Blueprint presentasi teknis dosen, metrik 24 grafik Royal Blue, & protokol Q&A |
 | **17** | [[17_MASTER_DOKUMENTASI_KESELURUHAN_DAN_RIWAYAT_VERSI]] | Master keseluruhan evolusi Era 0 s.d. VI, taksonomi matematis, & riwayat Sub 1–32 + Fase 2 |
-| **18** | [[18_INVENTARIS_LENGKAP_KODE_DAN_AUDITING_REPRODUKSI]] | Inventaris lengkap 53 skrip Python, 9 Kaggle kernel, Tugas 1–3, & ringkasan audit empiris |
-| **19** | [[19_TEKS_PRESENTER_PPT_VERBATIM]] | Naskah bicara presenter verbatim Slide 1–29 (`/bahasa-skills`, `/unslop`, `/antigravity-guide`) |
+| **18** | [[18_INVENTARIS_LENGKAP_KODE_DAN_AUDITING_REPRODUKSI]] | Inventaris lengkap 53 skrip Python, 9 Kaggle kernel + 1 notebook visual evaluasi (`01-10`), Tugas 1-3, & ringkasan audit empiris |
+| **19** | [[19_TEKS_PRESENTER_PPT_VERBATIM]] | Naskah bicara presenter verbatim Slide 1-29 (`/bahasa-skills`, `/unslop`, `/antigravity-guide`) |
 | **20** | [[20_PENJELASAN_SISTEM_DARI_TITIK_PALING_DASAR]] | Penjelasan sistem lengkap dari nol (piksel 4.096-D, ADM klasik, DenseNet-CBAM, hingga 5-Loss KD & Fase 2) |
+| **21** | [[21_PANDUAN_PAHAM_BULLETPROOF_PRESENTASI_DOSEN]] | Panduan pemahaman inti, batas klaim angka, & bank 15 Q&A jebakan agar siap presentasi ke dosen |
 
 ---
 
@@ -87,7 +88,7 @@ status: verified
 
 ---
 
-## 5. Katalog 22 Grafik Ilmiah & Infografis Tema Royal Blue (`#2254c5`)
+## 5. Katalog 24 Grafik Ilmiah & Infografis Tema Royal Blue (`#2254c5`)
 
 ### A. 4 Grafik Statistik Multivariat Klasik (`FinalProject/outputs/`)
 1. [`scree_plot.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/scree_plot.png)
@@ -95,7 +96,7 @@ status: verified
 3. [`mahalanobis_qq_plot.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/mahalanobis_qq_plot.png)
 4. [`lda_canonical_projection.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/lda_canonical_projection.png)
 
-### B. 7 Infografis Arsitektural & Dataset (`FinalProject/outputs/presentation_figures/`)
+### B. 8 Infografis Arsitektural, Dataset & Kode (`FinalProject/outputs/presentation_figures/`)
 5. [`info_15_classes_and_calligraphy.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/info_15_classes_and_calligraphy.png)
 6. [`info_domain_shift_comparison.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/info_domain_shift_comparison.png)
 7. [`info_dataset_architecture_table.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/info_dataset_architecture_table.png)
@@ -103,19 +104,21 @@ status: verified
 9. [`info_densenet_cbam_architecture.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/info_densenet_cbam_architecture.png)
 10. [`info_biomechanical_augmentation.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/info_biomechanical_augmentation.png)
 11. [`info_kd_5loss_pipeline.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/info_kd_5loss_pipeline.png)
+12. [`info_code_and_github_repo.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/info_code_and_github_repo.png)
 
-### C. 11 Grafik Kuantitatif Evolusi, Adaptasi & Audit (`FinalProject/outputs/presentation_figures/`)
-12. [`slide_evolution_trajectory_0_to_student.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_evolution_trajectory_0_to_student.png)
-13. [`slide_era1_phase1_jump.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_era1_phase1_jump.png)
-14. [`info_ttpa_prior_shift.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/info_ttpa_prior_shift.png)
-15. [`slide_era3_ceiling_and_ablations.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_era3_ceiling_and_ablations.png)
-16. [`slide_era4_milp_tomography.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_era4_milp_tomography.png)
-17. [`slide_difficult_classes_breakthrough.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_difficult_classes_breakthrough.png)
-18. [`slide_model_efficiency.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_model_efficiency.png)
-19. [`slide_perturbation_robustness.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_perturbation_robustness.png)
-20. [`slide_swa_vs_ep13_audit.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_swa_vs_ep13_audit.png)
-21. [`slide_phase2_ood_verification.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_phase2_ood_verification.png)
-22. [`slide_calibration_reliability.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_calibration_reliability.png)
+### C. 12 Grafik Kuantitatif Evolusi, Adaptasi & Audit (`FinalProject/outputs/presentation_figures/`)
+13. [`slide_evolution_trajectory_0_to_student.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_evolution_trajectory_0_to_student.png)
+14. [`slide_era1_phase1_jump.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_era1_phase1_jump.png)
+15. [`info_ttpa_prior_shift.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/info_ttpa_prior_shift.png)
+16. [`slide_era3_ceiling_and_ablations.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_era3_ceiling_and_ablations.png)
+17. [`slide_nccu_breakthrough.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_nccu_breakthrough.png)
+18. [`slide_era4_milp_tomography.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_era4_milp_tomography.png)
+19. [`slide_difficult_classes_breakthrough.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_difficult_classes_breakthrough.png)
+20. [`slide_model_efficiency.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_model_efficiency.png)
+21. [`slide_perturbation_robustness.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_perturbation_robustness.png)
+22. [`slide_swa_vs_ep13_audit.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_swa_vs_ep13_audit.png)
+23. [`slide_phase2_ood_verification.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_phase2_ood_verification.png)
+24. [`slide_calibration_reliability.png`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/outputs/presentation_figures/slide_calibration_reliability.png)
 
 ---
 

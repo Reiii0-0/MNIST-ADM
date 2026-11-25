@@ -111,7 +111,7 @@ Implementasi inti berada di [`distillation_loss.py`](file:///home/rei/Workspace/
    - **Contrastive Representation Distillation / CRD (`beta = 0,10`, `tau = 0,07`)**: Memakai InfoNCE pada bola satuan $\mathbb{S}^{255}$ agar fitur laten murid dan guru untuk gambar yang sama saling tarik-menarik, sementara terhadap gambar lain saling tolak.
    - **Distance Relational KD (`gamma = 1,00`)**: Menjaga jarak Euclidean berpasangan antar-gambar dalam batch agar sama antara ruang laten guru dan murid.
    - **Angle Relational KD (`delta = 2,00`)**: Menjaga sudut kosinus triplet antar-gambar agar bentuk geometri manifold tidak berubah saat dikompresi.
-3. **Stochastic Weight Averaging (`SWA`, Epoch `17–25`, `swa_lr = 1e-4`) & `FP16`**: Alih-alih berhenti di satu titik tajam, bobot dari 9 epoch terakhir dirata-ratakan, statistik *BatchNorm* diperbarui ulang (`update_bn`), lalu disimpan dalam presisi `FP16` ([`student_fp16.pt`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/models/student_fp16.pt), **`14,75 MiB`**). Prediksi `FP16` terverifikasi **100% identik** dengan `FP32`.
+3. **Stochastic Weight Averaging (`SWA`, Epoch `17–25`, `swa_lr = 1e-4`) & `FP16`**: Alih-alih berhenti di satu titik tajam, bobot dari 9 epoch terakhir dirata-ratakan, statistik *BatchNorm* diperbarui ulang (`update_bn`), lalu disimpan dalam presisi `FP16` ([`densenet121_cbam_student_fp16.pt`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/models/densenet121_cbam_student_fp16.pt), **`14,75 MiB`**). Prediksi `FP16` terverifikasi **100% identik** dengan `FP32`.
 
 ---
 
@@ -120,12 +120,10 @@ Implementasi inti berada di [`distillation_loss.py`](file:///home/rei/Workspace/
 Implementasi berada di [`predict_phase2_distillation.py`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/src/predict_phase2_distillation.py). Ketika sistem menerima `2.902` gambar baru yang benar-benar belum pernah dilihat (`0` irisan hash MD5), alurnya sangat ringkas:
 
 1. **Praproses**: Gambar `64 x 64` grayscale dinormalisasi ke skala `[-1, 1]`.
-2. **1x Forward Pass (Tanpa TTA)**: Seluruh `2.902` gambar melewati `student_fp16.pt` dalam `Batch-128` di GPU RTX 4060 hanya sekali jalan (`5,44 detik` total), menghasilkan `z_S = 0,5 * z_lin + 0,5 * z_arc`.
+2. **1x Forward Pass (Tanpa TTA)**: Seluruh `2.902` gambar melewati `densenet121_cbam_student_fp16.pt` dalam `Batch-128` di GPU RTX 4060 hanya sekali jalan (`5,44 detik` total), menghasilkan `z_S = 0,5 * z_lin + 0,5 * z_arc`.
 3. **Kalibrasi Prior Dinamis (TTPA)**: Softmax awal disesuaikan secara otomatis melalui Bayesian EM (`alpha = 1,05`, `source_counts` empiris) untuk mendeteksi proporsi kelas aktual di batch uji (termasuk mendeteksi hadirnya kembali kelas `0` dan `14`).
-4. **Keluaran Akhir**: Menghasilkan `predictions.csv` siap kirim ke CodaBench:
-   - **Fase 1 (`Sub 32`, ID `1014243`)**: **`0,9984`** (`2.462 / 2.466` benar, hanya `4` error; `12` dari `13` kelas aktif Gaya Baru mencapai `100,0%`).
-   - **Fase 2 Blind Test (`P2-Sub1`, ID `1048381`)**: **`0,9862`** (`~2.862 / 2.902` benar) dalam **`5,44 detik`** sekali jalan.
-   - **Uji Ketahanan Noise Gaussian ($\sigma = 25$)**: SWA `FP16` mempertahankan stabilitas **`95,98% (±0,02%)`** pada Fase 2 (unggul `+1,61%` atas `best.pt` Epoch 13 pra-SWA), dan pada stress-test Fase 1 bertahan di **`96,19%`** dibanding ConvNeXt (`42,70%`) maupun ResNet-18 (`36,90%`).
+4. **Keluaran Akhir**: Menghasilkan `predictions.csv` siap kirim ke CodaBench (`0,9984` Fase 1; `0,9862` Fase 2), sedangkan seluruh plot evaluasi statistik dan kurva pembuktian terangkum di [`10_mnist_adm_visual_evaluation_and_diagnostics.ipynb`](file:///home/rei/Workspace/Academic/Multivariate%20Data%20Analysis/FinalProject/notebooks/10_mnist_adm_visual_evaluation_and_diagnostics.ipynb).
+   - **Uji Ketahanan Noise Gaussian ($\sigma = 25$)**: SWA `FP16` mempertahankan stabilitas **`95,98% (±0,02%)`** pada Fase 2 (unggul `+1,61%` atas `densenet121_cbam_student_best.pt` Epoch 13 pra-SWA), dan pada stress-test Fase 1 bertahan di **`96,19%`** dibanding ConvNeXt (`42,70%`) maupun ResNet-18 (`36,90%`).
 
 ---
-*Navigasi Vault: [[INDEX|Indeks Utama Dokumentasi]] | [[17_MASTER_DOKUMENTASI_KESELURUHAN_DAN_RIWAYAT_VERSI|Master Dokumentasi]] | [[18_INVENTARIS_LENGKAP_KODE_DAN_AUDITING_REPRODUKSI|Inventaris Kode]] | [[19_TEKS_PRESENTER_PPT_VERBATIM|Naskah Presenter PPT]]*
+*Navigasi Vault: [[INDEX|Indeks Utama Dokumentasi]] | [[21_PANDUAN_PAHAM_BULLETPROOF_PRESENTASI_DOSEN|Panduan Bulletproof Dosen]] | [[19_TEKS_PRESENTER_PPT_VERBATIM|Naskah Presenter PPT]] | [[17_MASTER_DOKUMENTASI_KESELURUHAN_DAN_RIWAYAT_VERSI|Master Dokumentasi]]*
