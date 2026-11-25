@@ -36,9 +36,11 @@ from src.config import (
     get_splits_kfold_csv,
     get_train_synthetic_labels_csv,
     get_train_synthetic_calligraphy_labels_csv,
+    get_train_synthetic_calligraphy_v2_labels_csv,
     get_train_dir,
     get_train_synthetic_dir,
     get_train_synthetic_calligraphy_dir,
+    get_train_synthetic_calligraphy_v2_dir,
     MODELS_DIR
 )
 
@@ -47,11 +49,12 @@ class BiomechanicalChineseDataset(Dataset):
     """
     Dataset wrapper injecting Biomechanical Data Augmentations into training pipeline.
     """
-    def __init__(self, df, img_dir=None, synth_dir=None, callig_dir=None, is_train=True):
+    def __init__(self, df, img_dir=None, synth_dir=None, callig_dir=None, callig_v2_dir=None, is_train=True):
         self.df = df.reset_index(drop=True)
         self.img_dir = str(img_dir or get_train_dir())
         self.synth_dir = str(synth_dir or get_train_synthetic_dir())
         self.callig_dir = str(callig_dir or get_train_synthetic_calligraphy_dir())
+        self.callig_v2_dir = str(callig_v2_dir or get_train_synthetic_calligraphy_v2_dir())
         self.is_train = is_train
         self.aug = BiomechanicalAugmentationPipeline() if is_train else None
 
@@ -67,6 +70,8 @@ class BiomechanicalChineseDataset(Dataset):
         # Check synthetic vs calligraphy vs authentic path
         if img_id.startswith("synth_"):
             path = os.path.join(self.synth_dir, f"{img_id}.png")
+        elif img_id.startswith("callig_v2_"):
+            path = os.path.join(self.callig_v2_dir, f"{img_id}.png")
         elif img_id.startswith("callig_"):
             path = os.path.join(self.callig_dir, f"{img_id}.png")
         else:
@@ -88,6 +93,7 @@ class BiomechanicalChineseDataset(Dataset):
 def train_biomechanical_fold(
     fold=0,
     model_type="densenet121_cbam",
+    suffix="_v2",
     use_synthetic=True,
     epochs=15,
     batch_size=64,
@@ -95,7 +101,7 @@ def train_biomechanical_fold(
     device="cuda"
 ):
     print(f"\n=======================================================")
-    print(f"🚀 Training SOTA Model: {model_type} | Fold: {fold} | Device: {device}")
+    print(f"🚀 Training SOTA Model: {model_type}{suffix} | Fold: {fold} | Device: {device}")
     print(f"=======================================================")
 
     splits_csv = get_splits_kfold_csv()
@@ -114,20 +120,26 @@ def train_biomechanical_fold(
             train_df = pd.concat([train_df, df_synth], ignore_index=True)
             print(f"Injected {len(df_synth)} synthetic traditional Hanzi samples.")
 
-        # 2. Inject Caoshu & Xingshu Calligraphy (15 classes across 3 fonts)
-        callig_csv = get_train_synthetic_calligraphy_labels_csv()
-        if callig_csv.exists():
-            df_callig = pd.read_csv(callig_csv)
+        # 2. Inject Caoshu & Xingshu Calligraphy (15 classes across 7 fonts - Taktik A)
+        callig_v2_csv = get_train_synthetic_calligraphy_v2_labels_csv()
+        if callig_v2_csv.exists():
+            df_callig = pd.read_csv(callig_v2_csv)
             train_df = pd.concat([train_df, df_callig], ignore_index=True)
-            print(f"Injected {len(df_callig)} synthetic Caoshu & Xingshu calligraphy samples.")
+            print(f"Injected {len(df_callig)} synthetic targeted Caoshu & Xingshu v2 calligraphy samples across 7 fonts.")
+        else:
+            callig_csv = get_train_synthetic_calligraphy_labels_csv()
+            if callig_csv.exists():
+                df_callig = pd.read_csv(callig_csv)
+                train_df = pd.concat([train_df, df_callig], ignore_index=True)
+                print(f"Injected {len(df_callig)} synthetic Caoshu & Xingshu calligraphy samples.")
 
     print(f"Training samples: {len(train_df):,} | Validation samples (Unseen Writers): {len(val_df):,}")
 
     train_dataset = BiomechanicalChineseDataset(train_df, is_train=True)
     val_dataset = BiomechanicalChineseDataset(val_df, is_train=False)
 
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2, pin_memory=True)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=2, pin_memory=True)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
 
     # Initialize Architecture
     if model_type == "densenet121_cbam":
@@ -156,7 +168,7 @@ def train_biomechanical_fold(
 
     best_val_acc = 0.0
     os.makedirs(MODELS_DIR, exist_ok=True)
-    ckpt_path = str(MODELS_DIR / f"{model_type}_fold{fold}.pt")
+    ckpt_path = str(MODELS_DIR / f"{model_type}{suffix}_fold{fold}.pt")
     scaler = torch.amp.GradScaler('cuda') if device == "cuda" else None
 
     for epoch in range(1, epochs + 1):
@@ -206,7 +218,7 @@ def train_biomechanical_fold(
                 val_total += len(labels)
 
         val_acc = val_correct / val_total
-        print(f"Epoch {epoch:02d}/{epochs:02d} | Train Loss: {train_loss:.4f} | Train Acc: {train_acc*100:.2f}% | Val Acc: {val_acc*100:.2f}%")
+        print(f"Epoch {epoch:02d}/{epochs:02d} | Train Loss: {train_loss:.4f} | Train Acc: {train_acc*100:.2f}% | Val Acc: {val_acc*100:.2f}%", flush=True)
 
         if val_acc > best_val_acc:
             best_val_acc = val_acc
@@ -232,8 +244,9 @@ if __name__ == "__main__":
     parser.add_argument("--all_folds", action="store_true", help="Train all 5 folds sequentially")
     parser.add_argument("--model", type=str, default="densenet121_cbam",
                         choices=["densenet121_cbam", "swin_hccr_64", "resnet18_cbam", "convnext_femto"])
+    parser.add_argument("--suffix", type=str, default="_v2", help="Model checkpoint suffix (default: _v2)")
     parser.add_argument("--epochs", type=int, default=15, help="Epoch count")
-    parser.add_argument("--batch_size", type=int, default=32, help="Batch size (default: 32)")
+    parser.add_argument("--batch_size", type=int, default=64, help="Batch size (default: 64)")
     parser.add_argument("--lr", type=float, default=5e-4, help="Learning rate")
     args = parser.parse_args()
 
@@ -249,7 +262,7 @@ if __name__ == "__main__":
 
     splits_csv = get_splits_kfold_csv()
     df_splits = pd.read_csv(splits_csv)
-    oof_probs_path = MODELS_DIR / f"oof_probabilities_{args.model}.npy"
+    oof_probs_path = MODELS_DIR / f"oof_probabilities_{args.model}{args.suffix}.npy"
     if oof_probs_path.exists():
         oof_probs = np.load(oof_probs_path)
     else:
@@ -260,6 +273,7 @@ if __name__ == "__main__":
         acc, val_probs, val_indices = train_biomechanical_fold(
             fold=f,
             model_type=args.model,
+            suffix=args.suffix,
             use_synthetic=True,
             epochs=args.epochs,
             batch_size=args.batch_size,

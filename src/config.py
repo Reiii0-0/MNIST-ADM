@@ -49,6 +49,10 @@ def get_train_synthetic_calligraphy_labels_csv() -> Path:
     p = METADATA_DIR / "train_synthetic_calligraphy.csv"
     return p if p.exists() else PROJECT_ROOT / "train_synthetic_calligraphy.csv"
 
+def get_train_synthetic_calligraphy_v2_labels_csv() -> Path:
+    p = METADATA_DIR / "train_synthetic_calligraphy_v2.csv"
+    return p if p.exists() else PROJECT_ROOT / "train_synthetic_calligraphy_v2.csv"
+
 # -------------------------------------------------------------------------
 # Dataset Directory Resolvers (Check data/ first, fallback to root)
 # -------------------------------------------------------------------------
@@ -63,6 +67,10 @@ def get_train_synthetic_dir() -> Path:
 def get_train_synthetic_calligraphy_dir() -> Path:
     p = DATA_DIR / "train_synthetic_calligraphy"
     return p if p.exists() else PROJECT_ROOT / "train_synthetic_calligraphy"
+
+def get_train_synthetic_calligraphy_v2_dir() -> Path:
+    p = DATA_DIR / "train_synthetic_calligraphy_v2"
+    return p if p.exists() else PROJECT_ROOT / "train_synthetic_calligraphy_v2"
 
 def get_validation_dir() -> Path:
     for base in [DATA_DIR / "validasi", PROJECT_ROOT / "data_validasi"]:

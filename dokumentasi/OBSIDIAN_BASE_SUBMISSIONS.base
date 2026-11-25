@@ -1,0 +1,97 @@
+filters:
+  and:
+    - 'file.hasTag("submission")'
+
+formulas:
+  accuracy_pct: '(score * 100).toFixed(2) + "%"'
+  error_rate: '((errors / total_samples) * 100).toFixed(2) + "%"'
+  score_tier: 'if(score >= 0.99, "🏆 Tier 1 (99%+)", if(score >= 0.96, "🥇 Tier 2 (96-98%)", if(score >= 0.93, "🥈 Tier 3 (93-95%)", "🥉 Tier 4 (<93%)")))'
+
+properties:
+  sub_id:
+    displayName: "Sub #"
+  codabench_id:
+    displayName: "CodaBench ID #"
+  timestamp:
+    displayName: "Timestamp (GMT+7)"
+  score:
+    displayName: "Score"
+  formula.accuracy_pct:
+    displayName: "Accuracy"
+  formula.score_tier:
+    displayName: "Tier"
+  architecture:
+    displayName: "Methodology / Architecture"
+  total_correct:
+    displayName: "Correct"
+  errors:
+    displayName: "Errors"
+  formula.error_rate:
+    displayName: "Error Rate"
+  phase:
+    displayName: "Phase"
+  status:
+    displayName: "Evaluation Status"
+
+views:
+  - type: table
+    name: "Leaderboard Progression (Chronological)"
+    order:
+      - sub_id
+      - codabench_id
+      - timestamp
+      - phase
+      - formula.score_tier
+      - formula.accuracy_pct
+      - errors
+      - architecture
+      - status
+    groupBy:
+      property: phase
+      direction: ASC
+    summaries:
+      score: Max
+      errors: Min
+
+  - type: table
+    name: "Top Performing Models (Ranked by Score)"
+    filters:
+      and:
+        - 'score >= 0.94'
+    order:
+      - formula.accuracy_pct
+      - sub_id
+      - codabench_id
+      - timestamp
+      - errors
+      - architecture
+      - phase
+      - status
+    groupBy:
+      property: formula.score_tier
+      direction: ASC
+    summaries:
+      score: Max
+      errors: Min
+
+  - type: cards
+    name: "Milestone Gallery"
+    filters:
+      or:
+        - 'sub_id == 1'
+        - 'sub_id == 3'
+        - 'sub_id == 8'
+        - 'sub_id == 11'
+        - 'sub_id == 20'
+        - 'sub_id == 26'
+        - 'sub_id == 30'
+        - 'sub_id == 32'
+        - 'sub_id == 101'
+    order:
+      - file.name
+      - codabench_id
+      - timestamp
+      - formula.score_tier
+      - formula.accuracy_pct
+      - architecture
+      - status

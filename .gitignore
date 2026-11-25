@@ -17,53 +17,39 @@ htmlcov/
 .ipynb_checkpoints/
 *-checkpoint.ipynb
 
-# Machine Learning Large Weights (Trained models are hosted on Kaggle Cloud)
+# Large ML Weights, Probabilities & Archives (hosted on Kaggle Cloud)
 *.pt
 *.pth
 *.weights.h5
 *.ckpt
 *.bin
-
-# Raw image datasets & archives (fetch via Kaggle CLI / raw archives)
-data/train/
-data/train_synthetic/
-data/train_synthetic_calligraphy/
-data/fonts/
-data/validasi/
-data/test/
-data/vanilla/
-data/archives/
-train/
-train_synthetic/
-data_validasi/
-data_test/
-data_vanilla/
+*.npy
+*.npz
 *.zip
 *.tar.gz
-*.tfrecords
+*.tar
+*.log
 
-# Explicitly track metadata CSV files
+# Large Working Experiments & Raw Image Datasets
+experiments/
+models/
+submissions/
+kaggle_pulled/
+kaggle_pulled*/
+kaggle_dataset/
+kaggle_calligraphy_dataset/
+
+data/*
+!data/metadata/
 !data/metadata/*.csv
 
-# Submissions output
-submissions/
-predictions.csv
-predictions.zip
-predictions_*.zip
-
-# Model checkpoints & local outputs
-models/kaggle_outputs_hccr_senet/
-kaggle_pulled/
-
-# Keep outputs plots & metrics
-!outputs/*.png
-!outputs/*.json
+# Large / Transient Outputs (keep key plots, JSON metrics, scoring results & final deck)
+outputs/kaggle_*/
 outputs/matched_kaggle/
-outputs/scoring_results/
-# HTML renders & assets
+outputs/font_test_grid/
+outputs/FP_Analisis_Data_Multivariat_Tim_Arete_5025241135.pdf
+outputs/FP_Analisis_Data_Multivariat_Tim_Arete_5025241135.pptx
+
+# Transient HTML renders (keep Obsidian docs, markdown, base, canvas)
 *.html
 *_files/
-dokumentasi/
-*.md
-!README.md
-

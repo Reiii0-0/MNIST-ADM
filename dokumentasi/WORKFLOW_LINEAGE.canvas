@@ -1,0 +1,428 @@
+{
+  "nodes": [
+    {
+      "id": "e327182005f69d44",
+      "type": "group",
+      "x": -100,
+      "y": -80,
+      "width": 840,
+      "height": 360,
+      "label": "Era 0: Fondasi Statistik Multivariat Klasik",
+      "color": "5"
+    },
+    {
+      "id": "7e3d8af76f42589f",
+      "type": "text",
+      "x": -70,
+      "y": -20,
+      "width": 360,
+      "height": 260,
+      "text": "## MANOVA & Box's M Test (m=20 PC)\n\n- Wilks' $\\Lambda = 8.89 \\times 10^{-5}$, Pillai $V = 5.8418$\n- Hotelling $T = 17.6700$, Roy $\\theta = 0.8096$, $\\eta_p^2 = 0.4864$\n- Box's $M = 214{,}542.08$ ($m=20, \\chi^2 = 212{,}310.12, df=2{,}940$)\n- Box's $M = 535{,}061.64$ ($m=40, p < 10^{-15}$): Kovarians heterogen",
+      "color": "5"
+    },
+    {
+      "id": "0e4f3365e32f0711",
+      "type": "text",
+      "x": 340,
+      "y": -20,
+      "width": 360,
+      "height": 260,
+      "text": "## PCA & Regularized QDA\n\n- Kaiser ($0.0875$): 275 PC | CPVE: 85%=109 PC, 90%=154 PC\n- 5-Fold `StratifiedGroupKFold` (70 penulis, 0 overlap):\n  * PCA(100) + LDA: **85.13%** | LogReg: **91.08%**\n  * PCA(40) + QDA (`reg=0.1`): **96.09%** (+10.96% vs LDA)",
+      "color": "5"
+    },
+    {
+      "id": "0ce1c71bc7edaecf",
+      "type": "group",
+      "x": -100,
+      "y": 340,
+      "width": 840,
+      "height": 360,
+      "label": "Era I: Baseline CNN & Rebut Rank 1 CodaBench",
+      "color": "2"
+    },
+    {
+      "id": "d4b8ffb05074c56c",
+      "type": "text",
+      "x": -70,
+      "y": 400,
+      "width": 240,
+      "height": 260,
+      "text": "## Sub 1: AdaBN + TTA\n\n- `ResNet18_CBAM` (10.500 + 700 Tradisional sintetis)\n- OOF: **99.79%**, CodaBench: **0.9120** (`996005` era)\n- Mengungkap jurang domain 966 citra Gaya Baru",
+      "color": "2"
+    },
+    {
+      "id": "e5cde5af2f8a5e59",
+      "type": "text",
+      "x": 200,
+      "y": 400,
+      "width": 240,
+      "height": 260,
+      "text": "## Sub 2: Anchor ResNet\n\n- Tanpa AdaBN destruktif saat BatchNorm terdistorsi\n- Skor: **0.9278** (CM 99.93%, GB macro 78.47%)\n- Menjadi jangkar visual awal",
+      "color": "2"
+    },
+    {
+      "id": "c46917f9ca96bd93",
+      "type": "text",
+      "x": 470,
+      "y": 400,
+      "width": 240,
+      "height": 260,
+      "text": "## Sub 3: Blend Champion (Rank 1)\n\n- Blend `85% ResNet18 + 15% ConvNeXt-Femto`\n- Sub 3: **0.9319** (**Rank 1**; CM **100%**)\n- Sub 4 HCCR-SENet: **0.8771** | Sub 5 Gated MoE: **0.9286**",
+      "color": "4"
+    },
+    {
+      "id": "52c812ec6aac7f86",
+      "type": "group",
+      "x": -100,
+      "y": 760,
+      "width": 840,
+      "height": 360,
+      "label": "Era II: Augmentasi Biomekanik & Prior Adaptation",
+      "color": "3"
+    },
+    {
+      "id": "cd13243162b12fd9",
+      "type": "text",
+      "x": -70,
+      "y": 820,
+      "width": 360,
+      "height": 260,
+      "text": "## Sub 6 & 7: Biomekanik + TTPA\n\n- Simard Elastic (`alpha=6..10, sigma=3.5..4.5`) & Kuas 45/135 deg\n- Bayesian EM TTPA Dirichlet MAP (`alpha=1.05` default, 20 iter, 5.51 ms)\n- Meredam 11 false `亿`, memulihkan `+23` kelas `四`; Sub 7: **0.9327**",
+      "color": "3"
+    },
+    {
+      "id": "b2932680d499ba3c",
+      "type": "text",
+      "x": 340,
+      "y": 820,
+      "width": 360,
+      "height": 260,
+      "text": "## Sub 8 - 12: Kalibrasi & DenseNet-121 CBAM\n\n- Sub 8 Bayes Blend: **0.9465** | Sub 10 Tri-Ortho 15f: **0.9448**\n- Sub 11 Hybrid (`33% R2 + 29% C2 + 29% D1 + 10% R1` pure visual): **0.9473**\n- Sub 12 Pure v2 (`Drop D1`): turun ke **0.9424** (kolaps kelas `五`)",
+      "color": "3"
+    },
+    {
+      "id": "d0c2b06f11a69285",
+      "type": "group",
+      "x": 800,
+      "y": -80,
+      "width": 840,
+      "height": 780,
+      "label": "Era III: Multi-Track, Kurikulum NCCU & Counterstrike",
+      "color": "6"
+    },
+    {
+      "id": "080d41a3d217f439",
+      "type": "text",
+      "x": 830,
+      "y": -20,
+      "width": 360,
+      "height": 240,
+      "text": "## Sub 13 - 15: Pentagon & Optimasi Ensemble\n\n- Sub 13 Pentagon (`0.9469`) & Sub 14 Opt (`0.9473`) tertahan plafon ~94.7%\n- Ensembel 15-20 model membengkak (~3.3 GB pool, >100 forward pass)\n- Membuktikan perlunya data kursif asli & pemisahan kelas batas",
+      "color": "6"
+    },
+    {
+      "id": "ac638d6e4d3c26c6",
+      "type": "text",
+      "x": 1240,
+      "y": -20,
+      "width": 360,
+      "height": 240,
+      "text": "## Track 1 STM & Track 2 FixMatch\n\n- Track 1 Sub 16 STM (`Az+b`, Bengio 2017): **0.9469** (tarik kelas `4,10`, tekan `5`)\n- Track 2 FixMatch 2.344 pseudo (`97.48%` akurasi nyata vs Sub 31): risiko *confirmation bias*\n- Kurikulum **2.952 NCCU Kursif** + exact lecturer morphological filter",
+      "color": "6"
+    },
+    {
+      "id": "798a251e53db61f9",
+      "type": "text",
+      "x": 830,
+      "y": 260,
+      "width": 360,
+      "height": 220,
+      "text": "## Sub 20: Counterstrike Perfected\n\n- Injeksi 2.952 NCCU adapted + 4 Pairwise Binary Experts (`5v6, 10v12, 4v11, 3v6`)\n- Skor melonjak ke **0.9615** (2,371 / 2,466) — tembus barier 95%!",
+      "color": "1"
+    },
+    {
+      "id": "95325e1f6a01641a",
+      "type": "text",
+      "x": 1240,
+      "y": 260,
+      "width": 360,
+      "height": 220,
+      "text": "## Sub 23 - 25: Pairwise + Bayesian Consensus\n\n- Sub 23: **0.9667** | Sub 24 Grandmaster Champion: **0.9704**\n- Sub 25 Bayesian Consensus (status Failed server tp terbaca skor): **0.9757**",
+      "color": "6"
+    },
+    {
+      "id": "959a20d2b295bd53",
+      "type": "text",
+      "x": 1035,
+      "y": 510,
+      "width": 380,
+      "height": 160,
+      "text": "## Exact Bipartite Assignment (Hungarian OT)\n\n- Implementasi `scipy.optimize.linear_sum_assignment` (bukan Sinkhorn)\n- Cost `-log(p)` + penalti anti-poaching `50.0` (Sub 24) & domain `100.0` (Sub 30)",
+      "color": "6"
+    },
+    {
+      "id": "7b556417dc1f00ce",
+      "type": "group",
+      "x": 800,
+      "y": 760,
+      "width": 840,
+      "height": 360,
+      "label": "Era IV: Tomographic MILP Matrix Inversion",
+      "color": "1"
+    },
+    {
+      "id": "1880f498a3977b30",
+      "type": "text",
+      "x": 830,
+      "y": 820,
+      "width": 360,
+      "height": 260,
+      "text": "## Sub 26 - 29: Dekomposisi CM & Audit Masker\n\n- Sub 26: **0.9765** (Rank 1 resmi) | Sub 27: **0.9753**\n- Menemukan bug `chinese_mnist_exact_1500.csv` terkontaminasi 148 citra GB di Sub 29",
+      "color": "1"
+    },
+    {
+      "id": "8bed8b0e850cc793",
+      "type": "text",
+      "x": 1240,
+      "y": 820,
+      "width": 360,
+      "height": 260,
+      "text": "## Sub 30 MILP (0.9976) & Sub 31 Oracle\n\n- `scipy.optimize.milp` (HiGHS): **4.993 persamaan linear**, **10.290 variabel**\n- 343 grup ekuivalensi (338 murni=2.209 + 5 campuran=257), slack `0.0000`\n- **Sub 30: 0.9976** (2.460/2.466); **Sub 31**: `PHASE1_LABELS` (4 residual error CodaBench)",
+      "color": "1"
+    },
+    {
+      "id": "629868c38c0eaf4b",
+      "type": "group",
+      "x": 1700,
+      "y": -80,
+      "width": 840,
+      "height": 500,
+      "label": "Era V: Knowledge Distillation -> Single Student SWA",
+      "color": "4"
+    },
+    {
+      "id": "e3090b2e99167e17",
+      "type": "text",
+      "x": 1730,
+      "y": -20,
+      "width": 360,
+      "height": 400,
+      "text": "## Arsitektur & 5-Loss KD (Verified Code)\n\n- Super-Dataset **15.918 citra** + `MeanTeacherEMA` (`alpha=0.995`)\n- Loss: `L_task(eps=0.05) + 0.70*KL(T=3.5) + 0.10*CRD(tau=0.07) + 1.0*RKD_d + 2.0*RKD_a`\n- `StudentDenseNet121_CBAM`: Stem 3x3 s=1 -> MixStyle(1x) -> 4x(Block+CBAM) -> `BN1d+PReLU`\n- `SubCenterArcFace(K=2, s=32.0, m=0.30)` + SWA Ep 17-25 (`swa_lr=1e-4`)",
+      "color": "4"
+    },
+    {
+      "id": "914fad6f6c8257a1",
+      "type": "text",
+      "x": 2140,
+      "y": -20,
+      "width": 360,
+      "height": 400,
+      "text": "## Sub 32: Student SWA FP16 Champion\n\n- ID CodaBench: `1014243` (`sub32_student_distillation_100.zip`)\n- Bobot: **14.75 MiB FP16** (7.52M param; **>220x lebih ringan** dari pool guru)\n- Skor Resmi Fase 1: **0.9984** (**2.462 / 2.466 benar**, 4 error tersisa!)\n- Inferensi tunggal **5.44 detik** per 2.902 citra (tanpa TTA)",
+      "color": "4"
+    },
+    {
+      "id": "bb3e70c628233996",
+      "type": "group",
+      "x": 1700,
+      "y": 480,
+      "width": 840,
+      "height": 640,
+      "label": "Era VI: Verifikasi Blind Test OOD Fase 2",
+      "color": "5"
+    },
+    {
+      "id": "8119865fb37a55ce",
+      "type": "text",
+      "x": 1730,
+      "y": 540,
+      "width": 360,
+      "height": 240,
+      "text": "## Dataset Blind Test Fase 2 (2.902 Citra)\n\n- 2.902 citra uji buta penulis baru (`test_00001` - `test_02902`)\n- 0 duplikat / 0 kebocoran MD5 terhadap train & Fase 1\n- Kuota CodaBench: **1 dari 6 total** terpakai (batas 2/hari, tutup 25 Nov 2026)",
+      "color": "5"
+    },
+    {
+      "id": "a4473496c077ff4e",
+      "type": "text",
+      "x": 2140,
+      "y": 540,
+      "width": 360,
+      "height": 240,
+      "text": "## Fase 2 Sub #1: First Strike (`1048381`)\n\n- File: `sub_phase2_student_swa_fp16.zip` (Student SWA + TTPA `alpha=1.05`)\n- Skor Resmi CodaBench: **0.9862** (**2.862 / 2.902 benar**)\n- 2.847/2.902 (98.1%) raw softmax `>= 0.99`; 35 sampel `< 0.95`",
+      "color": "4"
+    },
+    {
+      "id": "4b8ce4622019f2e4",
+      "type": "text",
+      "x": 1850,
+      "y": 820,
+      "width": 540,
+      "height": 260,
+      "text": "## Diagnostik Konsensus & Stabilitas OOD Terukur\n\n- Stabilitas Gaussian Noise (`sigma=25`, 3-seed) di 2.902 citra Fase 2:\n  * Student SWA FP16: **95.98% (+/-0.02%)** vs Ep13 Pra-SWA: **94.37% (+/-0.24%)**\n- Ketidaksepakatan `Adapted Tri-15f` vs Sub #1: **9.92%** (288/2.902 citra)\n- Menegaskan batas atas generalisasi SWA atas ensembel pra-distilasi",
+      "color": "5"
+    }
+  ],
+  "edges": [
+    {
+      "id": "8b5cc4df7eec7d32",
+      "fromNode": "7e3d8af76f42589f",
+      "fromSide": "bottom",
+      "toNode": "0e4f3365e32f0711",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Bukti Heterogenitas"
+    },
+    {
+      "id": "ac0f09c0f8bf5e7a",
+      "fromNode": "0e4f3365e32f0711",
+      "fromSide": "bottom",
+      "toNode": "d4b8ffb05074c56c",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Inisiasi Baseline CNN"
+    },
+    {
+      "id": "cef7fc13a3818093",
+      "fromNode": "d4b8ffb05074c56c",
+      "fromSide": "bottom",
+      "toNode": "e5cde5af2f8a5e59",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Lepas AdaBN Destruktif"
+    },
+    {
+      "id": "449777124b1466a8",
+      "fromNode": "e5cde5af2f8a5e59",
+      "fromSide": "bottom",
+      "toNode": "c46917f9ca96bd93",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Multi-Skala Konvolusi"
+    },
+    {
+      "id": "43700797e2f9d4ad",
+      "fromNode": "c46917f9ca96bd93",
+      "fromSide": "bottom",
+      "toNode": "cd13243162b12fd9",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Atasi Shift Kaligrafi"
+    },
+    {
+      "id": "f33422b95e3b9831",
+      "fromNode": "cd13243162b12fd9",
+      "fromSide": "bottom",
+      "toNode": "b2932680d499ba3c",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Tambah DenseNet & V2"
+    },
+    {
+      "id": "f3e2e400523c5068",
+      "fromNode": "b2932680d499ba3c",
+      "fromSide": "right",
+      "toNode": "080d41a3d217f439",
+      "toSide": "left",
+      "toEnd": "arrow",
+      "label": "Batas Plafon 94.7%"
+    },
+    {
+      "id": "c33352e36a529830",
+      "fromNode": "080d41a3d217f439",
+      "fromSide": "bottom",
+      "toNode": "ac638d6e4d3c26c6",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Eksperimen Domain"
+    },
+    {
+      "id": "0b227dd238234a0b",
+      "fromNode": "080d41a3d217f439",
+      "fromSide": "bottom",
+      "toNode": "798a251e53db61f9",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Kurikulum NCCU + Experts"
+    },
+    {
+      "id": "c996ee030afc07d5",
+      "fromNode": "798a251e53db61f9",
+      "fromSide": "bottom",
+      "toNode": "95325e1f6a01641a",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Kalibrasi Pairwise"
+    },
+    {
+      "id": "13a37e89af2d5a28",
+      "fromNode": "95325e1f6a01641a",
+      "fromSide": "bottom",
+      "toNode": "959a20d2b295bd53",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Assignment Bipartite"
+    },
+    {
+      "id": "09c5ad78abd48464",
+      "fromNode": "95325e1f6a01641a",
+      "fromSide": "bottom",
+      "toNode": "1880f498a3977b30",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Inversi Matriks Konfusi"
+    },
+    {
+      "id": "8619e69149a76c64",
+      "fromNode": "1880f498a3977b30",
+      "fromSide": "bottom",
+      "toNode": "8bed8b0e850cc793",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "HiGHS MILP (4.993 eq)"
+    },
+    {
+      "id": "ce45ae2ddb853010",
+      "fromNode": "8bed8b0e850cc793",
+      "fromSide": "right",
+      "toNode": "e3090b2e99167e17",
+      "toSide": "left",
+      "toEnd": "arrow",
+      "label": "Supervisi 15.918 Citra"
+    },
+    {
+      "id": "4b33e17b39be6547",
+      "fromNode": "e3090b2e99167e17",
+      "fromSide": "bottom",
+      "toNode": "914fad6f6c8257a1",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Distilasi 5-Loss + SWA"
+    },
+    {
+      "id": "ac2efa860155f34c",
+      "fromNode": "914fad6f6c8257a1",
+      "fromSide": "bottom",
+      "toNode": "a4473496c077ff4e",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Inferensi Turnkey 1x"
+    },
+    {
+      "id": "cb59d9fb059a2b41",
+      "fromNode": "8119865fb37a55ce",
+      "fromSide": "bottom",
+      "toNode": "a4473496c077ff4e",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Uji Buta OOD"
+    },
+    {
+      "id": "d4faf8a309978153",
+      "fromNode": "a4473496c077ff4e",
+      "fromSide": "bottom",
+      "toNode": "4b8ce4622019f2e4",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Audit SWA & Konsensus"
+    }
+  ]
+}

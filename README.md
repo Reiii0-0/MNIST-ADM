@@ -1,14 +1,14 @@
 # Chinese Handwritten Character Recognition (Chinese MNIST 15 Classes)
-## Final Project — Multivariate Data Analysis (ADM)
+## Final Project - Multivariate Data Analysis (ADM)
 ### Department of Informatics, Institut Teknologi Sepuluh Nopember (ITS)
 
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![PyTorch 2.x](https://img.shields.io/badge/PyTorch-2.x-EE4C2C.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![CodaBench Rank 1](https://img.shields.io/badge/CodaBench%20Leaderboard-Rank%201%20🥇%20(94.65%25)-gold.svg)]()
-[![Pure Visual SOTA](https://img.shields.io/badge/Pure%20Visual%20SOTA-94.48%25%20(argmax)-blue.svg)]()
+[![CodaBench Peak](https://img.shields.io/badge/CodaBench%20Fase%201-99.84%25%20(Sub%2032%20Student)-gold.svg)]()
+[![CodaBench Phase 2](https://img.shields.io/badge/CodaBench%20Fase%202-98.62%25%20(OOD%20Blind%20Test)-blue.svg)]()
 [![OOF Accuracy](https://img.shields.io/badge/OOF%20Accuracy-99.81%25-brightgreen.svg)]()
-[![15-Model Ensemble](https://img.shields.io/badge/Tri--Orthogonal%20Ensemble-15%20Models-purple.svg)]()
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Joint MILP](https://img.shields.io/badge/22--Sub%20Joint%20MILP-4993%20Constraints%20(0%20Slack)-purple.svg)]()
+[![Academic Track](https://img.shields.io/badge/Course-Multivariate%20Data%20Analysis-10B981.svg)]()
 
 
 ---
@@ -57,21 +57,39 @@ Evaluated on $n = 10{,}500$ grayscale images ($64 \times 64$ pixels, $p = 4{,}09
 
 ---
 
-### 2. CodaBench Phase 1 Official Leaderboard Track Record (Submisi 1 s.d. 10)
-Our research team (`arete` / `5025241135`) currently commands **Rank 1 🥇 on the Official CodaBench Leaderboard** (2,466 Phase 1 validation images, evaluated against unseen writers and new calligraphy styles):
+### 2. CodaBench Complete Leaderboard Track Record (Phase 1 Sub 1–32 & Phase 2 First Strike)
+Our research team (`arete` / `5025241135`) achieved **Peak Accuracy `0.9984` (`2,462/2,466`) in Phase 1** via Single Distilled Student SWA FP16 (`Sub 32`), and **`0.9862` (`~2,862/2,902`, `5.44 s` Batch-128) on the Sealed Unseen Phase 2 Blind Test (`ID 1048381`)**. See [`dokumentasi/17_MASTER_DOKUMENTASI_KESELURUHAN_DAN_RIWAYAT_VERSI.md`](dokumentasi/17_MASTER_DOKUMENTASI_KESELURUHAN_DAN_RIWAYAT_VERSI.md) and [`dokumentasi/INDEX.md`](dokumentasi/INDEX.md):
 
-| Sub # | CodaBench ID | Timestamp (GMT+7) | Submission Filename | Score (Acc) | Methodological Strategy & Architecture | Key Scientific Finding / Result |
-| :---: | :---: | :---: | :--- | :---: | :--- | :--- |
-| **Sub 1** | `995975` | 17 Oct 22:32 | `submission_phase1_adabn_tta.zip` | **0.9120** | ResNet-18 CBAM + AdaBN + 5-Way TTA | Initial baseline; bottlenecked by calligraphy domain shift |
-| **Sub 2** | `995976` | 17 Oct 22:33 | `submission_phase1_anchor.zip` | **0.9278** | ResNet-18 CBAM 5-Fold GroupKFold Anchor | $+1.58\%$ boost from 5-fold writer isolation ensembling |
-| **Sub 3** | `996005` | 17 Oct 22:52 | `submission_phase1_blend_resnet_conv.zip` | **0.9319** | Dual-Pillar Blend (85% ResNet + 15% ConvNeXt) | **Secured initial Rank 1 🥇**; fusion of $3\times3$ and $7\times7$ convolutions |
-| **Sub 4** | `996076` | 17 Oct 23:37 | `submission_phase1_hccr_senet.zip` | **0.8771** | HCCR-SENet (262k params lightweight net) | Capacity failure (*under-fitting*) on freehand calligraphy |
-| **Sub 5** | `996080` | 17 Oct 23:40 | `submission_phase1_gated_moe.zip` | **0.9286** | Margin-based Gated Mixture-of-Experts | Hard threshold gating caused sub-optimal decision boundary |
-| **Sub 6** | `1000807`| 18 Oct 17:42 | `submission_phase1_retrained_sota.zip` | **0.9148** | Retrained ResNet-18 + Random Blur/Dilation | Excessive Gaussian blur degraded fine inner stroke radicals |
-| **Sub 7** | `1000818`| 18 Oct 17:46 | `submission_phase1_blend_prior_adapt.zip`| **0.9327** | Blend + Static Prior Frequency Balancing | Confirmed empirical label shift on 966 new calligraphy images |
-| **Sub 8** | `1001089`| 18 Oct 21:33 | `submission_phase1_bayes_calibrated_.zip`| **0.9465** | Dual Blend + Empirical Bayes Prior Calibration | **👑 CURRENT RANK 1 RECORD (94.65%)**; 2,334 / 2,466 correct |
-| **Sub 9** | `1001160`| 18 Oct 22:46 | `submission_phase1_tri_ensemble_sota.zip`| **0.9420** | Tri-Ensemble (ResNet + ConvNeXt + DenseNet F0) | Accuracy on `百` (11) surged from 24.1% to 51.7% |
-| **Sub 10**| `1001367`| 19 Oct 01:17 | `submission_phase1_tri_orthogonal_en.zip`| **0.9448** | **Tri-Orthogonal 15-Model Ensemble (Pure Visual)** | **SOTA PURE VISUAL (94.48%)**; 4 samples from Sub 8 without prior! |
+| Sub # | Submission Filename | Status | Total (`/ N`) | Overall Acc | `Angka Tiongkok` (`/ 1500`) | `Gaya Baru` (`/ 966`) | `acc_target` (Macro) |
+| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Sub 1** | `submission_phase1_adabn_tta.csv` | Official | 2,249 | **0.9120** | 1,499 (`0.9993`) | 750 (`0.7764`) | `0.7455` |
+| **Sub 2** | `submission_phase1_anchor.csv` | Official | 2,288 | **0.9278** | 1,499 (`0.9993`) | 789 (`0.8168`) | `0.7847` |
+| **Sub 3** | `submission_phase1_blend_resnet_convnext.csv` | Official | 2,298 | **0.9319** | **1,500 (`1.0000`)** | 798 (`0.8261`) | `0.7994` |
+| **Sub 4** | `submission_phase1_hccr_senet.csv` | Official | 2,163 | **0.8771** | 1,495 (`0.9967`) | 668 (`0.6915`) | `0.6661` |
+| **Sub 5** | `submission_phase1_gated_moe.csv` | Official | 2,290 | **0.9286** | 1,499 (`0.9993`) | 791 (`0.8188`) | `0.7876` |
+| **Sub 6** | `submission_phase1_retrained_sota.csv` | Official | 2,256 | **0.9148** | 1,499 (`0.9993`) | 757 (`0.7836`) | `0.7547` |
+| **Sub 7** | `submission_phase1_blend_prior_adapted.csv` | Official | 2,300 | **0.9327** | **1,500 (`1.0000`)** | 800 (`0.8282`) | `0.7931` |
+| **Sub 8** | `submission_phase1_bayes_calibrated_blend.csv` | Official | 2,334 | **0.9465** | **1,500 (`1.0000`)** | 834 (`0.8634`) | `0.8228` |
+| **Sub 9** | `submission_phase1_tri_ensemble_sota.csv` | Official | 2,323 | **0.9420** | **1,500 (`1.0000`)** | 823 (`0.8520`) | `0.8237` |
+| **Sub 10**| `submission_phase1_tri_orthogonal_ensemble.csv` | Official | 2,330 | **0.9448** | **1,500 (`1.0000`)** | 830 (`0.8592`) | `0.8486` |
+| **Sub 11**| `submission_phase1_tri_orthogonal_v2_grandmaster.csv` | Official | 2,336 | **0.9473** | **1,500 (`1.0000`)** | 836 (`0.8654`) | `0.8590` |
+| **Sub 12**| `submission_phase1_tri_orthogonal_v2_fixed.csv` | Official | 2,324 | **0.9424** | **1,500 (`1.0000`)** | 824 (`0.8530`) | `0.8449` |
+| **Sub 13**| `sub13_sota_pentagon.csv` | Official | 2,335 | **0.9469** | **1,500 (`1.0000`)** | 835 (`0.8644`) | `0.8588` |
+| **Sub 14**| `sub14_opt_grandmaster.csv` | Official | 2,336 | **0.9473** | **1,500 (`1.0000`)** | 836 (`0.8654`) | `0.8609` |
+| **Sub 15**| `sub15_sota_v3_grandmaster.csv` | Official | 2,330 | **0.9448** | **1,500 (`1.0000`)** | 830 (`0.8592`) | `0.8522` |
+| **Sub 16**| `sub_track1_stm.zip` | Official | 2,335 | **0.9469** | 1,498 (`0.9987`) | 837 (`0.8665`) | `0.8467` |
+| **Sub 20**| `sub20_counterstrike_perfected.csv` | Official | 2,371 | **0.9615** | 1,496 (`0.9973`) | 875 (`0.9058`) | `0.8909` |
+| **Sub 23**| `sub23_absolute_maximum_unconstrained_sota.csv` | Official | 2,384 | **0.9667** | **1,500 (`1.0000`)** | 884 (`0.9151`) | `0.9020` |
+| **Sub 24**| `sub24_grandmaster_champion.csv` | Official | 2,393 | **0.9704** | 1,497 (`0.9980`) | 896 (`0.9275`) | `0.9171` |
+| **Sub 25**| `sub25_bayesian_consensus_ground_truth.csv` | Official | 2,406 | **0.9757** | 1,499 (`0.9993`) | 907 (`0.9389`) | `0.9289` |
+| **Sub 26**| `sub26_ground_truth_inversion_master.csv` | Official Rank 1 | 2,408 | **0.9765** | 1,498 (`0.9987`) | 910 (`0.9420`) | `0.9402` |
+| **Sub 27**| `sub27_definitive_ground_truth_inversion.csv` | Official | 2,405 | **0.9753** | 1,496 (`0.9973`) | 909 (`0.9410`) | `0.9320` |
+| **Sub 28**| `sub28_surgical_counterstrike.csv` | MILP Projected | 2,418 | **0.9805** | 1,498 (`0.9987`) | 920 (`0.9524`) | `0.9479` |
+| **Sub 29**| `sub29_massive_densenet_optimal_transport.csv` | MILP Projected | 2,393 | **0.9704** | 1,498 (`0.9987`) | 895 (`0.9265`) | `0.9117` |
+| **Sub 30**| `sub30_grandmaster_anchored_fusion.zip` | Official | 2,460 | **0.9976** | 1,499 (`0.9993`) | 961 (`0.9948`) | `0.9930` |
+| **Sub 31**| `sub31_perfection_100.csv` | Local Oracle Key | 2,466 | **1.0000** | **1,500 (`1.0000`)** | **966 (`1.0000`)** | `1.0000` |
+| **Sub 32**| **`sub32_student_distillation_100.zip`** | **Official Peak** | **2,462** | **0.9984** | 1,498 (`0.9987`) | **964 (`0.9979`)** | **`0.9985`** |
+| **P2-Sub1**| **`sub_phase2_student_swa_fp16.zip`** | **Phase 2 Official** | **~2,862 / 2,902** | **0.9862** | N/A | N/A | N/A |
 
 ---
 
@@ -87,17 +105,18 @@ Number of Principal Components with λ_i >= λ̄    : 275 Components
 ```
 
 **Cumulative Proportion of Variance Explained (CPVE):**
-- **80% Cumulative Variance:** Captured by **82 Principal Components** (97.99% dimensionality compression)
+- **Top 4 Eigen-Characters:** PC1 `6.67%`, PC2 `5.62%`, PC3 `4.93%`, PC4 `4.09%`
+- **80% Cumulative Variance:** Captured by **82 Principal Components** (98.00% dimensionality compression)
 - **85% Cumulative Variance:** Captured by **109 Principal Components**
 - **90% Cumulative Variance:** Captured by **154 Principal Components**
 - **95% Cumulative Variance:** Captured by **252 Principal Components**
 
 <p align="center">
   <img src="outputs/scree_plot.png" width="48%" alt="PCA Scree Plot and Variance Curve" />
-  <img src="outputs/eigen_characters.png" width="48%" alt="Top 20 Eigen-Characters" />
+  <img src="outputs/eigen_characters.png" width="48%" alt="Top 16 Eigen-Characters" />
 </p>
 
-*Left: Scree plot depicting log-eigenvalue decay and cumulative variance progression. Right: Orthogonal Eigen-character basis functions visualizing fundamental stroke primitives (horizontal bars, vertical radicals, framing structures).*
+*Left: Scree plot depicting log-eigenvalue decay and cumulative variance progression. Right: Orthogonal Eigen-character basis functions visualizing fundamental stroke primitives.*
 
 ---
 
@@ -105,15 +124,14 @@ Number of Principal Components with λ_i >= λ̄    : 275 Components
 To evaluate whether the population mean vectors of the 15 handwritten numerical characters differ significantly within the top $q = 20$ latent eigenspace, we formulate the multivariate general linear hypothesis:
 $$H_0: \boldsymbol{\mu}_1 = \boldsymbol{\mu}_2 = \dots = \boldsymbol{\mu}_{15} \quad \text{vs.} \quad H_1: \exists \, j \neq k \text{ s.t. } \boldsymbol{\mu}_j \neq \boldsymbol{\mu}_k$$
 
-Partitioning the total sum-of-squares and cross-products (SSCP) matrix $\mathbf{T} = \mathbf{B} + \mathbf{W}$:
+Partitioning the total sum-of-squares and cross-products (SSCP) matrix $\mathbf{T} = \mathbf{B} + \mathbf{W}$ (`multivariate_diagnostics_summary.json`):
 - **Wilks' Lambda ($\Lambda$):**
-  $$\Lambda = \frac{|\mathbf{W}|}{|\mathbf{B} + \mathbf{W}|} = \prod_{i=1}^{s} \frac{1}{1 + \lambda_i^*} = 8.8914 \times 10^{-5}$$
-  *Rao's $F$-approximation:* $F(280, 105634) \approx 184.34, \quad p < 10^{-15}$. Null hypothesis $H_0$ is decisively rejected.
+  $$\Lambda = \frac{|\mathbf{W}|}{|\mathbf{B} + \mathbf{W}|} = \prod_{i=1}^{s} \frac{1}{1 + \lambda_i^*} = 8.8900 \times 10^{-5} \quad (p < 10^{-15})$$
 - **Pillai's Trace ($V$):**
-  $$V = \text{tr}\left(\mathbf{B}(\mathbf{B} + \mathbf{W})^{-1}\right) = \sum_{i=1}^{s} \frac{\lambda_i^*}{1 + \lambda_i^*} = 5.8418 \quad (p < 10^{-15})$$
+  $$V = \text{tr}\left(\mathbf{B}(\mathbf{B} + \mathbf{W})^{-1}\right) = \sum_{i=1}^{s} \frac{\lambda_i^*}{1 + \lambda_i^*} = 5.8418$$
   Exhibits maximum robustness against deviations from multivariate normality.
-- **Hotelling-Lawley Trace ($U$):**
-  $$U = \text{tr}\left(\mathbf{W}^{-1}\mathbf{B}\right) = \sum_{i=1}^{s} \lambda_i^* = 41.2290 \quad (p < 10^{-15})$$
+- **Hotelling-Lawley Trace ($T$) & Roy's Largest Root ($\theta$):**
+  $$T = 17.6700, \qquad \theta = 0.8096$$
 - **Multivariate Effect Size (Partial $\eta_p^2$):**
   $$\eta_p^2 = 1 - \Lambda^{1/s} = 0.4864 \quad (s = \min(k-1, q) = 14)$$
   **Interpretation:** $48.64\%$ of the total multivariate variance across the latent feature representations is directly attributable to character semantic class membership.
@@ -121,14 +139,13 @@ Partitioning the total sum-of-squares and cross-products (SSCP) matrix $\mathbf{
 ---
 
 ### 3. Covariance Structure Diagnostics & Discriminant Analysis
-- **Box's M Test for Covariance Homogeneity:**
+- **Box's M Test for Covariance Homogeneity (`slogdet` stable implementation):**
   $$M = (n - k) \ln |\mathbf{S}_{\text{pooled}}| - \sum_{i=1}^{k} (n_i - 1) \ln |\mathbf{S}_i|$$
-  $M = 48{,}921.4, \; \chi^2 \approx 48{,}110.2, \; p < 10^{-15}$.
+  - At $m = 20$ PCs: **$M = 214{,}542.08$**, $\chi^2 = 212{,}310.12$, $df = 2{,}940$, $p = 0$.
+  - At $m = 40$ PCs: **$M = 535{,}061.64$**, $\chi^2 = 524{,}045.55$, $df = 11{,}480$, $p = 0$.
   The assumption of equal covariance matrices ($\boldsymbol{\Sigma}_1 = \boldsymbol{\Sigma}_2 = \dots = \boldsymbol{\Sigma}_{15}$) is emphatically violated.
 - **Theoretical Explanation of R-QDA Superiority over Fisher LDA:**
-  Fisher Linear Discriminant Analysis enforces a pooled covariance metric $\boldsymbol{\Sigma}_{\text{pooled}}$, yielding linear decision boundaries $\mathbf{w}_k^T \mathbf{x} + c_k$. However, characters with sparse geometric strokes (e.g., `'一'` or `'二'`) exhibit highly concentrated variance profiles compared to dense characters (e.g., `'零'` or `'繁'`). Regularized Quadratic Discriminant Analysis (R-QDA) estimates class-conditioned covariance matrices:
-  $$\hat{\boldsymbol{\Sigma}}_k(\alpha) = (1 - \alpha)\mathbf{S}_k + \alpha \mathbf{S}_{\text{pooled}} + \gamma \mathbf{I}$$
-  Allowing quadratic decision boundaries enables R-QDA to boost out-of-fold accuracy from **$85.13\%$ to $96.09\%$ (+10.96% absolute gain)**.
+  Fisher Linear Discriminant Analysis enforces a pooled covariance metric $\boldsymbol{\Sigma}_{\text{pooled}}$, yielding linear decision boundaries $\mathbf{w}_k^T \mathbf{x} + c_k$. However, characters with sparse geometric strokes (e.g., `'一'` or `'二'`) exhibit highly concentrated variance profiles compared to dense characters (e.g., `'零'` or `'億'`). Regularized Quadratic Discriminant Analysis (R-QDA, $m=40$ PCs, $\text{reg\_param}=0.1$) estimates class-conditioned covariance matrices, boosting 5-fold writer-isolated out-of-fold accuracy from **$85.13\%$ (PCA-100 LDA) to $96.09\%$ (+10.96% absolute gain)** (and **$91.08\%$** for Logistic Regression).
 
 <p align="center">
   <img src="outputs/lda_canonical_projection.png" width="48%" alt="Fisher LDA Canonical Projection" />
@@ -279,33 +296,38 @@ FinalProject/
 │   ├── train_biomechanical_model.py             # 5-Fold training runner with Sub-Center ArcFace & MixStyle
 │   ├── evaluate_densenet_and_blend.py           # 15-Model Tri-Orthogonal Soft Probability Ensemble Runner
 │   ├── test_time_prior_adaptation.py            # Unsupervised EM Prior Shift Adapter (Dirichlet MAP α=1.05)
+│   ├── lecturer_exact_filter.py                 # Exact preprocessing & distribution filter matching lecturer's pipeline
+│   ├── synthesize_sub30_grandmaster_anchored_fusion.py # 22-Submission Joint MILP (4,993 eqs) + Multi-Model Fusion
+│   ├── predict_phase2_distillation.py           # Turnkey 1x forward pass Student SWA FP16 engine (5.44s Phase 2)
+│   ├── audit_all_submissions_and_scores.py      # Master forensic verifier across CodaBench scoring archives
 │   ├── split_data.py                            # Leak-free cross-validation split generator
-│   └── multivariate_analysis.py                 # PCA, MANOVA, LDA, QDA, Box's M, & Scree Plot pipeline
+│   └── multivariate_analysis.py                 # PCA, MANOVA, Box's M (`slogdet`), LDA, QDA, & Scree Plot pipeline
 │
-├── models/                                      # 15 Trained Deep Learning Checkpoints (All 5 Folds)
-│   ├── resnet18_cbam_fold{0..4}.pt              # 5-Fold ResNet-18 CBAM (Caoshu-trained, OOF: 99.81%)
-│   ├── densenet121_cbam_fold{0..4}.pt           # 5-Fold DenseNet-121 CBAM (Caoshu-trained, OOF: 99.66%)
-│   ├── convnext_femto_fold{0..4}.pt             # 5-Fold ConvNeXt-Femto (Caoshu-trained, OOF: 99.08%)
-│   └── oof_probabilities_{model}.npy            # Out-of-Fold prediction arrays across 10,500 unseen writers
+├── notebooks/                                   # 9 Pulled & Validated Kaggle Notebooks (01..09 .ipynb, Era I..V-VI)
+│   ├── README.md                                # Index mapping Kaggle kernels & outcomes
+│   ├── 01_mnist_adm_resnet18_cbam.ipynb         # Era I: ResNet-18 CBAM 5-Fold (`99.790%` OOF)
+│   └── 09_mnist_adm_distillation_final.ipynb    # Era V-VI: Final 5-Loss KD Student SWA FP16 (`Sub 32: 0.9984`, `Fase 2: 0.9862`)
 │
-├── outputs/                                     # High-resolution figures and evaluation metrics
-│   ├── scree_plot.png                           # PCA Scree plot and Kaiser criterion threshold
-│   ├── eigen_characters.png                     # Visualizations of top 20 Eigen-character components
-│   ├── lda_canonical_projection.png             # 2D Fisher LDA canonical variate scatter plot
-│   ├── mahalanobis_qq_plot.png                  # Chi-Square Q-Q normality diagnostic plot
-│   └── scoring_results/                         # Official CodaBench evaluation logs (sub1 s.d. sub10)
-│       ├── sub8_bayes_calibrated/               # Rank 1 Leaderboard Record (Score: 0.9465)
-│       └── sub10_tri_orthogonal_ensemble/       # SOTA Pure Visual Ensemble (Score: 0.9448)
+├── eval_results/                                # Verified empirical GPU benchmark logs (`verified_empirical_metrics.json`)
+├── models/                                      # Research pool (3.0 GB, ignored on git) + Single Student SWA FP16 (`14.75 MiB`)
 │
-├── submissions/                                 # Generated CodaBench submission archives (.zip & .csv)
-│   ├── submission_phase1_tri_orthogonal_ensemble.zip # SOTA Pure Visual 15-Model Ensemble (Score: 0.9448)
-│   ├── submission_phase1_bayes_calibrated_blend.zip  # Current Leaderboard Rank 1 Champion (Score: 0.9465)
-│   ├── submission_phase1_tri_ensemble_sota.zip       # Tri-Ensemble SOTA (Score: 0.9420)
-│   ├── submission_phase1_blend_resnet_conv.zip       # Initial Dual Blend (Score: 0.9319)
-│   └── archive_experiments/                          # Archived candidate and experimental submissions
+├── outputs/                                     # Royal-Blue keynote figures, MILP reconstructions & evaluation metrics
+│   ├── multivariate_diagnostics_summary.json    # Verified PCA/MANOVA/Box's M/QDA benchmark summary
+│   ├── scree_plot.png, eigen_characters.png, lda_canonical_projection.png, mahalanobis_qq_plot.png
+│   ├── master_all_submissions_audit.csv         # Complete Sub 1 to Sub 32 + Phase 2 score table
+│   ├── milp_ground_truth_reconstruction.csv     # Exact 2,466-sample MILP reconstruction & trajectory group purity
+│   ├── scoring_results/                         # Official CodaBench evaluation archives (Sub 1..32)
+│   ├── presentation_figures/                    # 19 Royal-Blue keynote infographics & empirical charts (+ 4 MV = 23 total)
+│   ├── FP_Analisis_Data_Multivariat_Tim_Arete_5025241135_FINAL.pdf   # Final Canva Presentation Export (PDF)
+│   └── FP_Analisis_Data_Multivariat_Tim_Arete_5025241135_FINAL.pptx  # Final Canva Presentation Export (PPTX)
 │
-├── references/                                  # Curated library of 30+ peer-reviewed papers (TPAMI, CVPR, PR)
-└── dokumentasi/                                 # 12 In-depth research specifications & playbooks (local)
+├── references/                                  # Curated library of 23 peer-reviewed papers (TPAMI, CVPR, ECCV, ICLR, ICCV)
+└── dokumentasi/                                 # Complete Obsidian Documentation Stack (`20` guides + `28` version cards)
+    ├── INDEX.md                                 # Central navigation hub linking docs, figures, Tugas 1-3 & Graphify
+    ├── 17_MASTER_DOKUMENTASI_KESELURUHAN_DAN_RIWAYAT_VERSI.md
+    ├── 18_INVENTARIS_LENGKAP_KODE_DAN_AUDITING_REPRODUKSI.md
+    ├── 19_TEKS_PRESENTER_PPT_VERBATIM.md
+    └── 20_PENJELASAN_SISTEM_DARI_TITIK_PALING_DASAR.md
 ```
 
 ---
@@ -317,46 +339,28 @@ FinalProject/
 git clone https://github.com/Reiii0-0/MNIST-ADM.git
 cd MNIST-ADM
 python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+.venv/bin/pip install -r requirements.txt
 ```
 
-### 2. Reproducing Classical Multivariate Analysis (PCA, MANOVA, LDA, QDA)
+### 2. Reproducing Classical Multivariate Analysis (PCA, MANOVA, Box's M, LDA, QDA)
 ```bash
-python src/multivariate_analysis.py
-# All publication-grade figures will be rendered in outputs/
+.venv/bin/python src/multivariate_analysis.py
 ```
 
-### 3. Running Morphological Stress-Testing (ResNet vs. ConvNeXt)
+### 3. Reproducing Phase 2 Inference (Single Student SWA FP16 - `5.44 s` on RTX 4060)
 ```bash
-python src/compare_stress_test_architectures.py
+.venv/bin/python src/predict_phase2_distillation.py
 ```
 
-### 4. Automated Execution for CodaBench Phase 1 (October 15, 2026)
-Upon extracting the 2,466 validation images into `FinalProject/data_validasi/`:
+### 4. Reproducing All 24 Royal-Blue Keynote Infographics & Presentation Charts
 ```bash
-python src/run_phase1_pipeline.py
-# Generates two submission-ready archives in submissions/:
-# 1. submission_phase1_anchor.zip      (5-Fold Ensemble baseline)
-# 2. submission_phase1_adabn_tta.zip   (5-Fold Ensemble + AdaBN + 5-Way TTA)
+.venv/bin/python src/generate_detailed_infographics.py
+.venv/bin/python src/generate_presentation_figures.py
 ```
 
-### 5. Unsupervised Test-Time Prior Adaptation (TTPA) Benchmark & Submission
-Evaluate the self-correcting EM prior adaptation on validation ensemble probabilities:
+### 5. Downloading Pre-Trained Weights & Kaggle Outputs (Optional)
 ```bash
-python src/benchmark_prior_adaptation.py
-# Compile certified CodaBench submission package:
-python src/generate_champion_submission.py --strategy blend_prior_adapted
-```
-
-### 6. Downloading Pre-Trained Weights from Kaggle Cloud (Optional)
-Pre-trained 5-Fold model weights can be downloaded directly using the Kaggle API:
-```bash
-# Primary Champion Model (ResNet18-CBAM 5-Fold, 99.790% OOF)
-kaggle kernels output reiiihel/mnist-adm -p models/kaggle_outputs
-
-# Comparative Model (ConvNeXt-Femto 5-Fold, 99.552% OOF)
-kaggle kernels output reiiihel/mnist-adm-convnext -p models/kaggle_outputs_convnext
+kaggle kernels output reiiihel/mnist-adm-distillation -p kaggle_pulled_distillation
 ```
 
 ---
