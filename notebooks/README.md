@@ -1,8 +1,8 @@
-# Kaggle Notebooks & Cloud Training Pipeline (`reiiihel/mnist-adm*`)
+# Kaggle Notebooks & Visual Evaluation (`reiiihel/mnist-adm*` + Lokal ADM)
 
-Folder ini berisi salinan lengkap **9 kernel Kaggle** (`reiiihel/mnist-adm*`, format `nbformat 4.5`) yang **sudah menyematkan output eksekusi asli (`execution_count` dan log `stdout` dari Kaggle Tesla T4 GPU)** agar hasil training, validasi, dan pembuatan submission dapat langsung dibaca di GitHub maupun dijalankan ulang di Kaggle GPU (`P100` / `T4`). Seluruh skrip modular lokal berada di [`../src/`](../src/).
+Folder ini berisi salinan lengkap **9 kernel Kaggle** (`reiiihel/mnist-adm*`, format `nbformat 4.5`) yang **sudah menyematkan output eksekusi asli (`execution_count` dan log `stdout` dari Kaggle Tesla T4 GPU)**, ditambah **1 notebook evaluasi visual lokal (`10`)** yang menyematkan grafik matplotlib dan figur diagnostik ADM langsung di dalam sel `.ipynb`. Seluruh skrip modular lokal berada di [`../src/`](../src/).
 
-| No. | Berkas Notebook | Kaggle Kernel ID | Era | Peran & Hasil Terverifikasi |
+| No. | Berkas Notebook | Kernel / Lingkup | Era | Peran & Hasil Terverifikasi |
 |:---:|:---|:---|:---:|:---|
 | `01` | [`01_mnist_adm_resnet18_cbam.ipynb`](./01_mnist_adm_resnet18_cbam.ipynb) | `reiiihel/mnist-adm` | Era I | ResNet-18 CBAM + MixStyle + SubCenter ArcFace (`99,80%` OOF 5-Fold di log akhir / `99,790%` run awal; `Sub 2: 0.9278`) |
 | `02` | [`02_mnist_adm_convnext_femto.ipynb`](./02_mnist_adm_convnext_femto.ipynb) | `reiiihel/mnist-adm-convnext` | Era I | ConvNeXt-Femto 5-Fold (`99,55%` OOF; diblend `15%` ke `Sub 3 Rank 1: 0.9319`) |
@@ -13,6 +13,7 @@ Folder ini berisi salinan lengkap **9 kernel Kaggle** (`reiiihel/mnist-adm*`, fo
 | `07` | [`07_mnist_adm_convnext_fixmatch.ipynb`](./07_mnist_adm_convnext_fixmatch.ipynb) | `reiiihel/mnist-adm-convnext-fixmatch` | Era III | Fine-tuning konsistensi pada cabang ConvNeXt-Femto 5-Fold + 9-way TTA |
 | `08` | [`08_mnist_adm_massive_sota.ipynb`](./08_mnist_adm_massive_sota.ipynb) | `reiiihel/mnist-adm-massive-sota` | Era IV | Pelatihan DenseNet-161 CBAM 20 epoch pada Super-Dataset 15.811 citra (`submission_massive_sota.zip`) |
 | `09` | [`09_mnist_adm_distillation_final.ipynb`](./09_mnist_adm_distillation_final.ipynb) | `reiiihel/mnist-adm-distillation` | Era V-VI | **Final Single Student (`14,75 MiB FP16`)**: 5-Loss KD + EMA + SWA + EM TTPA (`100,00%` val internal 25 epoch; **Fase 1 `Sub 32: 0.9984`**, **Fase 2 `P2-Sub1: 0.9862`**, **`5,44 s`**) |
+| `10` | [`10_mnist_adm_visual_evaluation_and_diagnostics.ipynb`](./10_mnist_adm_visual_evaluation_and_diagnostics.ipynb) | Lokal `FinalProject/` | Era 0-VI | **Evaluasi Visual & Diagnostik ADM Lengkap**: `7` figur `image/png` tertanam langsung (PCA/Scree, 4 plot klasik, kurva Sub 1-32 + Fase 2, terobosan 13 kelas gaya baru, stress test + kompresi >52x, kalibrasi `ECE`, galeri arsitektur) |
 
 ## Dataset Kaggle Terkait
 - `reiiihel/chinese-mnist-adm`
